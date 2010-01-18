@@ -1,0 +1,146 @@
+Vaatteiden kulutuksen seurantaohjelma
+Ville Korhonen <ville.p.korhonen@jyu.fi>
+TIEP111, harjoitustyö, vaihe 1
+
+Tehtävänä on suunnitella tietokanta henkilön vaatteiden sijainnista.
+
+Jokaisella on vaatteita valtavat määrät, ja toisinaan on hankalaa pysyä perillä siitä, missä mikäkin vaatekappale sijaitsee. Ohjelma auttaa käyttäjää pitämällä kirjaa esimerkiksi pesukoneeseen laitettujen sukkien määrästä, ja auttaa paljastamaan sukkia syövät pesukoneet. Pesutilanteisiin liittyen ohjelma osaa myös kertoa käyttäjälle, mitkä vaatteet ovat pesun tarpeessa.
+
+Lisäksi ohjelma helpottaa käyttäjän vaateostoksia kertomalla käyttäjän omiin kokemuksiin perustuen listan "parhaista" vaatteista, jonka voi sitten tulostaa ja ottaa mukaan kauppaan.
+
+
+	Mitä tietoja tarvitaan?
+	=======================
+
+ - rfid (jokainen vaate on varustettu tunnisteella...)
+ - tyyppi (paita, housu, sukka, ...)
+ - materiaali
+ - väri
+ - koko
+ - sijaintitiedot vs. ajankohta (missä vaate on ollut milloinkin)
+ - ostopaikka
+ - käyttökerrat
+ - puhtausaste (asteikolla 1-10)
+ - kunto
+ - valmistaja
+ - lisätiedot
+ - käyttökokemukset
+  - 1-10
+  - sanallinen
+  - vaatteen puhtausaste & kunto käyttökerran jälkeen
+
+
+	Mitä ominaisuuksia halutaan?
+	============================
+
+ - mahdollisuus tarkistaa, mitä vaatteita on ollut paikassa X ajanhetkellä Y
+ - mahdollisuus lisätä/poistaa/muokata vaatteita ja niiden tietoja
+ - likaisten vaatteiden listan tulostaminen
+ - tilasto käytetyimmistä vaatteista
+ - satunnaisen vaatekokonaisuuden luominen
+ - listaus kaikista vaatteista ja niiden kappalemääristä tyypeittäin
+
+
+	Tulosteet näytölle
+	==================
+
+
+		P. Päävalikko
+		=============
+
+
+  Vaaterekisteri 1.0
+  
+  Toiminnot:
+  	1. Vaatteet
+  	2. Rekisteröi käyttötietoja
+  	3. Tulosta lista likaisista vaatteista
+  	4. Luo satunnainen vaatekokonaisuus
+  	5. Tilastot
+  	------------------------------------------
+  	0. Lopeta sovellus
+
+
+
+		1. Vaatteet
+		===========
+
+
+  Toiminnot:
+  	1. Lisää uusi vaate
+  	2. Muokkaa vaatteita
+  	3. Poista vaatteita
+  	------------------------------------------
+  	0. Paluu päävalikkoon
+
+
+
+			1.1. Lisää uusi vaate
+			=====================
+
+
+  	Lisää uusi vaate:
+  
+  	Tyyppi:			sukka[RET]
+  	Väri: 			5[RET]
+  
+   	 VIRHE: syötä väritieto sanallisena
+  
+  	RFID-tunniste: 	9595955939592395959[RET]
+  	Materiaali: 	puuvilla[RET]
+  	Koko: 		46[RET]
+  	....
+  	Vahvistus:
+  	 Lisätäänkö uusi: sukka (puuvilla, musta) kokoa 46? [K/e] [RET]
+  	 Vaate lisätty!
+
+
+
+		2. Rekisteröi käyttötietoja
+		===========================
+
+
+  	Rekisteröi käyttötietoja:
+  	
+  	RFID-tunniste: 	9123951239512935912359[RET]
+  	
+  	Löytyi: housut (farkku, vaaleat, koko 32/34)
+  	
+  	Aika:			2010-01-01 02:30[RET]
+  	Sijainti:		ojanpohja[RET]
+  	
+  	Tahdotko antaa käyttökokemuksen? [K/e] e[RET]
+  	------------------------------------------
+  	0. Paluu päävalikkoon
+
+
+
+		3. Tulosta lista likaisista vaatteista
+		======================================
+
+
+  Vaatekappale					Sijainti			Puhtausaste
+  ------------------------------------------------------------------------------------------
+  Housut (farkku, vaaleat, koko 32/34)		huoneen lattia			likainen (1)
+  T-paita (puuvilla, sininen, koko L)		jääkaappi			erittäin puhdas (10)
+
+
+		4. Luo satunnainen vaatekokonaisuus
+		===================================
+
+
+  ------------------------------------------
+  0. Paluu päävalikkoon
+
+
+		5. Tilastot
+		===========
+
+
+  ------------------------------------------
+  0. Paluu päävalikkoon
+
+
+
+
+

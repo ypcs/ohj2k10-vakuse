@@ -1,0 +1,1 @@
+doc/vaihe1.txt = harjoitustyön vaihe 1
