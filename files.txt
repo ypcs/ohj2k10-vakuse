@@ -1,1 +1,1 @@
-doc/vaihe1.txt = harjoitustyön vaihe 1
+doc/suunnitelma.txt = harjoitustyön vaihe 1, eli harjoitustyön suunnitelma
