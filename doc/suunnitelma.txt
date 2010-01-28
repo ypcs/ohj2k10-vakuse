@@ -133,20 +133,21 @@ Lisäksi ohjelma helpottaa käyttäjän vaateostoksia kertomalla käyttäjän om
 
 
 
-			1.1. Lisää uusi vaate
-			=====================
+			1.1. Lisää uusi vaate / 1.2. muokkaa vaatteita
+			==============================================
 
 
   	Lisää uusi vaate:
   
-  	Tyyppi:			sukka[RET]
-  	Väri: 			5[RET]
+  	Tyyppi:         sukka[RET]        // autocomplete tyyppitaulun avulla: syötä pari
+                                        // ekaa kirjainta, paina [RET] ja sovellus ehdottaa jotain
+  	Väri:           5[RET]            // matchaus väritauluun
   
    	 VIRHE: syötä väritieto sanallisena
   
-  	RFID-tunniste: 	9595955939592395959[RET]
-  	Materiaali: 	puuvilla[RET]
-  	Koko: 		46[RET]
+  	RFID-tunniste:  9595955939592395959[RET]
+  	Materiaali:     puuvilla[RET]     // vrt. tyyppi: sama materiaalitaulun kanssa
+  	Koko:           46[RET]               // voi olla esim. numerotieto tai kirjaimia (XL,S,...)
   	....
   	Vahvistus:
   	 Lisätäänkö uusi: sukka (puuvilla, musta) kokoa 46? [K/e] [RET]
@@ -160,14 +161,14 @@ Lisäksi ohjelma helpottaa käyttäjän vaateostoksia kertomalla käyttäjän om
 
   	Rekisteröi käyttötietoja:
   	
-  	RFID-tunniste: 	9123951239512935912359[RET]
+  	RFID-tunniste:   9123951239512935912359[RET]
   	
   	Löytyi: housut (farkku, vaaleat, koko 32/34)
   	
-  	Aika:			2010-01-01 02:30[RET]
-  	Sijainti:		ojanpohja[RET]
+  	Aika:            2010-01-01 02:30[RET] // pvm muoto aina tämä
+  	Sijainti:        ojanpohja[RET]        // vapaata tekstiä
   	
-  	Tahdotko antaa käyttökokemuksen? [K/e] e[RET]
+  	Tahdotko antaa käyttökokemuksen? [K/e] e[RET] // käyttökokemus = vapaata tekstiä, rivinvaihdot ok
   	------------------------------------------
   	0. Paluu päävalikkoon
 
@@ -176,11 +177,13 @@ Lisäksi ohjelma helpottaa käyttäjän vaateostoksia kertomalla käyttäjän om
 		3. Tulosta lista likaisista vaatteista
 		======================================
 
+Data muodostetaan käyttötietokannan pohjalta: haetaan kunkin vaatteen viimeisin status.
 
-  Vaatekappale					Sijainti			Puhtausaste
+
+  Vaatekappale                            Sijainti           Puhtausaste
   ------------------------------------------------------------------------------------------
-  Housut (farkku, vaaleat, koko 32/34)		huoneen lattia			likainen (1)
-  T-paita (puuvilla, sininen, koko L)		jääkaappi			erittäin puhdas (10)
+  Housut (farkku, vaaleat, koko 32/34)    huoneen lattia     likainen (1)
+  T-paita (puuvilla, sininen, koko L)     jääkaappi          erittäin puhdas (10)
 
 
 		4. Luo satunnainen vaatekokonaisuus
