@@ -2,7 +2,12 @@ Vaatteiden kulutuksen seurantaohjelma
 Ville Korhonen <ville.p.korhonen@jyu.fi>
 TIEP111, harjoitustyö, vaihe 1
 
- - HTML: https://svn.cc.jyu.fi/srv/svn/ohj2k10/vipekorh/trunk/doc/suunnitelma.html
+HTML
+  https://svn.cc.jyu.fi/srv/svn/ohj2k10/vipekorh/trunk/doc/suunnitelma.html
+Plaintext
+  https://svn.cc.jyu.fi/srv/svn/ohj2k10/vipekorh/trunk/doc/suunnitelma.txt
+txt2tags (lähdekoodi)
+  https://svn.cc.jyu.fi/srv/svn/ohj2k10/vipekorh/trunk/doc/suunnitelma.t2t
 
 Tehtävänä on suunnitella tietokanta henkilön vaatteiden sijainnista.
 
