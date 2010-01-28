@@ -14,6 +14,11 @@
 <h3>TIEP111, harjoitustyö, vaihe 1</h3>
 </div>
 
+ <ul>
+ <li>HTML: <a href="https://svn.cc.jyu.fi/srv/svn/ohj2k10/vipekorh/trunk/doc/suunnitelma.html">https://svn.cc.jyu.fi/srv/svn/ohj2k10/vipekorh/trunk/doc/suunnitelma.html</a>
+ </li>
+ </ul>
+
 <p>
 Tehtävänä on suunnitella tietokanta henkilön vaatteiden sijainnista.
 </p>
@@ -43,7 +48,7 @@ Lisäksi ohjelma helpottaa käyttäjän vaateostoksia kertomalla käyttäjän om
  </li>
  <li>puhtausaste (asteikolla 1-10)
  </li>
- <li>kunto
+ <li>kunto (sanallisena)
  </li>
  <li>valmistaja
  </li>
@@ -73,8 +78,10 @@ Lisäksi ohjelma helpottaa käyttäjän vaateostoksia kertomalla käyttäjän om
 <p></p>
 <h4>käyttöhistoria</h4>
 <pre>
-  id | vaate | aika             | paikka           | kunto | puhtausaste jälkeen | arvosana | lisätiedot
-  1  | 1     | 2010-01-23 15:15 | juhlat @ jossain | uusi  | 7                   |  9       | vaate oli ihku
+  id | vaate | aika             | paikka           | kunto     | puhtausaste jälkeen | arvosana | lisätiedot
+  1  | 1     | 2010-01-23 15:15 | juhlat @ jossain | uusi      | 7                   |  9       | vaate oli ihku
+  3  | 5     | 2010-01-23 15:15 | juhlat @ jossain | reikäinen | 5                   | 4        | tän vois heittää roskiin
+  4  | 5     | 2010-01-23 16:00 | kylpyhuone       | rikki     | 6                   | 5        | osta uusi!
 </pre>
 <p></p>
 <h4>vaatetyypit</h4>
@@ -151,6 +158,12 @@ Lisäksi ohjelma helpottaa käyttäjän vaateostoksia kertomalla käyttäjän om
   	Väri:           5[RET]            // matchaus väritauluun
   
    	 VIRHE: syötä väritieto sanallisena
+  
+      Väri:           mus[RET]		  // autocompletea
+      
+       Tarkoititko:   musta [K/e] [RET]
+      Väri:           musta
+      
   
   	RFID-tunniste:  9595955939592395959[RET]
   	Materiaali:     puuvilla[RET]     // vrt. tyyppi: sama materiaalitaulun kanssa

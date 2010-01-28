@@ -5,6 +5,10 @@ TIEP111, harjoitustyö, vaihe 1
 %!Target: xhtml
 %!Encoding: utf-8
 
+% todo: utf-8 bom kaikkiin
+ - HTML: https://svn.cc.jyu.fi/srv/svn/ohj2k10/vipekorh/trunk/doc/suunnitelma.html
+
+
 Tehtävänä on suunnitella tietokanta henkilön vaatteiden sijainnista.
 
 Jokaisella on vaatteita valtavat määrät, ja toisinaan on hankalaa pysyä perillä siitä, missä mikäkin vaatekappale sijaitsee. Ohjelma auttaa käyttäjää pitämällä kirjaa esimerkiksi pesukoneeseen laitettujen sukkien määrästä, ja auttaa paljastamaan sukkia syövät pesukoneet. Pesutilanteisiin liittyen ohjelma osaa myös kertoa käyttäjälle, mitkä vaatteet ovat pesun tarpeessa.
@@ -23,7 +27,7 @@ Lisäksi ohjelma helpottaa käyttäjän vaateostoksia kertomalla käyttäjän om
  - ostopaikka
  - käyttökerrat
  - puhtausaste (asteikolla 1-10)
- - kunto
+ - kunto (sanallisena)
  - valmistaja
  - lisätiedot
  - käyttökokemukset
@@ -45,8 +49,10 @@ id | tyyppi | rfid                  | materiaali | väri | koko | ostopaikka | v
 
 ==== käyttöhistoria ====
 ```
-id | vaate | aika             | paikka           | kunto | puhtausaste jälkeen | arvosana | lisätiedot
-1  | 1     | 2010-01-23 15:15 | juhlat @ jossain | uusi  | 7                   |  9       | vaate oli ihku
+id | vaate | aika             | paikka           | kunto     | puhtausaste jälkeen | arvosana | lisätiedot
+1  | 1     | 2010-01-23 15:15 | juhlat @ jossain | uusi      | 7                   |  9       | vaate oli ihku
+3  | 5     | 2010-01-23 15:15 | juhlat @ jossain | reikäinen | 5                   | 4        | tän vois heittää roskiin
+4  | 5     | 2010-01-23 16:00 | kylpyhuone       | rikki     | 6                   | 5        | osta uusi!
 ```
 
 ==== vaatetyypit ====
@@ -122,6 +128,12 @@ Toiminnot:
 	Väri:           5[RET]            // matchaus väritauluun
 
  	 VIRHE: syötä väritieto sanallisena
+
+    Väri:           mus[RET]		  // autocompletea
+    
+     Tarkoititko:   musta [K/e] [RET]
+    Väri:           musta
+    
 
 	RFID-tunniste:  9595955939592395959[RET]
 	Materiaali:     puuvilla[RET]     // vrt. tyyppi: sama materiaalitaulun kanssa
