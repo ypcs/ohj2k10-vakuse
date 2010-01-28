@@ -5,7 +5,8 @@ TIEP111, harjoitustyö, vaihe 1
 %!Target: xhtml
 %!Encoding: utf-8
 
-% todo: utf-8 bom kaikkiin
+% todo: utf-8 bom kaikkiin tms, trac rikkoo atm
+% -> testaa auttaako svn:mime-type text/html;charset=...
  - HTML: https://svn.cc.jyu.fi/srv/svn/ohj2k10/vipekorh/trunk/doc/suunnitelma.html
 
 
