@@ -30,6 +30,64 @@ Lisäksi ohjelma helpottaa käyttäjän vaateostoksia kertomalla käyttäjän om
   - vaatteen puhtausaste & kunto käyttökerran jälkeen
 
 
+		Tietokannat
+		===========
+
+
+			vaatteet
+			========
+
+
+  id | tyyppi | rfid                  | materiaali | väri | koko | ostopaikka | valmistaja | lisätiedot |
+  1  | 1      | 92393959239592359233  | 3          | 5    | XL   | kauppa X   | jännä firma| ....       |
+  2 ....
+  5 ....
+  6 ....
+
+
+
+			käyttöhistoria
+			==============
+
+
+  id | vaate | aika             | paikka           | kunto | puhtausaste jälkeen | arvosana | lisätiedot
+  1  | 1     | 2010-01-23 15:15 | juhlat @ jossain | uusi  | 7                   |  9       | vaate oli ihku
+
+
+
+			vaatetyypit
+			===========
+
+
+  id | tyyppi
+  1  | housut
+  2  | paita
+  3  | sukka
+  6  | saapas
+
+
+
+			materiaalit
+			===========
+
+
+  id | materiaali
+  1  | puuvilla
+  2  | nahka
+  5  | farkku
+
+
+
+			värit
+			=====
+
+
+  id | väri
+  1  | musta
+  2  | valkoinen
+
+
+
 	Mitä ominaisuuksia halutaan?
 	============================
 
