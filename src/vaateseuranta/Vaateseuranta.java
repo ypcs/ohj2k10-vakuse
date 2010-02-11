@@ -137,7 +137,7 @@ public class Vaateseuranta {
    * @return palauttaa true mikäli tallennus onnistVaateseuranta, muuten false
    * @todo tee varsinainen toiminnallisuus
    */
-  public Boolean save() {
+  public static boolean save() {
     info();
 
     printSpace();
