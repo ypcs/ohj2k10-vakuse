@@ -1,0 +1,272 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>vaateseuranta.Vaateseuranta (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">Vaateseuranta.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> vaateseuranta;
+<A NAME="2"></A>
+<A NAME="3"></A>
+<A NAME="4"></A><FONT ID="Import">import</FONT> java.util.Scanner;
+<A NAME="5"></A>
+<A NAME="6"></A><FONT ID="FormalComment">/**
+<A NAME="7"></A> * Käyttöliittymäluokka Vaateseuranta -ohjelmaan
+<A NAME="8"></A> * Vaateseuranta -ohjelman 
+<A NAME="9"></A> *
+<A NAME="10"></A> * @author Ville Korhonen
+<A NAME="11"></A> * @version 2010-02-05
+<A NAME="12"></A> */</FONT>
+<A NAME="13"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> Vaateseuranta {
+<A NAME="14"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String APP_NAME = <FONT ID="StringLiteral">"Vaateseuranta"</FONT>;
+<A NAME="15"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> <FONT ID="Int">int</FONT> APP_VER_MAJOR = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="16"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> <FONT ID="Int">int</FONT> APP_VER_MINOR = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="17"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> <FONT ID="Int">int</FONT> APP_VER_PATCH = <FONT ID="IntegerLiteral">5</FONT>;
+<A NAME="18"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String APP_VERSION = APP_VER_MAJOR + <FONT ID="StringLiteral">"."</FONT> + APP_VER_MINOR + <FONT ID="StringLiteral">"."</FONT> + APP_VER_PATCH;
+<A NAME="19"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String APP_INFO = APP_NAME + <FONT ID="StringLiteral">" v"</FONT> + APP_VERSION;
+<A NAME="20"></A>    
+<A NAME="21"></A>  <FONT ID="FormalComment">/**
+<A NAME="22"></A>   * Tulostaa virheilmoituksen
+<A NAME="23"></A>   */</FONT>
+<A NAME="24"></A>  <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Void">void</FONT> error(String message) {
+<A NAME="25"></A>      System.err.println(message);
+<A NAME="26"></A>  }
+<A NAME="27"></A>
+<A NAME="28"></A>
+<A NAME="29"></A>  <FONT ID="FormalComment">/**
+<A NAME="30"></A>   * Lukee käyttäjän syötteen
+<A NAME="31"></A>   * @param question käyttäjälle esitettävä kysymys
+<A NAME="32"></A>   * @param defaultValue oletusarvo, mikäli käyttäjä syöttää tyhjän
+<A NAME="33"></A>   * @return palauttaa käyttäjän syötteen
+<A NAME="34"></A>   */</FONT>
+<A NAME="35"></A>  <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> String readLine(String question, String defaultValue) {
+<A NAME="36"></A>      Scanner lukija = <FONT ID="New">new</FONT> Scanner(System.in);
+<A NAME="37"></A>      System.out.print(question + <FONT ID="StringLiteral">" &gt; "</FONT>);
+<A NAME="38"></A>      String rivi = lukija.next().trim();
+<A NAME="39"></A>      <FONT ID="If">if</FONT> (rivi.length() == <FONT ID="IntegerLiteral">0</FONT>) {<FONT ID="Return">return</FONT> defaultValue;}
+<A NAME="40"></A>      <FONT ID="Return">return</FONT> rivi;
+<A NAME="41"></A>  }
+<A NAME="42"></A>
+<A NAME="43"></A>
+<A NAME="44"></A>  <FONT ID="FormalComment">/**
+<A NAME="45"></A>   * Lukee käyttäjän syöttämän merkin
+<A NAME="46"></A>   * @param question käyttäjälle esitettävä kysymys
+<A NAME="47"></A>   * @param defaultValue oletusarvo, mikäli käyttäjä syöttää tyhjän
+<A NAME="48"></A>   * @return palauttaa käyttäjän syötteen
+<A NAME="49"></A>   */</FONT>
+<A NAME="50"></A>  <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Char">char</FONT> readChar(String question, <FONT ID="Char">char</FONT> defaultValue) {
+<A NAME="51"></A>      String rivi = readLine(question, <FONT ID="StringLiteral">""</FONT> + defaultValue);
+<A NAME="52"></A>      <FONT ID="Return">return</FONT> rivi.charAt(<FONT ID="IntegerLiteral">0</FONT>);
+<A NAME="53"></A>  }
+<A NAME="54"></A>
+<A NAME="55"></A>
+<A NAME="56"></A>  <FONT ID="FormalComment">/**
+<A NAME="57"></A>   * Lukee käyttäjän syötteen (valikkosiirtymisiä varten)
+<A NAME="58"></A>   * @param question käyttäjälle esitettävä kysymys
+<A NAME="59"></A>   * @param defaultValue oletusarvo, mikäli käyttäjä syöttää tyhjän
+<A NAME="60"></A>   * @return palauttaa käyttäjän syötteen
+<A NAME="61"></A>   */</FONT>
+<A NAME="62"></A>  <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Int">int</FONT> readInteger(String question, <FONT ID="Int">int</FONT> defaultValue) {
+<A NAME="63"></A>      String rivi = readLine(question, <FONT ID="StringLiteral">""</FONT> + defaultValue);
+<A NAME="64"></A>      <FONT ID="Try">try</FONT> {
+<A NAME="65"></A>          <FONT ID="Return">return</FONT> Integer.parseInt(rivi);
+<A NAME="66"></A>      } <FONT ID="Catch">catch</FONT> (NumberFormatException ex) {
+<A NAME="67"></A>          error(<FONT ID="StringLiteral">"Virheellinen syöte"</FONT>);
+<A NAME="68"></A>          <FONT ID="Return">return</FONT> defaultValue;
+<A NAME="69"></A>      }
+<A NAME="70"></A>  }
+<A NAME="71"></A>
+<A NAME="72"></A>  <FONT ID="FormalComment">/**
+<A NAME="73"></A>   * Tulostaa merkkijonon ja rivinvaihdon jos printlf on tosi
+<A NAME="74"></A>   * @param s tulostettava merkkijono
+<A NAME="75"></A>   * @param printlf tulostetaanko (true) rivinvaihto vai ei (false)
+<A NAME="76"></A>   */</FONT>
+<A NAME="77"></A>  <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Void">void</FONT> print(String s, <FONT ID="Boolean">boolean</FONT> printlf) {
+<A NAME="78"></A>    System.out.print(s);
+<A NAME="79"></A>    <FONT ID="If">if</FONT> ( printlf ) System.out.println();
+<A NAME="80"></A>  }
+<A NAME="81"></A>
+<A NAME="82"></A>  
+<A NAME="83"></A>  <FONT ID="FormalComment">/**
+<A NAME="84"></A>   * Tulostaa merkkijonon ja rivinvaihdon
+<A NAME="85"></A>   * @param s Tulostettava rivi
+<A NAME="86"></A>   */</FONT>
+<A NAME="87"></A>  <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Void">void</FONT> print(String s) {
+<A NAME="88"></A>    print(s,<FONT ID="True">true</FONT>);
+<A NAME="89"></A>  }
+<A NAME="90"></A>
+<A NAME="91"></A>  <FONT ID="FormalComment">/**
+<A NAME="92"></A>   * Tulostaa hieman tyhjää väliä
+<A NAME="93"></A>   * @param kVaateseurantanka monta riviä tyhjää tulostetaan?
+<A NAME="94"></A>   */</FONT>
+<A NAME="95"></A>  <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Void">void</FONT> printSpace(<FONT ID="Int">int</FONT> howMany) {
+<A NAME="96"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> i=<FONT ID="IntegerLiteral">0</FONT>; i&lt;howMany; i++) {
+<A NAME="97"></A>        print(<FONT ID="StringLiteral">""</FONT>, <FONT ID="True">true</FONT>);
+<A NAME="98"></A>      }
+<A NAME="99"></A>  }
+<A NAME="100"></A>  
+<A NAME="101"></A>  <FONT ID="FormalComment">/**
+<A NAME="102"></A>   * Tulostaa kaksi tyhjää riviä
+<A NAME="103"></A>   */</FONT>
+<A NAME="104"></A>  <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Void">void</FONT> printSpace() {
+<A NAME="105"></A>      printSpace(<FONT ID="IntegerLiteral">2</FONT>);
+<A NAME="106"></A>  }
+<A NAME="107"></A>  
+<A NAME="108"></A>  <FONT ID="FormalComment">/**
+<A NAME="109"></A>   * Tulostaa ilmoituksen siitä, ettei toimintoa ole vielä toteutettu
+<A NAME="110"></A>   */</FONT>
+<A NAME="111"></A>  <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Void">void</FONT> notImplemented()  {
+<A NAME="112"></A>    print(<FONT ID="StringLiteral">" Hups, toimintoa ei toteutettu!"</FONT>);
+<A NAME="113"></A>    print(<FONT ID="StringLiteral">""</FONT>);
+<A NAME="114"></A>  }
+<A NAME="115"></A>
+<A NAME="116"></A>  <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Void">void</FONT> logo() {
+<A NAME="117"></A>      print(<FONT ID="StringLiteral">"*******************************************"</FONT>);
+<A NAME="118"></A>      print(<FONT ID="StringLiteral">"* "</FONT> + APP_INFO);
+<A NAME="119"></A>      print(<FONT ID="StringLiteral">"*******************************************"</FONT>);
+<A NAME="120"></A>  }
+<A NAME="121"></A>
+<A NAME="122"></A>  
+<A NAME="123"></A>  <FONT ID="FormalComment">/**
+<A NAME="124"></A>   * Tulostaa ohjelman tiedot
+<A NAME="125"></A>   */</FONT>
+<A NAME="126"></A>  <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Void">void</FONT> info() {
+<A NAME="127"></A>      print(APP_INFO);
+<A NAME="128"></A>      printSpace();
+<A NAME="129"></A>      print(<FONT ID="StringLiteral">"Vaateseurantaohjelmisto henkilökohtaiseen vaateseurantaan"</FONT>);
+<A NAME="130"></A>      print(<FONT ID="StringLiteral">"(c) 2010, VK &lt;ville.p.korhonen@jyu.fi&gt;"</FONT>);
+<A NAME="131"></A>      printSpace();
+<A NAME="132"></A>  }
+<A NAME="133"></A>
+<A NAME="134"></A>
+<A NAME="135"></A>  <FONT ID="FormalComment">/**
+<A NAME="136"></A>   * Tallentaa vaatekatalogin tiedot levylle.
+<A NAME="137"></A>   * @return palauttaa true mikäli tallennus onnistVaateseuranta, muuten false
+<A NAME="138"></A>   * @todo tee varsinainen toiminnallisuus
+<A NAME="139"></A>   */</FONT>
+<A NAME="140"></A>  <FONT ID="Public">public</FONT> Boolean save() {
+<A NAME="141"></A>    info();
+<A NAME="142"></A>
+<A NAME="143"></A>    printSpace();
+<A NAME="144"></A>
+<A NAME="145"></A>    print(<FONT ID="StringLiteral">"Nyt pitäisi tallentaa tavarat kovalevylle..."</FONT>);
+<A NAME="146"></A>    notImplemented();
+<A NAME="147"></A>
+<A NAME="148"></A>    <FONT ID="Return">return</FONT> <FONT ID="False">false</FONT>;
+<A NAME="149"></A>  }
+<A NAME="150"></A>
+<A NAME="151"></A>  <FONT ID="FormalComment">/**
+<A NAME="152"></A>   * Tulostaa ohjelman valikolle otsikon
+<A NAME="153"></A>   * @param title
+<A NAME="154"></A>   */</FONT>
+<A NAME="155"></A>  <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Void">void</FONT> printTitle(String title) {
+<A NAME="156"></A>      printSpace();
+<A NAME="157"></A>      print(<FONT ID="StringLiteral">"--------------------"</FONT>);
+<A NAME="158"></A>      print(title);
+<A NAME="159"></A>      print(<FONT ID="StringLiteral">"--------------------"</FONT>);
+<A NAME="160"></A>      print(<FONT ID="StringLiteral">""</FONT>);
+<A NAME="161"></A>  }
+<A NAME="162"></A>  
+<A NAME="163"></A>  <FONT ID="FormalComment">/**
+<A NAME="164"></A>   * Tulostaa ohjelman "Vaatteet" -osion valikon ja kysytään käyttäjältä valinta
+<A NAME="165"></A>   * @param onlyShow tulostetaanko valikko ja poistutaan kysymättä valintaa?
+<A NAME="166"></A>   */</FONT>
+<A NAME="167"></A>  <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Void">void</FONT> vaateMenu(<FONT ID="Boolean">boolean</FONT> onlyShow) {
+<A NAME="168"></A>      printTitle(<FONT ID="StringLiteral">"Vaatteet"</FONT>);
+<A NAME="169"></A>      print(<FONT ID="StringLiteral">"1 = Lisää uusi vaate"</FONT>);
+<A NAME="170"></A>      print(<FONT ID="StringLiteral">"2 - Muokkaa vaatteita"</FONT>);
+<A NAME="171"></A>      print(<FONT ID="StringLiteral">"3 - Poista vaatteita"</FONT>);
+<A NAME="172"></A>      print(<FONT ID="StringLiteral">"4 - Selaa vaatteita"</FONT>);
+<A NAME="173"></A>      
+<A NAME="174"></A>      print(<FONT ID="StringLiteral">"-"</FONT>);
+<A NAME="175"></A>      print(<FONT ID="StringLiteral">"0 = paluu edelliseen valikkoon"</FONT>);
+<A NAME="176"></A>      printSpace();
+<A NAME="177"></A>      <FONT ID="If">if</FONT> (onlyShow) {<FONT ID="Return">return</FONT>;}
+<A NAME="178"></A>      
+<A NAME="179"></A>      <FONT ID="Int">int</FONT> valinta;
+<A NAME="180"></A>      <FONT ID="Do">do</FONT> {
+<A NAME="181"></A>          valinta = readInteger(<FONT ID="StringLiteral">"Valinta"</FONT>, <FONT ID="IntegerLiteral">99</FONT>);
+<A NAME="182"></A>          <FONT ID="Switch">switch</FONT> (valinta) {
+<A NAME="183"></A>            <FONT ID="Case">case</FONT> <FONT ID="IntegerLiteral">0</FONT>: <FONT ID="Break">break</FONT>;
+<A NAME="184"></A>            <FONT ID="Case">case</FONT> <FONT ID="IntegerLiteral">1</FONT>: notImplemented(); <FONT ID="Break">break</FONT>;
+<A NAME="185"></A>            <FONT ID="Case">case</FONT> <FONT ID="IntegerLiteral">2</FONT>: notImplemented(); <FONT ID="Break">break</FONT>;
+<A NAME="186"></A>            <FONT ID="Case">case</FONT> <FONT ID="IntegerLiteral">3</FONT>: notImplemented(); <FONT ID="Break">break</FONT>;
+<A NAME="187"></A>            <FONT ID="Case">case</FONT> <FONT ID="IntegerLiteral">4</FONT>: notImplemented(); <FONT ID="Break">break</FONT>;
+<A NAME="188"></A>            
+<A NAME="189"></A>          }
+<A NAME="190"></A>      } <FONT ID="While">while</FONT> (valinta != <FONT ID="IntegerLiteral">0</FONT>);
+<A NAME="191"></A>      mainMenu(<FONT ID="True">true</FONT>);
+<A NAME="192"></A>  }
+<A NAME="193"></A>  
+<A NAME="194"></A>  <FONT ID="FormalComment">/**
+<A NAME="195"></A>   * Tulostaa ohjelman päävalikon ja kysyy käyttäjältä suoritettavan toiminnon
+<A NAME="196"></A>   * jonka jälkeen kyseinen toiminto suoritetaan
+<A NAME="197"></A>   * @param onlyShow tulostetaanko valikko ja poistutaan kysymättä valintaa?
+<A NAME="198"></A>   */</FONT>
+<A NAME="199"></A>  <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Void">void</FONT> mainMenu(<FONT ID="Boolean">boolean</FONT> onlyShow) {
+<A NAME="200"></A>      printTitle(<FONT ID="StringLiteral">"Päävalikko"</FONT>);
+<A NAME="201"></A>      print(<FONT ID="StringLiteral">"1 = Vaatteet"</FONT>);
+<A NAME="202"></A>      print(<FONT ID="StringLiteral">"2 = Rekisteröi käyttötietoja"</FONT>);
+<A NAME="203"></A>      print(<FONT ID="StringLiteral">"3 = Tulosta lista likaisista vaatteista"</FONT>);
+<A NAME="204"></A>      print(<FONT ID="StringLiteral">"4 = Luo satunnainen vaatekokonaisuus"</FONT>);
+<A NAME="205"></A>      print(<FONT ID="StringLiteral">"-"</FONT>);
+<A NAME="206"></A>      print(<FONT ID="StringLiteral">"0 = lopetus"</FONT>);
+<A NAME="207"></A>      printSpace();
+<A NAME="208"></A>      <FONT ID="If">if</FONT> (onlyShow) {<FONT ID="Return">return</FONT>;}
+<A NAME="209"></A>      
+<A NAME="210"></A>      <FONT ID="Int">int</FONT> valinta;
+<A NAME="211"></A>      <FONT ID="Do">do</FONT> {
+<A NAME="212"></A>          valinta = readInteger(<FONT ID="StringLiteral">"Valinta"</FONT>, <FONT ID="IntegerLiteral">99</FONT>);
+<A NAME="213"></A>          <FONT ID="Switch">switch</FONT> (valinta) {
+<A NAME="214"></A>            <FONT ID="Case">case</FONT> <FONT ID="IntegerLiteral">0</FONT>: <FONT ID="Break">break</FONT>;
+<A NAME="215"></A>            <FONT ID="Case">case</FONT> <FONT ID="IntegerLiteral">1</FONT>: vaateMenu(<FONT ID="False">false</FONT>); <FONT ID="Break">break</FONT>;
+<A NAME="216"></A>            <FONT ID="Case">case</FONT> <FONT ID="IntegerLiteral">2</FONT>: notImplemented(); <FONT ID="Break">break</FONT>;
+<A NAME="217"></A>            <FONT ID="Case">case</FONT> <FONT ID="IntegerLiteral">3</FONT>: notImplemented(); <FONT ID="Break">break</FONT>;
+<A NAME="218"></A>            <FONT ID="Case">case</FONT> <FONT ID="IntegerLiteral">4</FONT>: notImplemented(); <FONT ID="Break">break</FONT>;
+<A NAME="219"></A>            <FONT ID="Default">default</FONT>: error(<FONT ID="StringLiteral">"Virheellinen valinta!"</FONT>); <FONT ID="Break">break</FONT>;
+<A NAME="220"></A>          }
+<A NAME="221"></A>      } <FONT ID="While">while</FONT> (valinta != <FONT ID="IntegerLiteral">0</FONT>);
+<A NAME="222"></A>      
+<A NAME="223"></A>  }
+<A NAME="224"></A>
+<A NAME="225"></A>  <FONT ID="FormalComment">/**
+<A NAME="226"></A>   * Ohjelman pääohjelma
+<A NAME="227"></A>   * @param args komentorivin parametrit, ei käytössä vielä
+<A NAME="228"></A>   */</FONT>
+<A NAME="229"></A>  <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Void">void</FONT> main(String[] args) {
+<A NAME="230"></A>    <A HREF="../vaateseuranta/Vaateseuranta.java.html">Vaateseuranta</A> vaatteet = <FONT ID="New">new</FONT> <A HREF="../vaateseuranta/Vaateseuranta.java.html">Vaateseuranta</A>();
+<A NAME="231"></A>
+<A NAME="232"></A>    <FONT ID="Try">try</FONT> {
+<A NAME="233"></A>      <A HREF="../vaateseuranta/Vaateseuranta.java.html">Vaateseuranta</A> vaateseuranta = <FONT ID="New">new</FONT> <A HREF="../vaateseuranta/Vaateseuranta.java.html">Vaateseuranta</A>();
+<A NAME="234"></A>      <FONT ID="SingleLineComment">// näytetään logo
+<A NAME="235"></A></FONT>      vaateseuranta.logo();
+<A NAME="236"></A>      
+<A NAME="237"></A>      <FONT ID="SingleLineComment">// näytetään päävalikko
+<A NAME="238"></A></FONT>      vaateseuranta.mainMenu(<FONT ID="False">false</FONT>);
+<A NAME="239"></A>      
+<A NAME="240"></A>      <FONT ID="SingleLineComment">// tallennetaan data
+<A NAME="241"></A></FONT>      vaateseuranta.save();
+<A NAME="242"></A>
+<A NAME="243"></A>      <FONT ID="SingleLineComment">// näytetään vielä sovelluksen tiedot
+<A NAME="244"></A></FONT>      vaateseuranta.info();
+<A NAME="245"></A>    }
+<A NAME="246"></A>    <FONT ID="Catch">catch</FONT> (Exception ex) {
+<A NAME="247"></A>      System.out.println(<FONT ID="StringLiteral">"VIRHE: "</FONT> + ex.getMessage());
+<A NAME="248"></A>    }
+<A NAME="249"></A>  }
+<A NAME="250"></A>
+<A NAME="251"></A>}
+<A NAME="252"></A>
+<A NAME="253"></A></pre>
+</BODY>
+</HTML>

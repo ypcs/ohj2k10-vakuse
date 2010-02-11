@@ -1,0 +1,179 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>comtest.Strings (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">Strings.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> comtest;
+<A NAME="2"></A><FONT ID="Import">import</FONT> java.util.ArrayList;
+<A NAME="3"></A>
+<A NAME="4"></A><FONT ID="FormalComment">/**
+<A NAME="5"></A> * Class for handling String lists
+<A NAME="6"></A> * @author vesal
+<A NAME="7"></A> * @version 22.9.2007
+<A NAME="8"></A> * @example
+<A NAME="9"></A> * &lt;pre name="testStrings"&gt;
+<A NAME="10"></A> * Strings list = new Strings();
+<A NAME="11"></A> * list.size() === 0;
+<A NAME="12"></A> * list.add("$add"); list.size() === $size; list.get($index) === "$value";
+<A NAME="13"></A> * 
+<A NAME="14"></A> *    $add   | $size  |  $index | $value 
+<A NAME="15"></A> *    -----------------------------------
+<A NAME="16"></A> *     one   |   1    |   0     |  one   
+<A NAME="17"></A> *     two   |   2    |   0     |  one   
+<A NAME="18"></A> *     ---   |  ---   |   1     |  two   
+<A NAME="19"></A> * &lt;/pre&gt;
+<A NAME="20"></A> * 
+<A NAME="21"></A> */</FONT>
+<A NAME="22"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> Strings <FONT ID="Extends">extends</FONT> ArrayList&lt;String&gt; <FONT ID="Implements">implements</FONT> Cloneable {
+<A NAME="23"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> <FONT ID="Long">long</FONT> serialVersionUID = <FONT ID="IntegerLiteral">1L</FONT>;
+<A NAME="24"></A>
+<A NAME="25"></A>    <FONT ID="FormalComment">/**
+<A NAME="26"></A>     * Add an other list to the end of this list 
+<A NAME="27"></A>     * @param list what list to add
+<A NAME="28"></A>     * @return this list reference
+<A NAME="29"></A>     * @example
+<A NAME="30"></A>     * &lt;pre name="testAdd"&gt;
+<A NAME="31"></A>     * Strings l1 = new Strings(), l2 = new Strings();
+<A NAME="32"></A>     * l1.add("one"); l1.add("two");
+<A NAME="33"></A>     * l2.add("three"); l2.add("four");
+<A NAME="34"></A>     * l1.add(l2);
+<A NAME="35"></A>     * l1.get(2) === "three"; l1.get(3) === "four";
+<A NAME="36"></A>     * &lt;/pre&gt;
+<A NAME="37"></A>     */</FONT>
+<A NAME="38"></A>    <FONT ID="Public">public</FONT> <A HREF="../comtest/Strings.java.html">Strings</A> add(<A HREF="../comtest/Strings.java.html">Strings</A> list) {
+<A NAME="39"></A>        addAll(list);
+<A NAME="40"></A>        <FONT ID="Return">return</FONT> <FONT ID="This">this</FONT>;
+<A NAME="41"></A>    }
+<A NAME="42"></A>
+<A NAME="43"></A>    <FONT ID="FormalComment">/**
+<A NAME="44"></A>     * Make a new instance from list with same strings inside
+<A NAME="45"></A>     * @return new list
+<A NAME="46"></A>     * @example
+<A NAME="47"></A>     * &lt;pre name="testClone"&gt;
+<A NAME="48"></A>     * Strings l1 = new Strings(), l2;
+<A NAME="49"></A>     * l1.add("one"); l1.add("two");
+<A NAME="50"></A>     * l2 = l1.clone();
+<A NAME="51"></A>     * l1.set(1,"three");
+<A NAME="52"></A>     * l2.get(0) === "one"; l2.get(1) === "two"; l1.get(1) === "three";
+<A NAME="53"></A>     * &lt;/pre&gt;
+<A NAME="54"></A>     */</FONT>
+<A NAME="55"></A>    @Override
+<A NAME="56"></A>    <FONT ID="Public">public</FONT> <A HREF="../comtest/Strings.java.html">Strings</A> clone() {
+<A NAME="57"></A>        <A HREF="../comtest/Strings.java.html">Strings</A> list = <FONT ID="New">new</FONT> <A HREF="../comtest/Strings.java.html">Strings</A>();
+<A NAME="58"></A>        list.add(<FONT ID="This">this</FONT>);
+<A NAME="59"></A>        <FONT ID="Return">return</FONT> list;
+<A NAME="60"></A>    }
+<A NAME="61"></A>
+<A NAME="62"></A>    <FONT ID="FormalComment">/**
+<A NAME="63"></A>     * Replace from every line target by replacement.
+<A NAME="64"></A>     * Current list is changed, not cloned! 
+<A NAME="65"></A>     * @param target The sequence of char values to be replaced
+<A NAME="66"></A>     * @param replacement The replacement sequence of char values
+<A NAME="67"></A>     * @return reference to the same list
+<A NAME="68"></A>     * @example
+<A NAME="69"></A>     * &lt;pre name="testReplace"&gt;
+<A NAME="70"></A>     * Strings l1 = new Strings(); 
+<A NAME="71"></A>     * l1.add("$value"); $
+<A NAME="72"></A>     * 
+<A NAME="73"></A>     *   | $value |
+<A NAME="74"></A>     *   ----------
+<A NAME="75"></A>     *   | one    |
+<A NAME="76"></A>     *   | two    |
+<A NAME="77"></A>     *   | three  |
+<A NAME="78"></A>     *   | four   |
+<A NAME="79"></A>     * 
+<A NAME="80"></A>     * l1.replace("o","p"); 
+<A NAME="81"></A>     * l1.get($i) === "$value";
+<A NAME="82"></A>     * 
+<A NAME="83"></A>     *    $i   |  $value
+<A NAME="84"></A>     *   ----------------
+<A NAME="85"></A>     *     0   |  pne
+<A NAME="86"></A>     *     1   |  twp
+<A NAME="87"></A>     *     2   |  three
+<A NAME="88"></A>     *     3   |  fpur 
+<A NAME="89"></A>     * &lt;/pre&gt;
+<A NAME="90"></A>     */</FONT>
+<A NAME="91"></A>    <FONT ID="Public">public</FONT> <A HREF="../comtest/Strings.java.html">Strings</A> replace(String target, String replacement) {
+<A NAME="92"></A>        <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> i=<FONT ID="IntegerLiteral">0</FONT>; i&lt;size(); i++) {
+<A NAME="93"></A>            set(i, get(i).replace(target, replacement));
+<A NAME="94"></A>        }
+<A NAME="95"></A>        <FONT ID="Return">return</FONT> <FONT ID="This">this</FONT>;
+<A NAME="96"></A>    }
+<A NAME="97"></A>
+<A NAME="98"></A>    
+<A NAME="99"></A>    <FONT ID="FormalComment">/**
+<A NAME="100"></A>     * Remove a part from list
+<A NAME="101"></A>     * @param fromIndex index to start
+<A NAME="102"></A>     * @param toIndex index to stop 
+<A NAME="103"></A>     */</FONT>
+<A NAME="104"></A>    @Override
+<A NAME="105"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> removeRange(<FONT ID="Int">int</FONT> fromIndex, <FONT ID="Int">int</FONT> toIndex) {
+<A NAME="106"></A>        <FONT ID="Super">super</FONT>.removeRange(fromIndex, toIndex);
+<A NAME="107"></A>    }
+<A NAME="108"></A>    
+<A NAME="109"></A>    
+<A NAME="110"></A>    <FONT ID="FormalComment">/**
+<A NAME="111"></A>     * Returns the list as separated by separator;
+<A NAME="112"></A>     * @param separator what to use as separator
+<A NAME="113"></A>     * @param endSeparator what to use as separator after last line
+<A NAME="114"></A>     *        if null or "" then no separator after last line
+<A NAME="115"></A>     * @return list separated by separator
+<A NAME="116"></A>     * 
+<A NAME="117"></A>     * @example
+<A NAME="118"></A>     * &lt;pre name="test"&gt;
+<A NAME="119"></A>     * Strings list = new Strings();
+<A NAME="120"></A>     * list.toString("|","!") === "!";
+<A NAME="121"></A>     * list.add("one");
+<A NAME="122"></A>     * list.toString("|","!") === "one!";
+<A NAME="123"></A>     * list.add("two");
+<A NAME="124"></A>     * list.toString("|","!")  === "one|two!";
+<A NAME="125"></A>     * list.toString("|","")   === "one|two";
+<A NAME="126"></A>     * list.toString("|",null) === "one|two";
+<A NAME="127"></A>     * &lt;/pre&gt;
+<A NAME="128"></A>     */</FONT>
+<A NAME="129"></A>    <FONT ID="Public">public</FONT> String toString(String separator, String endSeparator) {
+<A NAME="130"></A>        StringBuffer result = <FONT ID="New">new</FONT> StringBuffer();
+<A NAME="131"></A>        String sep = <FONT ID="StringLiteral">""</FONT>;
+<A NAME="132"></A>        <FONT ID="For">for</FONT> ( String s : <FONT ID="This">this</FONT>) {
+<A NAME="133"></A>            result.append(sep + s);
+<A NAME="134"></A>            sep = separator;
+<A NAME="135"></A>        }    
+<A NAME="136"></A>        <FONT ID="If">if</FONT> ( endSeparator != <FONT ID="Null">null</FONT> ) result.append(endSeparator);
+<A NAME="137"></A>        <FONT ID="Return">return</FONT> result.toString();
+<A NAME="138"></A>    }
+<A NAME="139"></A>    
+<A NAME="140"></A>    <FONT ID="FormalComment">/**
+<A NAME="141"></A>     * Returns the list as separated by separator;
+<A NAME="142"></A>     * @param separator what to use as separator
+<A NAME="143"></A>     * @return list separated by separator
+<A NAME="144"></A>     * 
+<A NAME="145"></A>     * @example
+<A NAME="146"></A>     * &lt;pre name="test"&gt;
+<A NAME="147"></A>     * Strings list = new Strings();
+<A NAME="148"></A>     * list.toString("|") === "";
+<A NAME="149"></A>     * list.add("one");
+<A NAME="150"></A>     * list.toString("|") === "one";
+<A NAME="151"></A>     * list.add("two");
+<A NAME="152"></A>     * list.toString("|") === "one|two";
+<A NAME="153"></A>     * &lt;/pre&gt;
+<A NAME="154"></A>     */</FONT>
+<A NAME="155"></A>    <FONT ID="Public">public</FONT> String toString(String separator) {
+<A NAME="156"></A>        <FONT ID="Return">return</FONT> toString(separator,<FONT ID="Null">null</FONT>);
+<A NAME="157"></A>    }
+<A NAME="158"></A>    
+<A NAME="159"></A>}
+<A NAME="160"></A></pre>
+</BODY>
+</HTML>

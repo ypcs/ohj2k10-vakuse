@@ -1,0 +1,53 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>Vaatteet (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">Vaatteet.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="FormalComment">/**
+<A NAME="2"></A> * Käyttöliittymäluokka Vaateseuranta -ohjelmaan
+<A NAME="3"></A> * Vaateseuranta -ohjelman 
+<A NAME="4"></A> *
+<A NAME="5"></A> * @author Ville Korhonen
+<A NAME="6"></A> * @version 2010-02-05
+<A NAME="7"></A> */</FONT>
+<A NAME="8"></A> 
+<A NAME="9"></A> <FONT ID="Class">class</FONT> Vaatteet {
+<A NAME="10"></A>    <FONT ID="Private">private</FONT> <FONT ID="Int">int</FONT> tunniste;
+<A NAME="11"></A>    <FONT ID="Private">private</FONT> <FONT ID="Int">int</FONT> tyyppi;
+<A NAME="12"></A>    
+<A NAME="13"></A>    
+<A NAME="14"></A>    <FONT ID="FormalComment">/**
+<A NAME="15"></A>     * Palauttaa vaatteen uniikin tunnisteen
+<A NAME="16"></A>     * @return vaatteen tunniste
+<A NAME="17"></A>     *
+<A NAME="18"></A>     * @example
+<A NAME="19"></A>     * &lt;pre name="test"&gt;
+<A NAME="20"></A>     *  Vaatteet vaatteet = new Vaatteet();
+<A NAME="21"></A>     *  vaatteet.haeTunniste() === 0;
+<A NAME="22"></A>     */</FONT>
+<A NAME="23"></A>    <FONT ID="Public">public</FONT> <FONT ID="Int">int</FONT> haeTunniste() {<FONT ID="Return">return</FONT> tunniste;}
+<A NAME="24"></A>    
+<A NAME="25"></A>    <FONT ID="FormalComment">/**
+<A NAME="26"></A>     * Palauttaa vaatteen tyypin selväkielisenä (tekstinä), pienillä kirjaimilla kirjoitettuna
+<A NAME="27"></A>     *
+<A NAME="28"></A>     * @return vaatteen tyyppi
+<A NAME="29"></A>     * @todo vaatetyyppien luku tiedostosta, nyt palauttaa staattisen arvon
+<A NAME="30"></A>     */</FONT>
+<A NAME="31"></A>    <FONT ID="Public">public</FONT> String haeTyyppi() {
+<A NAME="32"></A>        <FONT ID="Return">return</FONT> <FONT ID="StringLiteral">"paita"</FONT>;
+<A NAME="33"></A>    }
+<A NAME="34"></A> }</pre>
+</BODY>
+</HTML>

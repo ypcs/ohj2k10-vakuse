@@ -1,0 +1,703 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>comtest.StringUtilities (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">StringUtilities.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="Package">package</FONT> comtest;
+<A NAME="2"></A><FONT ID="Import">import</FONT> java.util.Scanner;
+<A NAME="3"></A><FONT ID="Import">import</FONT> java.io.File;
+<A NAME="4"></A><FONT ID="Import">import</FONT> java.io.FileNotFoundException;
+<A NAME="5"></A>
+<A NAME="6"></A><FONT ID="FormalComment">/**
+<A NAME="7"></A> * A collection of static string handling functions
+<A NAME="8"></A> * to make the string handling in ComTest more easy.
+<A NAME="9"></A> * 
+<A NAME="10"></A> * @author vesal
+<A NAME="11"></A> * @version 22.9.2007
+<A NAME="12"></A> */</FONT>
+<A NAME="13"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> StringUtilities { <FONT ID="SingleLineComment">// NOPMD by vesal on 13.1.2008 15:27
+<A NAME="14"></A></FONT>    
+<A NAME="15"></A>    <FONT ID="FormalComment">/**
+<A NAME="16"></A>     * Chars that are handled as quote chars 
+<A NAME="17"></A>     */</FONT>
+<A NAME="18"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String QUOTES = <FONT ID="StringLiteral">"\"'"</FONT>;
+<A NAME="19"></A>    <FONT ID="MultiLineComment">/*
+<A NAME="20"></A>      #PACKAGEIMPORT
+<A NAME="21"></A>     */</FONT>    
+<A NAME="22"></A>    
+<A NAME="23"></A>    <FONT ID="FormalComment">/**
+<A NAME="24"></A>     * Splits s to pieces from where.  Quotes is taken account
+<A NAME="25"></A>     * so where inside quotes, then it is ignored.
+<A NAME="26"></A>     * @param s string to split
+<A NAME="27"></A>     * @param where from where to split
+<A NAME="28"></A>     * @param jump how much delete from each part
+<A NAME="29"></A>     * @param trim to trim or not the parts
+<A NAME="30"></A>     * @return list of parts
+<A NAME="31"></A>     * @example
+<A NAME="32"></A>     * &lt;pre name="testSplitBy"&gt;
+<A NAME="33"></A>     * String s = "first; second;\"third;3\";4;";
+<A NAME="34"></A>     * Strings p = splitBy(s,";",1);
+<A NAME="35"></A>     * p.size() === 5
+<A NAME="36"></A>     * p.get(0) === "first"; p.get(1) === " second"; p.get(2) === "\"third;3\""
+<A NAME="37"></A>     * p.get(3) === "4";     p.get(4) === ""
+<A NAME="38"></A>     * 
+<A NAME="39"></A>     * s = "first; second;\"third;3\";4";
+<A NAME="40"></A>     * p = splitBy(s,";",0,true);
+<A NAME="41"></A>     * p.size() === 4
+<A NAME="42"></A>     * p.get(0) === "first;"
+<A NAME="43"></A>     * p.get(1) === "second;"
+<A NAME="44"></A>     * p.get(2) === "\"third;3\";"
+<A NAME="45"></A>     * p.get(3) === "4"
+<A NAME="46"></A>     * &lt;/pre&gt;
+<A NAME="47"></A>     * 
+<A NAME="48"></A>     */</FONT>
+<A NAME="49"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <A HREF="../comtest/Strings.java.html">Strings</A> splitBy(String s, String where, <FONT ID="Int">int</FONT> jump, <FONT ID="Boolean">boolean</FONT> trim) {
+<A NAME="50"></A>        <A HREF="../comtest/Strings.java.html">Strings</A> parts = <FONT ID="New">new</FONT> <A HREF="../comtest/Strings.java.html">Strings</A>();
+<A NAME="51"></A>        <FONT ID="Int">int</FONT> p = <FONT ID="IntegerLiteral">0</FONT>, p2; 
+<A NAME="52"></A>        <FONT ID="While">while</FONT> ( <FONT ID="True">true</FONT> ) {
+<A NAME="53"></A>          p2 = indexOfNotInQuotes(s, where, QUOTES,p);
+<A NAME="54"></A>          <FONT ID="If">if</FONT> ( p2 &lt; <FONT ID="IntegerLiteral">0</FONT> ) <FONT ID="Break">break</FONT>;
+<A NAME="55"></A>          String part = s.substring(p,p2+where.length()-jump);
+<A NAME="56"></A>          <FONT ID="If">if</FONT> ( trim ) part = part.trim();
+<A NAME="57"></A>          p = p2+where.length();
+<A NAME="58"></A>          parts.add(part);
+<A NAME="59"></A>        }  
+<A NAME="60"></A>        parts.add(s.substring(p));
+<A NAME="61"></A>        <FONT ID="Return">return</FONT> parts;
+<A NAME="62"></A>    }
+<A NAME="63"></A>
+<A NAME="64"></A>    
+<A NAME="65"></A>    <FONT ID="FormalComment">/**
+<A NAME="66"></A>     * Splits s to pieces from where.  Quotes is taken account
+<A NAME="67"></A>     * so where inside quotes, then it is ignored.
+<A NAME="68"></A>     * @param s string to split
+<A NAME="69"></A>     * @param where from where to split
+<A NAME="70"></A>     * @param jump how much delete from each part
+<A NAME="71"></A>     * @return list of parts
+<A NAME="72"></A>     */</FONT> 
+<A NAME="73"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <A HREF="../comtest/Strings.java.html">Strings</A> splitBy(String s, String where, <FONT ID="Int">int</FONT> jump) {
+<A NAME="74"></A>       <FONT ID="Return">return</FONT> splitBy(s, where, jump, <FONT ID="False">false</FONT>); 
+<A NAME="75"></A>    }
+<A NAME="76"></A>
+<A NAME="77"></A>    
+<A NAME="78"></A>    <FONT ID="FormalComment">/**
+<A NAME="79"></A>     * Splits s to pieces from where.  Quotes is taken account
+<A NAME="80"></A>     * so where inside quotes, then it is ignored.
+<A NAME="81"></A>     * @param s string to split
+<A NAME="82"></A>     * @param where from where to split
+<A NAME="83"></A>     * @return list of parts
+<A NAME="84"></A>     * 
+<A NAME="85"></A>     * @example
+<A NAME="86"></A>     * &lt;pre name="test"&gt;
+<A NAME="87"></A>     * Strings p;
+<A NAME="88"></A>     * p = splitBy("one|two|three","|");
+<A NAME="89"></A>     * p.size() === 3;
+<A NAME="90"></A>     * p.get(0) === "one";
+<A NAME="91"></A>     * p.get(1) === "two";
+<A NAME="92"></A>     * p.get(2) === "three";
+<A NAME="93"></A>     * 
+<A NAME="94"></A>     * p = splitBy("one|","|");
+<A NAME="95"></A>     * p.size() === 2;
+<A NAME="96"></A>     * p.get(0) === "one";
+<A NAME="97"></A>     * p.get(1) === "";
+<A NAME="98"></A>     * 
+<A NAME="99"></A>     * p = splitBy("one","|");
+<A NAME="100"></A>     * p.size() === 1;
+<A NAME="101"></A>     * p.get(0) === "one";
+<A NAME="102"></A>     *
+<A NAME="103"></A>     * p = splitBy("","|");
+<A NAME="104"></A>     * p.size() === 1;
+<A NAME="105"></A>     * p.get(0) === "";
+<A NAME="106"></A>     *
+<A NAME="107"></A>     * &lt;/pre&gt;
+<A NAME="108"></A>     */</FONT> 
+<A NAME="109"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <A HREF="../comtest/Strings.java.html">Strings</A> splitBy(String s, String where) {
+<A NAME="110"></A>       <FONT ID="Return">return</FONT> splitBy(s, where, where.length() , <FONT ID="False">false</FONT>); 
+<A NAME="111"></A>    }
+<A NAME="112"></A>        
+<A NAME="113"></A>    
+<A NAME="114"></A>    <FONT ID="FormalComment">/**
+<A NAME="115"></A>     * Find first instance of what that is not inside of quotes 
+<A NAME="116"></A>     * @param s     from where to find
+<A NAME="117"></A>     * @param what  string to find
+<A NAME="118"></A>     * @param quote what chars are used as a quote
+<A NAME="119"></A>     * @param pos position where to start
+<A NAME="120"></A>     * @return index of first occurrence or -1 if not found
+<A NAME="121"></A>     */</FONT>
+<A NAME="122"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Int">int</FONT> indexOfNotInQuotes(String s, String what, String quote, <FONT ID="Int">int</FONT> pos) { <FONT ID="SingleLineComment">// NOPMD by vesal on 13.1.2008 15:27
+<A NAME="123"></A></FONT>        <FONT ID="If">if</FONT> ( quote.equals(<FONT ID="StringLiteral">""</FONT>) ) <FONT ID="Return">return</FONT> s.indexOf(what); <FONT ID="SingleLineComment">// NOPMD by vesal on 13.1.2008 15:27
+<A NAME="124"></A></FONT>        <FONT ID="If">if</FONT> ( quote.indexOf(what) &gt;= <FONT ID="IntegerLiteral">0</FONT> ) <FONT ID="Return">return</FONT> s.indexOf(what);
+<A NAME="125"></A>
+<A NAME="126"></A>        <FONT ID="Boolean">boolean</FONT> inQuote = <FONT ID="False">false</FONT>;
+<A NAME="127"></A>        <FONT ID="Char">char</FONT> quoteChar = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="128"></A>        
+<A NAME="129"></A>        <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> i=pos; i&lt;s.length(); i++) {
+<A NAME="130"></A>            <FONT ID="If">if</FONT> ( inQuote &amp;&amp; s.charAt(i) == <FONT ID="CharacerLiteral">'\\'</FONT>  ) { i += <FONT ID="IntegerLiteral">1</FONT>; <FONT ID="Continue">continue</FONT>; }
+<A NAME="131"></A>            <FONT ID="Int">int</FONT> p = quote.indexOf(s.charAt(i));
+<A NAME="132"></A>            <FONT ID="If">if</FONT> ( !inQuote &amp;&amp; p &gt;= <FONT ID="IntegerLiteral">0</FONT> )  {
+<A NAME="133"></A>                inQuote = <FONT ID="True">true</FONT>;
+<A NAME="134"></A>                quoteChar = quote.charAt(p);
+<A NAME="135"></A>                <FONT ID="Continue">continue</FONT>;
+<A NAME="136"></A>            } 
+<A NAME="137"></A>            <FONT ID="If">if</FONT> ( inQuote ) {
+<A NAME="138"></A>                <FONT ID="If">if</FONT> ( s.charAt(i) == quoteChar ) inQuote = <FONT ID="False">false</FONT>;
+<A NAME="139"></A>                <FONT ID="Continue">continue</FONT>;
+<A NAME="140"></A>            }
+<A NAME="141"></A>            <FONT ID="If">if</FONT> ( s.startsWith(what,i) ) <FONT ID="Return">return</FONT> i; 
+<A NAME="142"></A>        }
+<A NAME="143"></A>        <FONT ID="Return">return</FONT> -<FONT ID="IntegerLiteral">1</FONT>;
+<A NAME="144"></A>    }
+<A NAME="145"></A>
+<A NAME="146"></A>    
+<A NAME="147"></A>    <FONT ID="FormalComment">/**
+<A NAME="148"></A>     * Find first instance of what that is not inside of quotes 
+<A NAME="149"></A>     * @param s     from where to find
+<A NAME="150"></A>     * @param what  string to find
+<A NAME="151"></A>     * @return index of first occurrence or -1 if not found
+<A NAME="152"></A>     */</FONT>
+<A NAME="153"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Int">int</FONT> indexOfNotInQuotes(String s, String what) {
+<A NAME="154"></A>      <FONT ID="Return">return</FONT> indexOfNotInQuotes(s,what,QUOTES);  
+<A NAME="155"></A>    }
+<A NAME="156"></A>
+<A NAME="157"></A>        
+<A NAME="158"></A>    <FONT ID="FormalComment">/**
+<A NAME="159"></A>     * Find first instance of what that is not inside of quotes.
+<A NAME="160"></A>     * @param s     from where to find
+<A NAME="161"></A>     * @param what  string to find
+<A NAME="162"></A>     * @param quote what chars are used as a quote
+<A NAME="163"></A>     * @param pos position where to start
+<A NAME="164"></A>     * @return index of first occurrence or -1 if not found
+<A NAME="165"></A>     * TODO: faster version without copy of s 
+<A NAME="166"></A>     */</FONT> 
+<A NAME="167"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Int">int</FONT> indexOfNotInQuotes(StringBuilder s, String what, String quote, <FONT ID="Int">int</FONT> pos) {
+<A NAME="168"></A>        <FONT ID="Return">return</FONT> indexOfNotInQuotes(s.toString(), what, quote, pos);
+<A NAME="169"></A>    }
+<A NAME="170"></A>
+<A NAME="171"></A>    
+<A NAME="172"></A>    <FONT ID="FormalComment">/**
+<A NAME="173"></A>     * Find first instance of what that is not inside of quotes 
+<A NAME="174"></A>     * @param s     from where to find
+<A NAME="175"></A>     * @param what  string to find
+<A NAME="176"></A>     * @param quote what chars are used as a quote
+<A NAME="177"></A>     * @return index of first occurrence or -1 if not found
+<A NAME="178"></A>     */</FONT> 
+<A NAME="179"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Int">int</FONT> indexOfNotInQuotes(StringBuilder s, String what, String quote) {
+<A NAME="180"></A>        <FONT ID="Return">return</FONT> indexOfNotInQuotes(s, what, quote, <FONT ID="IntegerLiteral">0</FONT>);
+<A NAME="181"></A>    }
+<A NAME="182"></A>
+<A NAME="183"></A>    
+<A NAME="184"></A>    <FONT ID="FormalComment">/**
+<A NAME="185"></A>     * Find first instance of what that is not inside of quotes 
+<A NAME="186"></A>     * @param s     from where to find
+<A NAME="187"></A>     * @param what  string to find
+<A NAME="188"></A>     * @return index of first occurrence or -1 if not found
+<A NAME="189"></A>     */</FONT>
+<A NAME="190"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Int">int</FONT> indexOfNotInQuotes(StringBuilder s, String what) {
+<A NAME="191"></A>      <FONT ID="Return">return</FONT> indexOfNotInQuotes(s,what,QUOTES);  
+<A NAME="192"></A>    }
+<A NAME="193"></A>
+<A NAME="194"></A>        
+<A NAME="195"></A>     <FONT ID="FormalComment">/**
+<A NAME="196"></A>     * Find first instance of what that is not inside of quotes 
+<A NAME="197"></A>     * @param s     from where to find
+<A NAME="198"></A>     * @param what  string to find
+<A NAME="199"></A>     * @param quote what chars are used as a quote
+<A NAME="200"></A>     * @return index of first occurrence or -1 if not found
+<A NAME="201"></A>     * @example
+<A NAME="202"></A>     * &lt;pre name="testIndexOfNotInQuotes"&gt;
+<A NAME="203"></A>     * indexOfNotInQuotes("a = a+1; // add one ", "//","\"")        === 9  
+<A NAME="204"></A>     * indexOfNotInQuotes("a = a+1; ", "//","\"")                   === -1  
+<A NAME="205"></A>     * indexOfNotInQuotes("s = \"//\"; // s is comment", "//","\"") === 10  
+<A NAME="206"></A>     * indexOfNotInQuotes("s = \"//\"; ", "//","\"")                === -1  
+<A NAME="207"></A>     * indexOfNotInQuotes("s = \"a\";  // \"//\" ", "//","\"")      === 10  
+<A NAME="208"></A>     * indexOfNotInQuotes("s = \"a\";  // \"//\" ", "\"","\"")      === 4  
+<A NAME="209"></A>     * indexOfNotInQuotes("s = \"a\";  // \"//\" ", "a","")         === 5  
+<A NAME="210"></A>     * indexOfNotInQuotes("s = \"a\"; c='a'; d=a; ", "a","\"'")     === 18  
+<A NAME="211"></A>     * &lt;/pre&gt;
+<A NAME="212"></A>     */</FONT>
+<A NAME="213"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Int">int</FONT> indexOfNotInQuotes(String s, String what, String quote) {
+<A NAME="214"></A>        <FONT ID="Return">return</FONT> indexOfNotInQuotes(s, what, quote,<FONT ID="IntegerLiteral">0</FONT>);
+<A NAME="215"></A>    }
+<A NAME="216"></A>
+<A NAME="217"></A>    
+<A NAME="218"></A>    <FONT ID="FormalComment">/**
+<A NAME="219"></A>     * Removes n instances of what from the beginning of s
+<A NAME="220"></A>     * @param s where to remove
+<A NAME="221"></A>     * @param what string what to remove
+<A NAME="222"></A>     * @param n how many times to remove
+<A NAME="223"></A>     * @return string without what in the beginning
+<A NAME="224"></A>     * @example
+<A NAME="225"></A>     * &lt;pre name="testRemoveFromBeginingN"&gt;
+<A NAME="226"></A>     * removeFromBegining("* a=a+1;","*",2)      === " a=a+1;"  
+<A NAME="227"></A>     * removeFromBegining("*** a=a+1;","*",2)    === "* a=a+1;"  
+<A NAME="228"></A>     * removeFromBegining("* ** a=a+1;","*",2)   === " ** a=a+1;"  
+<A NAME="229"></A>     * &lt;/pre&gt;
+<A NAME="230"></A>     */</FONT>
+<A NAME="231"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> String removeFromBegining(String s, String what, <FONT ID="Int">int</FONT> n) {
+<A NAME="232"></A>        String result = s;
+<A NAME="233"></A>        <FONT ID="Int">int</FONT> i = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="234"></A>        <FONT ID="While">while</FONT> ( i &lt; n &amp;&amp; result.startsWith(what)) {
+<A NAME="235"></A>            i++;
+<A NAME="236"></A>            result = result.substring(what.length());
+<A NAME="237"></A>        }    
+<A NAME="238"></A>        <FONT ID="Return">return</FONT> result;
+<A NAME="239"></A>    }
+<A NAME="240"></A>
+<A NAME="241"></A>    
+<A NAME="242"></A>    <FONT ID="FormalComment">/**
+<A NAME="243"></A>     * Removes all instances of what from the beginning of s
+<A NAME="244"></A>     * @param s where to remove
+<A NAME="245"></A>     * @param what string what to remove
+<A NAME="246"></A>     * @return string without what in the beginning
+<A NAME="247"></A>     * @example
+<A NAME="248"></A>     * &lt;pre name="testRemoveFromBegining"&gt;
+<A NAME="249"></A>     * removeFromBegining("* a=a+1;","*")      === " a=a+1;"  
+<A NAME="250"></A>     * removeFromBegining("*** a=a+1;","*")    === " a=a+1;"  
+<A NAME="251"></A>     * removeFromBegining("* ** a=a+1;","*")   === " ** a=a+1;"  
+<A NAME="252"></A>     * &lt;/pre&gt;
+<A NAME="253"></A>     */</FONT>
+<A NAME="254"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> String removeFromBegining(String s, String what) {
+<A NAME="255"></A>        String result = s;
+<A NAME="256"></A>        <FONT ID="While">while</FONT> ( result.startsWith(what)) 
+<A NAME="257"></A>            result = result.substring(what.length()); 
+<A NAME="258"></A>        <FONT ID="Return">return</FONT> result;
+<A NAME="259"></A>    }
+<A NAME="260"></A>
+<A NAME="261"></A>    
+<A NAME="262"></A>    <FONT ID="FormalComment">/**
+<A NAME="263"></A>     * Removes all instances of what from the beginning of s
+<A NAME="264"></A>     * If there is only spaces before s, then remove them also.
+<A NAME="265"></A>     * @param s where to remove
+<A NAME="266"></A>     * @param what string what to remove
+<A NAME="267"></A>     * @return string without what in the beginning
+<A NAME="268"></A>     * @example
+<A NAME="269"></A>     * &lt;pre name="testRemoveFromBeginingTrim"&gt;
+<A NAME="270"></A>     * removeFromBeginingTrim("  * a=a+1;","*")      === " a=a+1;"  
+<A NAME="271"></A>     * removeFromBeginingTrim("  *** a=a+1;","*")    === " a=a+1;"  
+<A NAME="272"></A>     * removeFromBeginingTrim("  * ** a=a+1;","*")   === " ** a=a+1;"  
+<A NAME="273"></A>     * removeFromBeginingTrim("  a=a+1;","*")        === "  a=a+1;"  
+<A NAME="274"></A>     * &lt;/pre&gt;
+<A NAME="275"></A>     */</FONT>
+<A NAME="276"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> String removeFromBeginingTrim(String s, String what) {
+<A NAME="277"></A>        <FONT ID="Int">int</FONT> p = indexOfNotInQuotes(s, what);
+<A NAME="278"></A>        <FONT ID="If">if</FONT> ( p &lt; <FONT ID="IntegerLiteral">0</FONT> ) <FONT ID="Return">return</FONT> s;
+<A NAME="279"></A>        <FONT ID="For">for</FONT> ( <FONT ID="Int">int</FONT> i=<FONT ID="IntegerLiteral">0</FONT>; i&lt;p; i++ ) {
+<A NAME="280"></A>            <FONT ID="If">if</FONT> ( !Character.isWhitespace(s.charAt(i)) ) <FONT ID="Return">return</FONT> s;
+<A NAME="281"></A>        }
+<A NAME="282"></A>        String result = s.trim();
+<A NAME="283"></A>        <FONT ID="While">while</FONT> ( result.startsWith(what) ) 
+<A NAME="284"></A>            result = result.substring(what.length()); 
+<A NAME="285"></A>        <FONT ID="Return">return</FONT> result;
+<A NAME="286"></A>    }
+<A NAME="287"></A>
+<A NAME="288"></A>    
+<A NAME="289"></A>    <FONT ID="FormalComment">/**
+<A NAME="290"></A>     * Returns a string where all after afterWhat string is removed
+<A NAME="291"></A>     * Also the afterWhat is removed.  If afterWhat is inside
+<A NAME="292"></A>     * quotes, then it is not affected. 
+<A NAME="293"></A>     * @param s string to handle
+<A NAME="294"></A>     * @param afterWhat string to look for
+<A NAME="295"></A>     * @return the handled string
+<A NAME="296"></A>     * @example
+<A NAME="297"></A>     * &lt;pre name="test"&gt;
+<A NAME="298"></A>     * removeAllAfter("a = a+1; // add one ", "//")         === "a = a+1; "  
+<A NAME="299"></A>     * removeAllAfter("a = a+1; ","//")                     === "a = a+1; "  
+<A NAME="300"></A>     * removeAllAfter("s = \"//\"; // s is comment", "//" ) === "s = \"//\"; "  
+<A NAME="301"></A>     * removeAllAfter("s = \"//\"; " ,"//")                 === "s = \"//\"; "  
+<A NAME="302"></A>     * removeAllAfter("s = \"a\";  // \"//\" " ,"//")       === "s = \"a\";  "  
+<A NAME="303"></A>     * &lt;/pre&gt;
+<A NAME="304"></A>     */</FONT>
+<A NAME="305"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> String removeAllAfter(String s, String afterWhat) {
+<A NAME="306"></A>        <FONT ID="Int">int</FONT> i = indexOfNotInQuotes(s,afterWhat,QUOTES);
+<A NAME="307"></A>        <FONT ID="If">if</FONT> ( i &lt; <FONT ID="IntegerLiteral">0</FONT> ) <FONT ID="Return">return</FONT> s;
+<A NAME="308"></A>        <FONT ID="Return">return</FONT> s.substring(<FONT ID="IntegerLiteral">0</FONT>,i);
+<A NAME="309"></A>    }
+<A NAME="310"></A>
+<A NAME="311"></A>    
+<A NAME="312"></A>    <FONT ID="FormalComment">/**
+<A NAME="313"></A>     * Returns a string where all after afterWhat string is removed
+<A NAME="314"></A>     * Also the afterWhat is removed.  If afterWhat is inside
+<A NAME="315"></A>     * quotes, then it is not affected. 
+<A NAME="316"></A>     * @param s string to handle
+<A NAME="317"></A>     * @param afterWhat string to look for
+<A NAME="318"></A>     * @return true if something is removed
+<A NAME="319"></A>     * @example
+<A NAME="320"></A>     * &lt;pre name="test"&gt;
+<A NAME="321"></A>     * StringBuilder sb;
+<A NAME="322"></A>     * sb = new StringBuilder($str); removeAllAfter(sb,$what) === $out; $sb.toString() === $result;
+<A NAME="323"></A>     * 
+<A NAME="324"></A>     *  $str                         | $what  | $result        | $out
+<A NAME="325"></A>     * --------------------------------------------------------------
+<A NAME="326"></A>     * "a = a+1; // add one "        | "//"   | "a = a+1; "    | true
+<A NAME="327"></A>     * "a = a+1; "                   | "//"   | "a = a+1; "    | false
+<A NAME="328"></A>     * "s = \"//\"; // s is comment" | "//"   | "s = \"//\"; " | true
+<A NAME="329"></A>     * "s = \"//\"; "                | "//"   | "s = \"//\"; " | false
+<A NAME="330"></A>     * "s = \"a\";  // \"//\" "      | "//"   | "s = \"a\";  " | true
+<A NAME="331"></A>     * &lt;/pre&gt;
+<A NAME="332"></A>     */</FONT>
+<A NAME="333"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Boolean">boolean</FONT> removeAllAfter(StringBuilder s, String afterWhat) {
+<A NAME="334"></A>        <FONT ID="Int">int</FONT> i = indexOfNotInQuotes(s,afterWhat,QUOTES);
+<A NAME="335"></A>        <FONT ID="If">if</FONT> ( i &lt; <FONT ID="IntegerLiteral">0</FONT> ) <FONT ID="Return">return</FONT> <FONT ID="False">false</FONT>;
+<A NAME="336"></A>        s.delete(i,s.length());
+<A NAME="337"></A>        <FONT ID="Return">return</FONT> <FONT ID="True">true</FONT>;
+<A NAME="338"></A>    }
+<A NAME="339"></A>
+<A NAME="340"></A>    
+<A NAME="341"></A>    <FONT ID="FormalComment">/**
+<A NAME="342"></A>     * Adds a new part to filename
+<A NAME="343"></A>     * @param fileName  filename to change
+<A NAME="344"></A>     * @param newPart part to add
+<A NAME="345"></A>     * @return filename + newPart
+<A NAME="346"></A>     * @example
+<A NAME="347"></A>     * &lt;pre name="testAddToName"&gt;
+<A NAME="348"></A>     * addToName("my.java","Test") === "myTest.java"
+<A NAME="349"></A>     * addToName("my","Test") === "myTest"
+<A NAME="350"></A>     * &lt;/pre&gt;
+<A NAME="351"></A>     */</FONT>
+<A NAME="352"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> String addToName(String fileName, String newPart) {
+<A NAME="353"></A>        <FONT ID="Int">int</FONT> i = fileName.lastIndexOf(<FONT ID="CharacerLiteral">'.'</FONT>);
+<A NAME="354"></A>        <FONT ID="If">if</FONT> ( i &lt; <FONT ID="IntegerLiteral">0</FONT> ) <FONT ID="Return">return</FONT> fileName + newPart;
+<A NAME="355"></A>        <FONT ID="Return">return</FONT> fileName.substring(<FONT ID="IntegerLiteral">0</FONT>,i) + newPart + fileName.substring(i);
+<A NAME="356"></A>    }
+<A NAME="357"></A>
+<A NAME="358"></A>
+<A NAME="359"></A>    <FONT ID="FormalComment">/**
+<A NAME="360"></A>     * Returns just the file part from fileName. No path, no extension
+<A NAME="361"></A>     * @param fileName name where file parts is searched
+<A NAME="362"></A>     * @return only file name part from fileName
+<A NAME="363"></A>     * @example testJustFilePart
+<A NAME="364"></A>     * &lt;pre name="testJustFilePart"&gt;
+<A NAME="365"></A>     * justFilePart("myTest.java")                     === "myTest"
+<A NAME="366"></A>     * justFilePart("myTest")                          === "myTest"
+<A NAME="367"></A>     * justFilePart("/users/my/java/myTest.java")      === "myTest"
+<A NAME="368"></A>     * justFilePart("/users/my.prg/java/myTest.java")  === "myTest"
+<A NAME="369"></A>     * justFilePart("/users/my.prg/java/myTest")       === "myTest"
+<A NAME="370"></A>     * justFilePart("/users/my.prg/java/myTest/")      === ""
+<A NAME="371"></A>     * justFilePart("e:\\users\\my.prg\\java\\myTest") === "myTest"
+<A NAME="372"></A>     * justFilePart("\\users\\my.prg\\java\\myTest")   === "myTest"
+<A NAME="373"></A>     * justFilePart("e:myTest.java")                   === "myTest"
+<A NAME="374"></A>     * &lt;/pre&gt;
+<A NAME="375"></A>     */</FONT>
+<A NAME="376"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> String justFilePart(String fileName) {
+<A NAME="377"></A>        <FONT ID="Int">int</FONT> id = fileName.lastIndexOf(<FONT ID="CharacerLiteral">'.'</FONT>);
+<A NAME="378"></A>        <FONT ID="Int">int</FONT> is = fileName.lastIndexOf(<FONT ID="CharacerLiteral">'/'</FONT>);
+<A NAME="379"></A>        <FONT ID="Int">int</FONT> ib = fileName.lastIndexOf(<FONT ID="CharacerLiteral">'\\'</FONT>);
+<A NAME="380"></A>        <FONT ID="Int">int</FONT> idd = fileName.lastIndexOf(<FONT ID="CharacerLiteral">':'</FONT>);
+<A NAME="381"></A>        <FONT ID="If">if</FONT> ( idd &gt; is ) is = idd;
+<A NAME="382"></A>        <FONT ID="If">if</FONT> ( ib &gt; is ) is = ib;
+<A NAME="383"></A>        <FONT ID="If">if</FONT> ( id &lt; is ) id = fileName.length();
+<A NAME="384"></A>        <FONT ID="If">if</FONT> ( id &lt; <FONT ID="IntegerLiteral">0</FONT> )  id = fileName.length();
+<A NAME="385"></A>        <FONT ID="Return">return</FONT> fileName.substring(is+<FONT ID="IntegerLiteral">1</FONT>,id);
+<A NAME="386"></A>    }
+<A NAME="387"></A>
+<A NAME="388"></A>    
+<A NAME="389"></A>    <FONT ID="FormalComment">/**
+<A NAME="390"></A>     * Removes from s the first instance of what
+<A NAME="391"></A>     * @param s where to remove
+<A NAME="392"></A>     * @param what what string to remove 
+<A NAME="393"></A>     * @return s without first instance on what
+<A NAME="394"></A>     * @example
+<A NAME="395"></A>     * &lt;pre name="test"&gt;
+<A NAME="396"></A>     * remove($s,$what) === $result;
+<A NAME="397"></A>     * 
+<A NAME="398"></A>     *   $s        |  $what |  $result 
+<A NAME="399"></A>     * ----------------------------------
+<A NAME="400"></A>     * "aab"       |  "a"   |  "ab"
+<A NAME="401"></A>     * "bab"       |  "a"   |  "bb"
+<A NAME="402"></A>     * "bba"       |  "a"   |  "bb"
+<A NAME="403"></A>     * &lt;/pre&gt;
+<A NAME="404"></A>     * 
+<A NAME="405"></A>     * @example
+<A NAME="406"></A>     * &lt;pre name="test"&gt;
+<A NAME="407"></A>     * remove($s,$what) === $result;
+<A NAME="408"></A>     * 
+<A NAME="409"></A>     *   $s        |  $what |  $result 
+<A NAME="410"></A>     * ----------------------------------
+<A NAME="411"></A>     * "\"aa\"b"   |  "a"   |  "\"aa\"b"
+<A NAME="412"></A>     * "\"a\"ab"   |  "a"   |  "\"a\"b"
+<A NAME="413"></A>     * &lt;/pre&gt;
+<A NAME="414"></A>     */</FONT>
+<A NAME="415"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> String remove(String s, String what) {
+<A NAME="416"></A>        <FONT ID="Int">int</FONT> p = indexOfNotInQuotes(s, what);
+<A NAME="417"></A>        <FONT ID="If">if</FONT> ( p &lt; <FONT ID="IntegerLiteral">0</FONT> ) <FONT ID="Return">return</FONT> s;
+<A NAME="418"></A>        <FONT ID="Return">return</FONT> s.substring(<FONT ID="IntegerLiteral">0</FONT>,p)+s.substring(p+what.length());
+<A NAME="419"></A>    }
+<A NAME="420"></A>    
+<A NAME="421"></A>
+<A NAME="422"></A>    <FONT ID="FormalComment">/**
+<A NAME="423"></A>     * Removes from s the first instance of what
+<A NAME="424"></A>     * @param s where to remove
+<A NAME="425"></A>     * @param what what string to remove 
+<A NAME="426"></A>     * @return true if removed, else false
+<A NAME="427"></A>     * @example
+<A NAME="428"></A>     * &lt;pre name="test"&gt;
+<A NAME="429"></A>     * StringBuilder sb;
+<A NAME="430"></A>     * sb = new StringBuilder($s); remove(sb,$what) === $out; sb.toString() === $result;
+<A NAME="431"></A>     * 
+<A NAME="432"></A>     *   $s        |  $what |  $result | $out
+<A NAME="433"></A>     * -----------------------------------------
+<A NAME="434"></A>     * "aab"       |  "a"   |  "ab"    | true
+<A NAME="435"></A>     * "bab"       |  "a"   |  "bb"    | true
+<A NAME="436"></A>     * "bba"       |  "a"   |  "bb"    | true
+<A NAME="437"></A>     * &lt;/pre&gt;
+<A NAME="438"></A>     * 
+<A NAME="439"></A>     * @example
+<A NAME="440"></A>     * &lt;pre name="test"&gt;
+<A NAME="441"></A>     * StringBuilder sb;
+<A NAME="442"></A>     * sb = new StringBuilder($s); remove(sb,$what) === $out; sb.toString() === $result;
+<A NAME="443"></A>     * 
+<A NAME="444"></A>     *   $s        |  $what |  $result    | $out
+<A NAME="445"></A>     * -----------------------------------------
+<A NAME="446"></A>     * "\"aa\"b"   |  "a"   |  "\"aa\"b"  | false
+<A NAME="447"></A>     * "\"a\"ab"   |  "a"   |  "\"a\"b"   | true
+<A NAME="448"></A>     * &lt;/pre&gt;
+<A NAME="449"></A>     */</FONT>
+<A NAME="450"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Boolean">boolean</FONT> remove(StringBuilder s, String what) {
+<A NAME="451"></A>        <FONT ID="Int">int</FONT> p = indexOfNotInQuotes(s, what);
+<A NAME="452"></A>        <FONT ID="If">if</FONT> ( p &lt; <FONT ID="IntegerLiteral">0</FONT> ) <FONT ID="Return">return</FONT> <FONT ID="False">false</FONT>;
+<A NAME="453"></A>        s.delete(p,p+what.length());
+<A NAME="454"></A>        <FONT ID="Return">return</FONT> <FONT ID="True">true</FONT>;
+<A NAME="455"></A>    }
+<A NAME="456"></A>    
+<A NAME="457"></A>
+<A NAME="458"></A>    <FONT ID="FormalComment">/**
+<A NAME="459"></A>     * Read the file and return the contents as a ArrayList
+<A NAME="460"></A>     * @param fileName the file name to read
+<A NAME="461"></A>     * @return null if problems, otherwise the file contents
+<A NAME="462"></A>     * 
+<A NAME="463"></A>     * @example
+<A NAME="464"></A>     * &lt;pre name="testGetFileContents"&gt;
+<A NAME="465"></A>     * Strings list = getFileContents("comtest/StringUtilities.java");
+<A NAME="466"></A>     * int lastn = list.size()-1;
+<A NAME="467"></A>     * lastn &gt; 200 === true;
+<A NAME="468"></A>     * list.get(0) === "package comtest;"; 
+<A NAME="469"></A>     * list.get(lastn) === "}";
+<A NAME="470"></A>     * list = getFileContents("comtest/StringUtilitiesXYZ.java");
+<A NAME="471"></A>     * list === null;
+<A NAME="472"></A>     * 
+<A NAME="473"></A>     * &lt;/pre&gt;
+<A NAME="474"></A>     */</FONT>
+<A NAME="475"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <A HREF="../comtest/Strings.java.html">Strings</A> getFileContents(String fileName) {
+<A NAME="476"></A>        Scanner scanner = <FONT ID="Null">null</FONT>;
+<A NAME="477"></A>
+<A NAME="478"></A>        <FONT ID="Try">try</FONT> {
+<A NAME="479"></A>            scanner = <FONT ID="New">new</FONT> Scanner(<FONT ID="New">new</FONT> File(fileName));
+<A NAME="480"></A>
+<A NAME="481"></A>            <A HREF="../comtest/Strings.java.html">Strings</A> lines = <FONT ID="New">new</FONT> <A HREF="../comtest/Strings.java.html">Strings</A>();
+<A NAME="482"></A>
+<A NAME="483"></A>            <FONT ID="While">while</FONT> ( (scanner.hasNextLine()) ) {
+<A NAME="484"></A>                lines.add(scanner.nextLine());
+<A NAME="485"></A>            }
+<A NAME="486"></A>            <FONT ID="Return">return</FONT> lines;
+<A NAME="487"></A>        } <FONT ID="Catch">catch</FONT> (FileNotFoundException e) {
+<A NAME="488"></A>            <FONT ID="Return">return</FONT> <FONT ID="Null">null</FONT>;
+<A NAME="489"></A>        }
+<A NAME="490"></A>        <FONT ID="Finally">finally</FONT> {
+<A NAME="491"></A>            <FONT ID="If">if</FONT> ( scanner != <FONT ID="Null">null</FONT> ) scanner.close();
+<A NAME="492"></A>        }
+<A NAME="493"></A>    }
+<A NAME="494"></A>
+<A NAME="495"></A>    
+<A NAME="496"></A>    <FONT ID="FormalComment">/**
+<A NAME="497"></A>     * Counts the index in ending word when
+<A NAME="498"></A>     * the builded string should contain
+<A NAME="499"></A>     * end-string as last characters. 
+<A NAME="500"></A>     * @param start The starting string.
+<A NAME="501"></A>     * @param end The required ending.
+<A NAME="502"></A>     * @return The starting index where end-string should be inserted after the start.
+<A NAME="503"></A>     * @example
+<A NAME="504"></A>     * &lt;pre name="test"&gt;
+<A NAME="505"></A>     * countEndIndex("#STATIC","#STATICIMPORT") === 7;
+<A NAME="506"></A>     * countEndIndex("ABCD","1234") === 0;
+<A NAME="507"></A>     * countEndIndex("ABCD","ABCD") === 4;
+<A NAME="508"></A>     * countEndIndex("1234567890#STATIC","#STATICIMPORT") === 7;
+<A NAME="509"></A>     * 
+<A NAME="510"></A>     * &lt;/pre&gt;
+<A NAME="511"></A>     */</FONT>
+<A NAME="512"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Int">int</FONT> countEndIndex(String start, String end) {
+<A NAME="513"></A>        <FONT ID="Int">int</FONT> startLastIdx =start.length();
+<A NAME="514"></A>        <FONT ID="Int">int</FONT> endLastIdx = end.length();
+<A NAME="515"></A>        <FONT ID="Int">int</FONT> minLastIdx = Math.min(startLastIdx,endLastIdx);
+<A NAME="516"></A>        <FONT ID="Boolean">boolean</FONT> matched = <FONT ID="False">false</FONT>;
+<A NAME="517"></A>        <FONT ID="For">for</FONT>(<FONT ID="Int">int</FONT> i = <FONT ID="IntegerLiteral">1</FONT>; i&lt;=minLastIdx;i++){
+<A NAME="518"></A>          <FONT ID="Boolean">boolean</FONT> regmatch = end.regionMatches(<FONT ID="IntegerLiteral">0</FONT>, start, startLastIdx-i, i);
+<A NAME="519"></A>          <FONT ID="If">if</FONT> (regmatch) matched = <FONT ID="True">true</FONT>;
+<A NAME="520"></A>          <FONT ID="If">if</FONT> (! regmatch &amp;&amp; matched){
+<A NAME="521"></A>            <FONT ID="Return">return</FONT> i-<FONT ID="IntegerLiteral">1</FONT>;
+<A NAME="522"></A>          }
+<A NAME="523"></A>        }
+<A NAME="524"></A>        <FONT ID="If">if</FONT> (matched){
+<A NAME="525"></A>          <FONT ID="Return">return</FONT> minLastIdx;
+<A NAME="526"></A>        } <FONT ID="Else">else</FONT> {
+<A NAME="527"></A>          <FONT ID="Return">return</FONT> <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="528"></A>        }
+<A NAME="529"></A>      }
+<A NAME="530"></A>    
+<A NAME="531"></A> <FONT ID="MultiLineComment">/*   
+<A NAME="532"></A>    public static int countEndIndex(String start, String end) {
+<A NAME="533"></A>        if ( !end.startsWith(start) ) return 0; 
+<A NAME="534"></A>        return start.length();
+<A NAME="535"></A>    }
+<A NAME="536"></A>*/</FONT>
+<A NAME="537"></A>    
+<A NAME="538"></A>    
+<A NAME="539"></A>    <FONT ID="FormalComment">/**
+<A NAME="540"></A>     * Searches what backwards from pos and returns position found
+<A NAME="541"></A>     * @param s where to search
+<A NAME="542"></A>     * @param what to search
+<A NAME="543"></A>     * @param pos  where to start search
+<A NAME="544"></A>     * @return position found or -1 if not found
+<A NAME="545"></A>     * 
+<A NAME="546"></A>     * @example
+<A NAME="547"></A>     * &lt;pre name="test"&gt;
+<A NAME="548"></A>     *   indexOfBack("0123456789","4",8)  === 4;
+<A NAME="549"></A>     *   indexOfBack("0123456789","9",8)  === -1;
+<A NAME="550"></A>     *   indexOfBack("0123456789","4",4)  === 4;
+<A NAME="551"></A>     *   indexOfBack("0123456789","4",3)  === -1;
+<A NAME="552"></A>     *   indexOfBack(null,"4",5)          === -1;
+<A NAME="553"></A>     *   indexOfBack(null,null,5)         === -1;
+<A NAME="554"></A>     *   indexOfBack("012345678",null,5)  === -1;
+<A NAME="555"></A>     *   indexOfBack("0123456789","4",18) === 4;
+<A NAME="556"></A>     *   indexOfBack("0123456789","",18)  === 10;
+<A NAME="557"></A>     *   indexOfBack("0123456789","",5)   === 5;
+<A NAME="558"></A>     *   indexOfBack("0123456789","abc",15) === -1;
+<A NAME="559"></A>     * &lt;/pre&gt;
+<A NAME="560"></A>     */</FONT>
+<A NAME="561"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Int">int</FONT> indexOfBack(String s, String what, <FONT ID="Int">int</FONT> pos) {
+<A NAME="562"></A>        <FONT ID="If">if</FONT> ( s == <FONT ID="Null">null</FONT> )    <FONT ID="Return">return</FONT> -<FONT ID="IntegerLiteral">1</FONT>;
+<A NAME="563"></A>        <FONT ID="If">if</FONT> ( what == <FONT ID="Null">null</FONT> ) <FONT ID="Return">return</FONT> -<FONT ID="IntegerLiteral">1</FONT>;
+<A NAME="564"></A>        <FONT ID="If">if</FONT> ( pos &lt; <FONT ID="IntegerLiteral">0</FONT> ) <FONT ID="Return">return</FONT> -<FONT ID="IntegerLiteral">1</FONT>;
+<A NAME="565"></A>        <FONT ID="Int">int</FONT> p = pos;
+<A NAME="566"></A>        <FONT ID="Int">int</FONT> len = what.length();
+<A NAME="567"></A>        <FONT ID="If">if</FONT> ( p &gt;= s.length() ) p = s.length() - len;
+<A NAME="568"></A>        <FONT ID="If">if</FONT> ( p &lt; <FONT ID="IntegerLiteral">0</FONT> ) <FONT ID="Return">return</FONT> -<FONT ID="IntegerLiteral">1</FONT>;
+<A NAME="569"></A>        
+<A NAME="570"></A>        <FONT ID="While">while</FONT> ( p &gt;= <FONT ID="IntegerLiteral">0</FONT> &amp;&amp; !s.substring(p,p+len).equals(what) ) p--;
+<A NAME="571"></A>        
+<A NAME="572"></A>        <FONT ID="Return">return</FONT> p;
+<A NAME="573"></A>    }
+<A NAME="574"></A>    
+<A NAME="575"></A>    
+<A NAME="576"></A>    <FONT ID="FormalComment">/**
+<A NAME="577"></A>     * Returns indent string copied from line.  Search for
+<A NAME="578"></A>     * line is started backwards from pos.
+<A NAME="579"></A>     * @param line line to look indent template
+<A NAME="580"></A>     * @param pos where to start looking
+<A NAME="581"></A>     * @return the same indent that current line has
+<A NAME="582"></A>     *  
+<A NAME="583"></A>     * @example
+<A NAME="584"></A>     * &lt;pre name="test"&gt;
+<A NAME="585"></A>     *   getLineIndent("first\n    second\n",15)  === "    ";   
+<A NAME="586"></A>     *   getLineIndent("first\n    second\n",5)   === "    ";   
+<A NAME="587"></A>     *   getLineIndent("first\n    second\n",4)   === "";   
+<A NAME="588"></A>     *   getLineIndent("  first\n    second\n",6) === "  ";   
+<A NAME="589"></A>     * &lt;/pre&gt;
+<A NAME="590"></A>     */</FONT>
+<A NAME="591"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> String getLineIndent(String line, <FONT ID="Int">int</FONT> pos) {
+<A NAME="592"></A>        <FONT ID="Int">int</FONT> p = indexOfBack(line, <FONT ID="StringLiteral">"\n"</FONT>, pos);
+<A NAME="593"></A>        <FONT ID="Int">int</FONT> e = p+<FONT ID="IntegerLiteral">1</FONT>;
+<A NAME="594"></A>        <FONT ID="While">while</FONT> ( e &lt; line.length() &amp;&amp; Character.isWhitespace(line.charAt(e)) ) e++;
+<A NAME="595"></A>        <FONT ID="Return">return</FONT> line.substring(p+<FONT ID="IntegerLiteral">1</FONT>,e);
+<A NAME="596"></A>    }
+<A NAME="597"></A>
+<A NAME="598"></A>    
+<A NAME="599"></A>    <FONT ID="FormalComment">/**
+<A NAME="600"></A>     * Check if string is empty
+<A NAME="601"></A>     * @param s string to check
+<A NAME="602"></A>     * @return true if null or just spaces or tabs, false in other case
+<A NAME="603"></A>     * @example
+<A NAME="604"></A>     * &lt;pre name="test"&gt;
+<A NAME="605"></A>     *   String s = null;
+<A NAME="606"></A>     *   isEmpty(s)      === true;
+<A NAME="607"></A>     *   isEmpty("")     === true;
+<A NAME="608"></A>     *   isEmpty(" ")    === true;
+<A NAME="609"></A>     *   isEmpty("a")    === false;
+<A NAME="610"></A>     *   isEmpty("\n")   === false;
+<A NAME="611"></A>     * &lt;/pre&gt;
+<A NAME="612"></A>     */</FONT>
+<A NAME="613"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Boolean">boolean</FONT> isEmpty(String s) {
+<A NAME="614"></A>      <FONT ID="If">if</FONT> (s == <FONT ID="Null">null</FONT>) <FONT ID="Return">return</FONT> <FONT ID="True">true</FONT>;  
+<A NAME="615"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> i=<FONT ID="IntegerLiteral">0</FONT>; i&lt;s.length(); i++ ) {
+<A NAME="616"></A>          <FONT ID="Char">char</FONT> c = s.charAt(i);
+<A NAME="617"></A>          <FONT ID="If">if</FONT> ( c != <FONT ID="CharacerLiteral">' '</FONT> &amp;&amp; c != <FONT ID="CharacerLiteral">'\t'</FONT> ) <FONT ID="Return">return</FONT> <FONT ID="False">false</FONT>;
+<A NAME="618"></A>      }
+<A NAME="619"></A>      <FONT ID="Return">return</FONT> <FONT ID="True">true</FONT>;
+<A NAME="620"></A>    }
+<A NAME="621"></A>
+<A NAME="622"></A>    
+<A NAME="623"></A>    <FONT ID="FormalComment">/**
+<A NAME="624"></A>     * Check if string is empty
+<A NAME="625"></A>     * @param s string to check
+<A NAME="626"></A>     * @return true if null or just spaces or tabs, false in other case
+<A NAME="627"></A>     * @example
+<A NAME="628"></A>     * &lt;pre name="test"&gt;
+<A NAME="629"></A>     *   StringBuilder sb = null;
+<A NAME="630"></A>     *   isEmpty(sb)                        === true;
+<A NAME="631"></A>     *   isEmpty(new StringBuilder(""))     === true;
+<A NAME="632"></A>     *   isEmpty(new StringBuilder(" "))    === true;
+<A NAME="633"></A>     *   isEmpty(new StringBuilder("a"))    === false;
+<A NAME="634"></A>     *   isEmpty(new StringBuilder("\n"))   === false;
+<A NAME="635"></A>     * &lt;/pre&gt;
+<A NAME="636"></A>     */</FONT>
+<A NAME="637"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Boolean">boolean</FONT> isEmpty(StringBuilder s) {
+<A NAME="638"></A>      <FONT ID="If">if</FONT> (s == <FONT ID="Null">null</FONT>) <FONT ID="Return">return</FONT> <FONT ID="True">true</FONT>;  
+<A NAME="639"></A>      <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> i=<FONT ID="IntegerLiteral">0</FONT>; i&lt;s.length(); i++ ) {
+<A NAME="640"></A>          <FONT ID="Char">char</FONT> c = s.charAt(i);
+<A NAME="641"></A>          <FONT ID="If">if</FONT> ( c != <FONT ID="CharacerLiteral">' '</FONT> &amp;&amp; c != <FONT ID="CharacerLiteral">'\t'</FONT> ) <FONT ID="Return">return</FONT> <FONT ID="False">false</FONT>;
+<A NAME="642"></A>      }
+<A NAME="643"></A>      <FONT ID="Return">return</FONT> <FONT ID="True">true</FONT>;
+<A NAME="644"></A>    }
+<A NAME="645"></A>
+<A NAME="646"></A>    
+<A NAME="647"></A>    <FONT ID="FormalComment">/**
+<A NAME="648"></A>     * Removes spaces from begin and end of s
+<A NAME="649"></A>     * @param s string where to remove
+<A NAME="650"></A>     * @return true if any removed
+<A NAME="651"></A>     * @example
+<A NAME="652"></A>     * &lt;pre name="test"&gt;
+<A NAME="653"></A>     *   StringBuilder sb;
+<A NAME="654"></A>     *   sb = new StringBuilder($str); trim(sb) === $out; sb.toString() === $result;
+<A NAME="655"></A>     *   
+<A NAME="656"></A>     *    $str     | $result | $out
+<A NAME="657"></A>     *   ---------------------------- 
+<A NAME="658"></A>     *    "o  1"   | "o  1"  | false
+<A NAME="659"></A>     *    " o 1"   | "o 1"   | true
+<A NAME="660"></A>     *    "o 1 "   | "o 1"   | true
+<A NAME="661"></A>     *    " o  1 " | "o  1"  | true
+<A NAME="662"></A>     * &lt;/pre&gt;
+<A NAME="663"></A>     */</FONT>
+<A NAME="664"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Boolean">boolean</FONT> trim(StringBuilder s) {
+<A NAME="665"></A>        <FONT ID="If">if</FONT> ( s.length() == <FONT ID="IntegerLiteral">0</FONT> ) <FONT ID="Return">return</FONT> <FONT ID="False">false</FONT>;
+<A NAME="666"></A>        <FONT ID="Boolean">boolean</FONT> removed = <FONT ID="False">false</FONT>;
+<A NAME="667"></A>        <FONT ID="While">while</FONT> ( <FONT ID="True">true</FONT> ) {
+<A NAME="668"></A>            <FONT ID="If">if</FONT> ( s.length() == <FONT ID="IntegerLiteral">0</FONT> ) <FONT ID="Break">break</FONT>;
+<A NAME="669"></A>            <FONT ID="If">if</FONT> ( s.charAt(s.length()-<FONT ID="IntegerLiteral">1</FONT>) != <FONT ID="CharacerLiteral">' '</FONT> ) <FONT ID="Break">break</FONT>;
+<A NAME="670"></A>            s.deleteCharAt(s.length()-<FONT ID="IntegerLiteral">1</FONT>);
+<A NAME="671"></A>            removed = <FONT ID="True">true</FONT>;
+<A NAME="672"></A>        }
+<A NAME="673"></A>        <FONT ID="While">while</FONT> ( <FONT ID="True">true</FONT> ) {
+<A NAME="674"></A>            <FONT ID="If">if</FONT> ( s.length() == <FONT ID="IntegerLiteral">0</FONT> ) <FONT ID="Break">break</FONT>;
+<A NAME="675"></A>            <FONT ID="If">if</FONT> ( s.charAt(<FONT ID="IntegerLiteral">0</FONT>) != <FONT ID="CharacerLiteral">' '</FONT> ) <FONT ID="Break">break</FONT>;
+<A NAME="676"></A>            s.deleteCharAt(<FONT ID="IntegerLiteral">0</FONT>);
+<A NAME="677"></A>            removed = <FONT ID="True">true</FONT>;
+<A NAME="678"></A>        }
+<A NAME="679"></A>        <FONT ID="Return">return</FONT> removed;     
+<A NAME="680"></A>    }
+<A NAME="681"></A>    
+<A NAME="682"></A>    
+<A NAME="683"></A>}
+<A NAME="684"></A></pre>
+</BODY>
+</HTML>

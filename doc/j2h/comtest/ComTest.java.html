@@ -1,0 +1,1853 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.5">
+<TITLE>comtest.ComTest (Java2HTML)</TITLE>
+</HEAD>
+<BODY><TABLE id="Header" border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td colspan="2" width="33%">&nbsp;</td>
+<td align="center" colspan="2" width="33%">
+<font size="4">ComTest.java</font>
+</td>
+<td align="right" colspan="2" width="33%">&nbsp;</td>
+</tr>
+</TABLE>
+<pre ID="Classes">
+<A NAME="1"></A><FONT ID="SingleLineComment">// ComTest - Comments for testing
+<A NAME="2"></A></FONT><FONT ID="Package">package</FONT> comtest;
+<A NAME="3"></A><FONT ID="Import">import</FONT> java.util.Calendar;
+<A NAME="4"></A><FONT ID="Import">import</FONT> java.io.File;
+<A NAME="5"></A><FONT ID="Import">import</FONT> java.io.IOException;
+<A NAME="6"></A><FONT ID="Import">import</FONT> java.io.PrintWriter;
+<A NAME="7"></A><FONT ID="Import">import</FONT> java.io.FileWriter;
+<A NAME="8"></A>
+<A NAME="9"></A><FONT ID="Import">import</FONT> <FONT ID="Static">static</FONT> <A HREF="../comtest/StringUtilities.java.html">comtest.StringUtilities</A>.*;
+<A NAME="10"></A>
+<A NAME="11"></A><FONT ID="FormalComment">/**
+<A NAME="12"></A> * A class for making testing easy.
+<A NAME="13"></A> * Reads the files given in parameters and generates JUNIT tests
+<A NAME="14"></A> * from comments.&lt;p /&gt;
+<A NAME="15"></A> * 
+<A NAME="16"></A> *   The idea is to simplify writing unit tests.  And to get
+<A NAME="17"></A> *   unit test as examples to comments and JavaDoc.  
+<A NAME="18"></A> *   That's where the name ComTest comes (Comments for Testing)
+<A NAME="19"></A> *       
+<A NAME="20"></A> * &lt;pre&gt;
+<A NAME="21"></A> * Example: Just simple initialization section:
+<A NAME="22"></A> * 
+<A NAME="23"></A> * Counter cnt = new Counter(3);                            // IS
+<A NAME="24"></A> *              cnt.getCount() === 0;  cnt.getSum() === 0;  // IS
+<A NAME="25"></A> * cnt.add(1);  cnt.getCount() === 1;  cnt.getSum() === 1;  // IS
+<A NAME="26"></A> * cnt.add(2);  cnt.getCount() === 2;  cnt.getSum() === 3;  // IS
+<A NAME="27"></A> * 
+<A NAME="28"></A> * Syntax:
+<A NAME="29"></A> *   The ComTest comment must be inside block comments 
+<A NAME="30"></A> *   and start with
+<A NAME="31"></A> *     (at)example
+<A NAME="32"></A> *     [pre name="testModuleName"]  // change [] to HTML &lt;&gt; 
+<A NAME="33"></A> *   and ends with 
+<A NAME="34"></A> *     [/pre]
+<A NAME="35"></A> *     
+<A NAME="36"></A> *   Before handling the ComTest line, comments after //
+<A NAME="37"></A> *   is removed.
+<A NAME="38"></A> *     
+<A NAME="39"></A> *   The test itself contains following sections
+<A NAME="40"></A> *    0) The test case name is taken from pre-tag.
+<A NAME="41"></A> *    
+<A NAME="42"></A> *       Or if there is only name="test" then name is
+<A NAME="43"></A> *       found from the next starting class or method
+<A NAME="44"></A> *       and the the test case names comes like
+<A NAME="45"></A> *         testAdd34
+<A NAME="46"></A> *       where 34 is the line of the add-methods heading.     
+<A NAME="47"></A> *   
+<A NAME="48"></A> *    1) Initialization section.                           (IS)
+<A NAME="49"></A> *       This is Java code until first template section
+<A NAME="50"></A> *       
+<A NAME="51"></A> *    2) Template section                                  (TS)
+<A NAME="52"></A> *       This is Java-code where at least one $ exists
+<A NAME="53"></A> *       on the line outside of quotes. 
+<A NAME="54"></A> *       Template code is output from
+<A NAME="55"></A> *       each table value line by replacing template
+<A NAME="56"></A> *       values by table values.  After first template
+<A NAME="57"></A> *       line all lines are kept as template line until
+<A NAME="58"></A> *       the table starts.  Template "variables" are
+<A NAME="59"></A> *       just text replacements.
+<A NAME="60"></A> *       If the line is form: "$a" == "$b";
+<A NAME="61"></A> *       it is not template line, but
+<A NAME="62"></A> *       it can be forced template line be extra $ at the
+<A NAME="63"></A> *       end of it, so: "$a" == "$b"; $ 
+<A NAME="64"></A> *       
+<A NAME="65"></A> *    3) Normal code                                       (NC)
+<A NAME="66"></A> *       This is normal Java code after first table ends.
+<A NAME="67"></A> *       Normal code is output immediately when it is hit.
+<A NAME="68"></A> *       Normal code ends to first template line.
+<A NAME="69"></A> *       
+<A NAME="70"></A> *    4) Table heading                                     (TH)
+<A NAME="71"></A> *       This is the first line after template lines 
+<A NAME="72"></A> *       where there is at least one column separator 
+<A NAME="73"></A> *         " | "
+<A NAME="74"></A> *       or | as a first or last char in the line 
+<A NAME="75"></A> *       (after removing * and trim)  
+<A NAME="76"></A> *       There could be more columns
+<A NAME="77"></A> *       than there is templates variables.  All template
+<A NAME="78"></A> *       variable does not need to begin with $ (actually none), 
+<A NAME="79"></A> *       but there is a big risk to change some unwanted 
+<A NAME="80"></A> *       on that case.
+<A NAME="81"></A> *       
+<A NAME="82"></A> *    5) Table values.                                     (TV)
+<A NAME="83"></A> *       These are lines with at least one column separator
+<A NAME="84"></A> *         " | "
+<A NAME="85"></A> *       or | as a first or last char in the line 
+<A NAME="86"></A> *       (after removing * and trim)  
+<A NAME="87"></A> *       If the cell value is ignore value
+<A NAME="88"></A> *         "---"
+<A NAME="89"></A> *       then all template sentences with that column header
+<A NAME="90"></A> *       will be ignored.  
+<A NAME="91"></A> *       
+<A NAME="92"></A> *       Table values are substituted to corresponding template
+<A NAME="93"></A> *       variables for each table line.  If there is sentences
+<A NAME="94"></A> *       with $ after substitution then those sentences are 
+<A NAME="95"></A> *       removed.
+<A NAME="96"></A> *       
+<A NAME="97"></A> *    6) Table separator (line)                            (LI)
+<A NAME="98"></A> *         "-----"  (at least 5 "-" -signs)
+<A NAME="99"></A> *       Table separator lines are comments. Actually it 
+<A NAME="100"></A> *       can be anywhere in ComTest.  The whole line is 
+<A NAME="101"></A> *       treated as a comment even ----- is in 
+<A NAME="102"></A> *       the end of line
+<A NAME="103"></A> *       
+<A NAME="104"></A> *    7) Initialization separator                           (IZ)
+<A NAME="105"></A> *         "====="  (at least 5 "=" -signs)
+<A NAME="106"></A> *       After initialization separator the next table
+<A NAME="107"></A> *       line or normal section causes start of new test case 
+<A NAME="108"></A> *       and that starts with initialization section.
+<A NAME="109"></A> *       The test cases are numbered by adding _n after
+<A NAME="110"></A> *       original test case name.
+<A NAME="111"></A> *       
+<A NAME="112"></A> *    8) If Initialization separator is before first       (IZE)
+<A NAME="113"></A> *       table heading, the whole table will be handled
+<A NAME="114"></A> *       so that every line comes a new test case with
+<A NAME="115"></A> *       initialization section.                  
+<A NAME="116"></A> *       
+<A NAME="117"></A> *    9) If there is normal lines or template lines
+<A NAME="118"></A> *       after table, then that resets previous templates.
+<A NAME="119"></A> *       
+<A NAME="120"></A> *   10) All sentences with === is divided to leftSide and
+<A NAME="121"></A> *       rightSide.  And then generated code
+<A NAME="122"></A> *       assertEquals("explanation",rightSide,leftSide);    
+<A NAME="123"></A> *       Note that for more complicated assert's one can write
+<A NAME="124"></A> *       f.ex assertTrue("Should be less: #LINE#" , a &lt; 3);
+<A NAME="125"></A> *       
+<A NAME="126"></A> *       Sentences with ~~~ or ~~ is handled as double
+<A NAME="127"></A> *       comparison so they produce 
+<A NAME="128"></A> *       assertEquals("explanation",rightSide,leftSide,#PRECISION);
+<A NAME="129"></A> *       
+<A NAME="130"></A> *       If the line has only one === or ~~ sentence
+<A NAME="131"></A> *       then the ending ; may left out.
+<A NAME="132"></A> *       
+<A NAME="133"></A> *       Sentences with =R= or =~ is handled as regular expression
+<A NAME="134"></A> *       comparison.    
+<A NAME="135"></A> *           
+<A NAME="136"></A> *       
+<A NAME="137"></A> *   11) To write directly to Java class, introduce the
+<A NAME="138"></A> *       test with name="testJAVA".  This turns Raw-mode on
+<A NAME="139"></A> *       and on raw mode the lines are not written inside any 
+<A NAME="140"></A> *       test case method.  In raw-mode there is no
+<A NAME="141"></A> *       initialization section (IS), so on case of re-init
+<A NAME="142"></A> *       no code is repeated.  
+<A NAME="143"></A> *       To write JUnit annotations line .@Before the
+<A NAME="144"></A> *       at sign  must be prefixed by any char to prevent
+<A NAME="145"></A> *       JavaDoc going wrong.  The prefix char is removed.
+<A NAME="146"></A> *   
+<A NAME="147"></A> *   12) Lines that ends with                           
+<A NAME="148"></A> *         #THROWS exceptionName
+<A NAME="149"></A> *       is surrounded by "try ... fail() .. catch exceptionName e {}"
+<A NAME="150"></A> *       so that line fails if the exception is not thrown.
+<A NAME="151"></A> *       Note that the #THROWS works only line based.
+<A NAME="152"></A> *       But if table line contains #THROWS then the
+<A NAME="153"></A> *       template may generate more lines inside try catch.
+<A NAME="154"></A> *       
+<A NAME="155"></A> *       If #THROWS exeptionName is before any other line after pre-tag, 
+<A NAME="156"></A> *       then the test is started by
+<A NAME="157"></A> *         public void testN() throws exeptionName {
+<A NAME="158"></A> *       
+<A NAME="159"></A> *   13) Import is handled by "commands"
+<A NAME="160"></A> *         #STATICIMPORT    - creates a line import static package.ClassName.*;
+<A NAME="161"></A> *         #DYNAMICIMPORT   - creates a line import package.ClassName.*;
+<A NAME="162"></A> *         #CLASSIMPORT     - creates a line import package.ClassName;
+<A NAME="163"></A> *         #PACKAGEIMPORT   - creates a line import package.*;
+<A NAME="164"></A> *         #NOIMPORT        - clears the automatic importing for JUnit
+<A NAME="165"></A> *                          - if #NOIMPORT=all then not even JUnit-importing is done
+<A NAME="166"></A> *         #import impSentence; - adds the selected import sentence
+<A NAME="167"></A> *       Import commands can be either in ComTest comments or in
+<A NAME="168"></A> *       normal comments if there is only spaces before the command.
+<A NAME="169"></A> *       If there is no import commands on the file or ComTest.ini files, then
+<A NAME="170"></A> *         import package.*;  or/and
+<A NAME="171"></A> *         import static package.ClassName.* ; is inserted automatically
+<A NAME="172"></A> *       if static method or ordinary method is tested.
+<A NAME="173"></A> *       
+<A NAME="174"></A> *       jUnit imports:
+<A NAME="175"></A> *         #JUNITIMPORTS    - what imports is added to begining of file
+<A NAME="176"></A> *                            lines separated by : 
+<A NAME="177"></A> *         Default:
+<A NAME="178"></A> *         #JUNITIMPORTS=import static org.junit.Assert.*;:import org.junit.*;            
+<A NAME="179"></A> *       
+<A NAME="180"></A> *   14) The result directory and package can be changed be variables
+<A NAME="181"></A> *         #DIRECTORY=dir   
+<A NAME="182"></A> *         #PACKAGE=packageName
+<A NAME="183"></A> *       in normal comments if there is only spaces before.
+<A NAME="184"></A> *       If dir is relative, then it is appended to end of files directory.
+<A NAME="185"></A> *       If packageName is .subPackageName then it is added to files
+<A NAME="186"></A> *       packageName. 
+<A NAME="187"></A> *       
+<A NAME="188"></A> *   15) Variable sentences can be also in file
+<A NAME="189"></A> *       ComTest.ini in same directory than the file to scan.
+<A NAME="190"></A> *       In ini file the variables do not need to be in comments.
+<A NAME="191"></A> *       Before # there is allowed only spaces.
+<A NAME="192"></A> *       // is treated as a comment like in Java-file.  
+<A NAME="193"></A> *       The ComTest.ini file is read first and the variables
+<A NAME="194"></A> *       in the Java-file may override the values.                
+<A NAME="195"></A> *          
+<A NAME="196"></A> *   16) The symbols $, | , ---  and other "variables"
+<A NAME="197"></A> *       can be changed by variable substitution lines     
+<A NAME="198"></A> *          #COLUMNSEPARATOR=" | ";
+<A NAME="199"></A> *          #COLUMNCHAR="|";
+<A NAME="200"></A> *          #TEMPLATELINEMARKER="$";
+<A NAME="201"></A> *          #DELETESENTENCEMARKER="---";
+<A NAME="202"></A> *          #INITLINE="=====";
+<A NAME="203"></A> *          #EVERYLINEINITS1="=====";
+<A NAME="204"></A> *          #EVERYLINEINITS2="=== Every line inits ===";
+<A NAME="205"></A> *          #EQUALSMARKER="===";
+<A NAME="206"></A> *          #EQUALSMARKER2="=&gt;";
+<A NAME="207"></A> *          #ALMOSTMARKER1="~~~";
+<A NAME="208"></A> *          #ALMOSTMARKER2="~~";
+<A NAME="209"></A> *          #REGEXPMARKER1="=R=";
+<A NAME="210"></A> *          #REGEXPMARKER2="=~";
+<A NAME="211"></A> *          #TOLERANCE="0.000001";
+<A NAME="212"></A> *          #THROWSMARKER="#THROWS";
+<A NAME="213"></A> *          #IMPORTMARKER="#import";
+<A NAME="214"></A> *          #PACKAGEMARKER="#PACKAGE=";
+<A NAME="215"></A> *          #DIRECTORYMARKER="#DIRECTORY=";
+<A NAME="216"></A> *          #BEFORETESTCLASS=@SuppressWarnings({ "PMD" })
+<A NAME="217"></A> *       Each substitution must be in own line and
+<A NAME="218"></A> *       = must be the next char after variable name.
+<A NAME="219"></A> *       Variables are valid after substitution point until
+<A NAME="220"></A> *       end of file or new change.  Every file starts with defaults.
+<A NAME="221"></A> *       COLUMNCHAR variable is needed only if it is
+<A NAME="222"></A> *       the first or last char on the line.  So mostly
+<A NAME="223"></A> *       in one column tables.        
+<A NAME="224"></A> *       Variable substitution can be in ComTest-comments or
+<A NAME="225"></A> *       in normal comments if there is only spaces before the command.
+<A NAME="226"></A> *   
+<A NAME="227"></A> *     
+<A NAME="228"></A> * Example: Initialization section, template section and table 
+<A NAME="229"></A> *          with two new initialization                           
+<A NAME="230"></A> *   
+<A NAME="231"></A> * Counter cnt = new Counter(3);                            // IS 
+<A NAME="232"></A> * cnt.add($add);  cnt.getCount() === $count;               // TS  
+<A NAME="233"></A> * cnt.getSum() === $sum;                                   // TS
+<A NAME="234"></A> * cnt.getMax() === $max; cnt.getMin() === $min;            // TS
+<A NAME="235"></A> * 
+<A NAME="236"></A> *  ----------------------------------------------          // LI
+<A NAME="237"></A> *     $add   |   $count   | $sum   | $max | $min           // TH
+<A NAME="238"></A> *  ----------------------------------------------          // LI
+<A NAME="239"></A> *     ---    |     0      |  0     |   0  |   0            // TV
+<A NAME="240"></A> *      1     |     1      |  1     |   1  |   1            // TV
+<A NAME="241"></A> *      2     |     2      |  1+2   |   2  |   1            // TV
+<A NAME="242"></A> *      3     |     3      |  1+2+3 |   3  |   1            // TV
+<A NAME="243"></A> *      4     |     3      |  6     |   3  |   1            // TV
+<A NAME="244"></A> *  ==============================================          // IZ
+<A NAME="245"></A> *      5     |     1      |  5     |   5  |   5            // TV 
+<A NAME="246"></A> *      2     |     2      |  5+2   |   5  |   2            // TV
+<A NAME="247"></A> *      3     |     3      |  5+2+3 |   5  |   2            // TV 
+<A NAME="248"></A> *  ==============================================          // IZ
+<A NAME="249"></A> *     -1     |     1      |  -1    |  -1  |  -1            // TV
+<A NAME="250"></A> *      2     |     2      | -1+2   |   2  |  -1            // TV  
+<A NAME="251"></A> *      9     |     3      | -1+2+9 |   9  |  -1            // TV
+<A NAME="252"></A> * &lt;/pre&gt;                                              
+<A NAME="253"></A> * 
+<A NAME="254"></A> * Below is a real life example from test with all sections
+<A NAME="255"></A> * and with many tables. For code generated
+<A NAME="256"></A> * see ComTestTest.testStringAdd()
+<A NAME="257"></A> * 
+<A NAME="258"></A> * @example
+<A NAME="259"></A> * &lt;pre name="testStringAdd"&gt;             
+<A NAME="260"></A> * // Example of many tables
+<A NAME="261"></A> *   Strings list = new Strings();               // IS
+<A NAME="262"></A> *   
+<A NAME="263"></A> *   list.size() === 0;                          // IS
+<A NAME="264"></A> *   list.add("$value"); list.size() === $size;  // TS
+<A NAME="265"></A> *   list.get($i) === "$value";                  // TS
+<A NAME="266"></A> *   
+<A NAME="267"></A> *    $i   |  $value | $size                     // TH
+<A NAME="268"></A> *   -------------------------                   // LI
+<A NAME="269"></A> *     0   |  one    |  1                        // TV
+<A NAME="270"></A> *     1   |  two    |  2                        // TV
+<A NAME="271"></A> *     2   |  three  |  3                        // TV
+<A NAME="272"></A> *     3   |  ---    |  3                        // TV
+<A NAME="273"></A> *
+<A NAME="274"></A> *   list.get(3) === "three"; #THROWS IndexOutOfBoundsException // NC
+<A NAME="275"></A> *        
+<A NAME="276"></A> *   list.add("$value"); list.size() === $size;  // TS2
+<A NAME="277"></A> *   list.add($b); // no output no variable $b   // --       
+<A NAME="278"></A> *   
+<A NAME="279"></A> *   === Every line inits ===
+<A NAME="280"></A> *    $i   |  $value | $size                     // TH2
+<A NAME="281"></A> *   -------------------------                   // LI
+<A NAME="282"></A> *     0   |  one    |  1                        // TV
+<A NAME="283"></A> *     1   |  two    |  1                        // TV 
+<A NAME="284"></A> *     2   |  three  |  1                        // TV
+<A NAME="285"></A> *     
+<A NAME="286"></A> * #COLUMNSEPARATOR=" , "; 
+<A NAME="287"></A> * #TEMPLATELINEMARKER="%";
+<A NAME="288"></A> *   list.add("four"); list.size() === 1;        // NC 
+<A NAME="289"></A> *   assertTrue("Strings: #LINE#",list.size()&gt;0);// NC
+<A NAME="290"></A> *   list.add("%value"); list.size() === %size;  // TS3
+<A NAME="291"></A> *   assertTrue("Strings: #LINE#",list.size()&gt;0);// TS3
+<A NAME="292"></A> *   
+<A NAME="293"></A> *    %i   ,  %value , %size                     // TH3
+<A NAME="294"></A> *   -------------------------                   // LI
+<A NAME="295"></A> *     0   ,  one    ,  2                        // TV
+<A NAME="296"></A> *     1   ,  two    ,  3                        // TV
+<A NAME="297"></A> *     2   ,  three  ,  4                        // TV
+<A NAME="298"></A> *     
+<A NAME="299"></A> *   if ( %i &gt; 0 ) { list.get(%i) === "%value"; }// TS4
+<A NAME="300"></A> *   
+<A NAME="301"></A> *    %i   ,  %value                             // TH3
+<A NAME="302"></A> *   -----------------                           // LI
+<A NAME="303"></A> *     1   ,  one                                // TV
+<A NAME="304"></A> *     2   ,  two                                // TV
+<A NAME="305"></A> *     3   ,  three                              // TV
+<A NAME="306"></A> *     4   ,  four   #THROWS IndexOutOfBoundsException 
+<A NAME="307"></A> *     
+<A NAME="308"></A> * #COLUMNSEPARATOR=" | "; 
+<A NAME="309"></A> * #TEMPLATELINEMARKER="$";
+<A NAME="310"></A> * &lt;/pre&gt;
+<A NAME="311"></A> *      
+<A NAME="312"></A> * @example 
+<A NAME="313"></A> * &lt;pre name="testDouble"&gt;
+<A NAME="314"></A> *  // Test double comparison and tolerance   
+<A NAME="315"></A> *  double d1 = 0.1;                             // IS
+<A NAME="316"></A> *  d1 ~~ 1.0/10;                                // IS
+<A NAME="317"></A> *  #TOLERANCE=0.2;
+<A NAME="318"></A> *  d1 ~~ 0;                                     // IS
+<A NAME="319"></A> *  &lt;/pre&gt;   
+<A NAME="320"></A> *
+<A NAME="321"></A> * @example 
+<A NAME="322"></A> * &lt;pre name="testRegExp"&gt;
+<A NAME="323"></A> *  // Test regExp comparison
+<A NAME="324"></A> *  "cat" =R= "c.*t"   
+<A NAME="325"></A> *  "cat" =~  "c.*"   
+<A NAME="326"></A> *  &lt;/pre&gt;   
+<A NAME="327"></A> *
+<A NAME="328"></A> * 
+<A NAME="329"></A> * @example 
+<A NAME="330"></A> * &lt;pre name="testJAVA"&gt;
+<A NAME="331"></A> * // Test raw mode and introduce an attribute and initializer 
+<A NAME="332"></A> * 
+<A NAME="333"></A> * private Strings globalList;
+<A NAME="334"></A> * 
+<A NAME="335"></A> * /.** *./    // This is the way to make comments inside comments 
+<A NAME="336"></A> * .@Before public void init() {// Run before ALL tests, not only those below
+<A NAME="337"></A> *   globalList = new Strings();
+<A NAME="338"></A> *   String st[] = {"one", "two", "three" };
+<A NAME="339"></A> *   for (String s:st) globalList.add(s);
+<A NAME="340"></A> * }
+<A NAME="341"></A> * &lt;/pre&gt;
+<A NAME="342"></A> *
+<A NAME="343"></A> * @example
+<A NAME="344"></A> * &lt;pre name="testGlobalList"&gt;             
+<A NAME="345"></A> *   globalList.size() === 3;
+<A NAME="346"></A> *   globalList.add("one");
+<A NAME="347"></A> * &lt;/pre&gt;               
+<A NAME="348"></A> *
+<A NAME="349"></A> * @example
+<A NAME="350"></A> * &lt;pre name="testGlobalList2"&gt;             
+<A NAME="351"></A> *   globalList.size() === 3;
+<A NAME="352"></A> *   globalList.add("two");
+<A NAME="353"></A> * &lt;/pre&gt;               
+<A NAME="354"></A> *
+<A NAME="355"></A> * 
+<A NAME="356"></A> * &lt;h2&gt;Tips&lt;/h2&gt;
+<A NAME="357"></A> * &lt;ul&gt;
+<A NAME="358"></A> * &lt;li&gt;More difficult testing directly to JUNit test file.
+<A NAME="359"></A> * ComTest prevents all hand made things in test unit.&lt;/li&gt;
+<A NAME="360"></A> *
+<A NAME="361"></A> * &lt;li&gt;Things written to test unit is usable in ComTest&lt;/li&gt;
+<A NAME="362"></A> *
+<A NAME="363"></A> * &lt;li&gt;All JUnit commands are available&lt;/li&gt;
+<A NAME="364"></A> *
+<A NAME="365"></A> * &lt;li&gt;To write attributes or helper methods to the TestUnit
+<A NAME="366"></A> *  use name="testJAVA"&lt;/li&gt;
+<A NAME="367"></A> *
+<A NAME="368"></A> * &lt;li&gt;Do not use variable names that includes the other one
+<A NAME="369"></A> * like $a and $aa.  If $a=6 and the replace is done, then
+<A NAME="370"></A> * $aa may come 6a.&lt;/li&gt; 
+<A NAME="371"></A> *
+<A NAME="372"></A> * &lt;li&gt; To use logical or test: |, do it without spaces around it
+<A NAME="373"></A> * like c = a|b; not like c = a | b; Or if you need to write " | "
+<A NAME="374"></A> * then change the separator char by substituting to variables, see 12)&lt;/li&gt;
+<A NAME="375"></A> * 
+<A NAME="376"></A> * &lt;li&gt;Write the code inside comments first as normal code
+<A NAME="377"></A> * and test the code and then move inside comments.&lt;/li&gt;
+<A NAME="378"></A> *  
+<A NAME="379"></A> * &lt;li&gt;To change the output directory and package write
+<A NAME="380"></A> * ComTest.ini to the package file.&lt;/li&gt;
+<A NAME="381"></A> *    
+<A NAME="382"></A> * &lt;li&gt;It is possible to make templates without naming
+<A NAME="383"></A> * the template variables (column names) by $.  
+<A NAME="384"></A> * Then it is enough to have one $
+<A NAME="385"></A> * f.ex at the end of the first line after the ending ;.
+<A NAME="386"></A> * The only danger is to have column names that are included
+<A NAME="387"></A> * in the Java-sentences for some other meaning.
+<A NAME="388"></A> * &lt;/li&gt;   
+<A NAME="389"></A> * 
+<A NAME="390"></A> * &lt;li&gt;If using if sentences with === then you must use
+<A NAME="391"></A> * brackets.  So instead of
+<A NAME="392"></A> * &lt;pre&gt; 
+<A NAME="393"></A> *   if ( a &lt; 5 ) a === 3;
+<A NAME="394"></A> * &lt;/pre&gt;
+<A NAME="395"></A> * use
+<A NAME="396"></A> * &lt;pre&gt; 
+<A NAME="397"></A> *   if ( a &lt; 5 ) { a === 3; }
+<A NAME="398"></A> * &lt;/pre&gt;
+<A NAME="399"></A> * The else sentence can be used with or without brackets.
+<A NAME="400"></A> * There is same problem also for for and while and do sentences.
+<A NAME="401"></A> * &lt;/li&gt;
+<A NAME="402"></A> * 
+<A NAME="403"></A> * &lt;/ul&gt;
+<A NAME="404"></A> * 
+<A NAME="405"></A> * @author vesal
+<A NAME="406"></A> * @version 31.1.2010
+<A NAME="407"></A> *
+<A NAME="408"></A> */</FONT>
+<A NAME="409"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> ComTest { <FONT ID="SingleLineComment">// NOPMD by vesal on 13.1.2008 15:29
+<A NAME="410"></A></FONT>    <FONT ID="SingleLineComment">// TODO Comments from @example or pre line to test method
+<A NAME="411"></A></FONT>    <FONT ID="SingleLineComment">// TODO Syntax:  $arg:REPEAT(one,two,three)
+<A NAME="412"></A></FONT>    <FONT ID="SingleLineComment">// TODO Syntax:  $arg:REPEAT(0..7)
+<A NAME="413"></A></FONT>    <FONT ID="SingleLineComment">// TODO Make a safe copy from old file in case of problems
+<A NAME="414"></A></FONT>    <FONT ID="SingleLineComment">// TODO Should the table line be printed as a comment when every line produces a different test
+<A NAME="415"></A></FONT>
+<A NAME="416"></A>    <FONT ID="SingleLineComment">// #STATICIMPORT 
+<A NAME="417"></A></FONT>    <FONT ID="SingleLineComment">// #import comtest.Strings;
+<A NAME="418"></A></FONT>
+<A NAME="419"></A>    <FONT ID="FormalComment">/**
+<A NAME="420"></A>     * Split line to smaller tokens. Line is divided from 
+<A NAME="421"></A>     * ;, { or }.  The splitter chars are returned as
+<A NAME="422"></A>     * own one char sentences.  
+<A NAME="423"></A>     * @param s line to split
+<A NAME="424"></A>     * @return line that is split to smaller sentences.
+<A NAME="425"></A>     * 
+<A NAME="426"></A>     * @example
+<A NAME="427"></A>     * &lt;pre name="test"&gt;
+<A NAME="428"></A>     *   Strings sns = splitToSentences("a === 5;");
+<A NAME="429"></A>     *   sns.size() === 2; 
+<A NAME="430"></A>     *   sns.get(0) === "a === 5"; sns.get(1) === "; "; 
+<A NAME="431"></A>     *   sns.toString("|") === "a === 5|; "; 
+<A NAME="432"></A>     *
+<A NAME="433"></A>     *   sns = splitToSentences("a === 5; b === 3;");
+<A NAME="434"></A>     *   sns.size() === 4; 
+<A NAME="435"></A>     *   sns.toString("|") === "a === 5|; | b === 3|; "; 
+<A NAME="436"></A>     *
+<A NAME="437"></A>     *   sns = splitToSentences("if ( a &lt; 3 ) { a === 5; } else b === 3;");
+<A NAME="438"></A>     *   sns.size() === 8; 
+<A NAME="439"></A>     *   sns.toString("|") === "if ( a &lt; 3 ) |{ | a === 5|; |} |else | b === 3|; "; 
+<A NAME="440"></A>     *
+<A NAME="441"></A>     *   sns = splitToSentences("if ( a &lt; 3 ) { a === 5; } else { b === 3; }");
+<A NAME="442"></A>     *   sns.size() === 10;
+<A NAME="443"></A>     *   sns.toString("|") === "if ( a &lt; 3 ) |{ | a === 5|; |} |else |{ | b === 3|; | }";
+<A NAME="444"></A>     *   
+<A NAME="445"></A>     *   sns = splitToSentences("get(request,new String[]{\"str\",\"id\"},13,true) === 123;"); 
+<A NAME="446"></A>     *   sns.size() === 2;
+<A NAME="447"></A>     *   sns.toString("|") === "get(request,new String[]{\"str\",\"id\"},13,true) === 123|; ";
+<A NAME="448"></A>     * &lt;/pre&gt;
+<A NAME="449"></A>     */</FONT>
+<A NAME="450"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <A HREF="../comtest/Strings.java.html">Strings</A> splitToSentences(String s) { <FONT ID="SingleLineComment">// NOPMD by vesal on 13.1.2008 15:29
+<A NAME="451"></A></FONT>        <A HREF="../comtest/Strings.java.html">Strings</A> sentences = <FONT ID="New">new</FONT> <A HREF="../comtest/Strings.java.html">Strings</A>();
+<A NAME="452"></A>        String sentence,separator; 
+<A NAME="453"></A>        <FONT ID="Int">int</FONT> p = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="454"></A>        <FONT ID="While">while</FONT> ( <FONT ID="True">true</FONT> ) {
+<A NAME="455"></A>            <FONT ID="Int">int</FONT> p1 = indexOfNotInQuotes(s, <FONT ID="StringLiteral">";"</FONT>, QUOTES, p);
+<A NAME="456"></A>            <FONT ID="Int">int</FONT> p2 = indexOfNotInQuotes(s, <FONT ID="StringLiteral">"{"</FONT>, QUOTES, p);
+<A NAME="457"></A>            <FONT ID="Int">int</FONT> p3 = indexOfNotInQuotes(s, <FONT ID="StringLiteral">"}"</FONT>, QUOTES, p);
+<A NAME="458"></A>            <FONT ID="Int">int</FONT> p4 = indexOfNotInQuotes(s, <FONT ID="StringLiteral">"else"</FONT>, QUOTES, p);
+<A NAME="459"></A>            <FONT ID="Int">int</FONT> p5 = indexOfNotInQuotes(s, <FONT ID="StringLiteral">"]"</FONT>, QUOTES, p);
+<A NAME="460"></A>            <FONT ID="Int">int</FONT> p0 = p1;
+<A NAME="461"></A>            <FONT ID="Int">int</FONT> plen = <FONT ID="IntegerLiteral">1</FONT>;
+<A NAME="462"></A>            <FONT ID="If">if</FONT> ( <FONT ID="IntegerLiteral">0</FONT> &lt;= p5 &amp;&amp; p5 &lt; p2 ) { <FONT ID="SingleLineComment">// format new int[]{3,5}; =&gt; new int[]{3,5} 
+<A NAME="463"></A></FONT>                sentence = s.substring(p5+<FONT ID="IntegerLiteral">1</FONT>,p2);
+<A NAME="464"></A>                <FONT ID="If">if</FONT> ( isEmpty(sentence) ) { p2 = -<FONT ID="IntegerLiteral">1</FONT>; p3 = -<FONT ID="IntegerLiteral">1</FONT>; } 
+<A NAME="465"></A>            }
+<A NAME="466"></A>            <FONT ID="If">if</FONT> ( <FONT ID="IntegerLiteral">0</FONT> &lt;= p2 &amp;&amp; p2 &lt; p0) p0 = p2;
+<A NAME="467"></A>            <FONT ID="If">if</FONT> ( <FONT ID="IntegerLiteral">0</FONT> &lt;= p3 &amp;&amp; p3 &lt; p0) p0 = p3;
+<A NAME="468"></A>            <FONT ID="If">if</FONT> ( <FONT ID="IntegerLiteral">0</FONT> &lt;= p4 &amp;&amp; p4 &lt; p0) { p0 = p4; plen = <FONT ID="IntegerLiteral">4</FONT>; }
+<A NAME="469"></A>            <FONT ID="If">if</FONT> ( p0 &lt; <FONT ID="IntegerLiteral">0</FONT> ) { <FONT ID="SingleLineComment">// take the rest of line
+<A NAME="470"></A></FONT>                sentence = s.substring(p);
+<A NAME="471"></A>                <FONT ID="If">if</FONT> ( !isEmpty(sentence) ) sentences.add(sentence);
+<A NAME="472"></A>                <FONT ID="Break">break</FONT>;
+<A NAME="473"></A>            }
+<A NAME="474"></A>            sentence = s.substring(p,p0); 
+<A NAME="475"></A>            <FONT ID="If">if</FONT> ( !isEmpty(sentence) ) sentences.add(sentence);
+<A NAME="476"></A>            separator = s.substring(p0,p0+plen);
+<A NAME="477"></A>            sentences.add(separator + <FONT ID="StringLiteral">" "</FONT>);
+<A NAME="478"></A>            p = p0+plen;
+<A NAME="479"></A>            
+<A NAME="480"></A>        }
+<A NAME="481"></A>        <FONT ID="Return">return</FONT> sentences;
+<A NAME="482"></A>    }
+<A NAME="483"></A>
+<A NAME="484"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String TEST = <FONT ID="StringLiteral">"test"</FONT>;
+<A NAME="485"></A>    
+<A NAME="486"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String SEPARATORLINE        = <FONT ID="StringLiteral">"-----"</FONT>;
+<A NAME="487"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String LINENUMBERMARKER     = <FONT ID="StringLiteral">"#LINE#"</FONT>;
+<A NAME="488"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String METHODINDEXMARKER    = <FONT ID="StringLiteral">"#METHODINDEX#"</FONT>;
+<A NAME="489"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String STARTOFTEST          = <FONT ID="StringLiteral">"&lt;pre name=\""</FONT>+TEST;
+<A NAME="490"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String COMTESTID            = <FONT ID="StringLiteral">"Generated by ComTest"</FONT>;
+<A NAME="491"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String COMTESTIDOLD         = <FONT ID="StringLiteral">"Genereted by ComTest"</FONT>;
+<A NAME="492"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String COMTESTBEGIN         = <FONT ID="StringLiteral">"BEGIN"</FONT>;
+<A NAME="493"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String COMTESTEND           = <FONT ID="StringLiteral">"END"</FONT>;
+<A NAME="494"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String STATICIMPORT         = <FONT ID="StringLiteral">"#STATICIMPORT"</FONT>;
+<A NAME="495"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String DYNAMICIMPORT        = <FONT ID="StringLiteral">"#DYNAMICIMPORT"</FONT>;
+<A NAME="496"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String CLASSIMPORT          = <FONT ID="StringLiteral">"#CLASSIMPORT"</FONT>;
+<A NAME="497"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String PACKAGEIMPORT        = <FONT ID="StringLiteral">"#PACKAGEIMPORT"</FONT>;
+<A NAME="498"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String NOIMPORT             = <FONT ID="StringLiteral">"#NOIMPORT"</FONT>;
+<A NAME="499"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String COMTESTINI           = <FONT ID="StringLiteral">"ComTest.ini"</FONT>;
+<A NAME="500"></A>
+<A NAME="501"></A>    <FONT ID="SingleLineComment">// Constants that have corresponding variables in ComTestScanner 
+<A NAME="502"></A></FONT>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String COLUMNSEPARATOR      = <FONT ID="StringLiteral">" | "</FONT>;
+<A NAME="503"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String COLUMNCHAR           = <FONT ID="StringLiteral">"|"</FONT>;
+<A NAME="504"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String TEMPLATELINEMARKER   = <FONT ID="StringLiteral">"$"</FONT>;
+<A NAME="505"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String DELETESENTENCEMARKER = <FONT ID="StringLiteral">"---"</FONT>;
+<A NAME="506"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String INITLINE             = <FONT ID="StringLiteral">"====="</FONT>;
+<A NAME="507"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String EVERYLINEINITS1      = <FONT ID="StringLiteral">"====="</FONT>;
+<A NAME="508"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String EVERYLINEINITS2      = <FONT ID="StringLiteral">"=== Every line inits ==="</FONT>;
+<A NAME="509"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String EQUALSMARKER         = <FONT ID="StringLiteral">"==="</FONT>;
+<A NAME="510"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String EQUALSMARKER2        = <FONT ID="StringLiteral">"=&gt;"</FONT>;
+<A NAME="511"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String ALMOSTMARKER1        = <FONT ID="StringLiteral">"~~~"</FONT>;
+<A NAME="512"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String ALMOSTMARKER2        = <FONT ID="StringLiteral">"~~"</FONT>;
+<A NAME="513"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String REGEXPMARKER1        = <FONT ID="StringLiteral">"=R="</FONT>;
+<A NAME="514"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String REGEXPMARKER2        = <FONT ID="StringLiteral">"=~"</FONT>;
+<A NAME="515"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String TOLERANCE            = <FONT ID="StringLiteral">"0.000001"</FONT>;
+<A NAME="516"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String THROWSMARKER         = <FONT ID="StringLiteral">"#THROWS"</FONT>;
+<A NAME="517"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String IMPORTMARKER         = <FONT ID="StringLiteral">"#import"</FONT>;
+<A NAME="518"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String PACKAGEMARKER        = <FONT ID="StringLiteral">"#PACKAGE="</FONT>;
+<A NAME="519"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String DIRECTORYMARKER      = <FONT ID="StringLiteral">"#DIRECTORY="</FONT>;
+<A NAME="520"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String BEFORETESTCLASS      = <FONT ID="StringLiteral">"@SuppressWarnings({ \"PMD\" })"</FONT>;
+<A NAME="521"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String JUNITIMPORTS         = <FONT ID="StringLiteral">"import static org.junit.Assert.*;:import org.junit.*;"</FONT>;
+<A NAME="522"></A>    
+<A NAME="523"></A>
+<A NAME="524"></A>    <FONT ID="FormalComment">/**
+<A NAME="525"></A>     * Class to do the file scanning and output for test class
+<A NAME="526"></A>     * @author vesal
+<A NAME="527"></A>     */</FONT>
+<A NAME="528"></A>    <FONT ID="SingleLineComment">// @SuppressWarnings("hiding")
+<A NAME="529"></A></FONT>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Class">class</FONT> ComTestScanner { <FONT ID="SingleLineComment">// NOPMD by vesal on 13.1.2008 15:29
+<A NAME="530"></A></FONT>        <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String JAVAIMPOPRT = <FONT ID="StringLiteral">"import "</FONT>;
+<A NAME="531"></A>        <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> <A HREF="../comtest/Strings.java.html">Strings</A> contents;
+<A NAME="532"></A>        <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> <A HREF="../comtest/Strings.java.html">Strings</A> imports = <FONT ID="New">new</FONT> <A HREF="../comtest/Strings.java.html">Strings</A>();
+<A NAME="533"></A>        <FONT ID="Private">private</FONT> <A HREF="../comtest/Strings.java.html">Strings</A> outlines = <FONT ID="Null">null</FONT>;
+<A NAME="534"></A>        <FONT ID="Private">private</FONT> <FONT ID="Boolean">boolean</FONT> doStaticImport = <FONT ID="False">false</FONT>;
+<A NAME="535"></A>        <FONT ID="SingleLineComment">// private boolean noAutoImport = false;
+<A NAME="536"></A></FONT>        <FONT ID="Private">private</FONT> <FONT ID="Boolean">boolean</FONT> noImportAtAll = <FONT ID="False">false</FONT>;
+<A NAME="537"></A>        <FONT ID="Private">private</FONT> <FONT ID="Boolean">boolean</FONT> fullAutoImport = <FONT ID="True">true</FONT>;
+<A NAME="538"></A>        <FONT ID="Private">private</FONT> <FONT ID="Boolean">boolean</FONT> needsStaticImport = <FONT ID="False">false</FONT>;
+<A NAME="539"></A>        <FONT ID="Private">private</FONT> <FONT ID="Boolean">boolean</FONT> needsClassImport = <FONT ID="False">false</FONT>;
+<A NAME="540"></A>        <FONT ID="Private">private</FONT> String className = <FONT ID="Null">null</FONT>;
+<A NAME="541"></A>        <FONT ID="Private">private</FONT> String outFileName = <FONT ID="Null">null</FONT>;
+<A NAME="542"></A>        <FONT ID="Private">private</FONT> String outDirName  = <FONT ID="Null">null</FONT>;
+<A NAME="543"></A>        <FONT ID="Private">private</FONT> String testClassName = <FONT ID="Null">null</FONT>;
+<A NAME="544"></A>        <FONT ID="Private">private</FONT> String packageName = <FONT ID="StringLiteral">""</FONT>;
+<A NAME="545"></A>        <FONT ID="Private">private</FONT> String originalPackageName = <FONT ID="StringLiteral">""</FONT>;
+<A NAME="546"></A>        <FONT ID="Private">private</FONT> String testFilePackageName = <FONT ID="StringLiteral">""</FONT>;
+<A NAME="547"></A>        <FONT ID="Private">private</FONT> String directory = <FONT ID="Null">null</FONT>;
+<A NAME="548"></A>        <FONT ID="Private">private</FONT> String comTestIni = <FONT ID="Null">null</FONT>;
+<A NAME="549"></A>        <FONT ID="Private">private</FONT> <FONT ID="Int">int</FONT> printedTableLines = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="550"></A>        
+<A NAME="551"></A>     
+<A NAME="552"></A>        <FONT ID="Private">private</FONT> String COLUMNSEPARATOR      = ComTest.COLUMNSEPARATOR;
+<A NAME="553"></A>        <FONT ID="Private">private</FONT> String COLUMNCHAR           = ComTest.COLUMNCHAR;
+<A NAME="554"></A>        <FONT ID="Private">private</FONT> String TEMPLATELINEMARKER   = ComTest.TEMPLATELINEMARKER;
+<A NAME="555"></A>        <FONT ID="Private">private</FONT> String DELETESENTENCEMARKER = ComTest.DELETESENTENCEMARKER;
+<A NAME="556"></A>        <FONT ID="Private">private</FONT> String INITLINE             = ComTest.INITLINE;
+<A NAME="557"></A>        <FONT ID="Private">private</FONT> String EVERYLINEINITS1      = ComTest.EVERYLINEINITS1;
+<A NAME="558"></A>        <FONT ID="Private">private</FONT> String EVERYLINEINITS2      = ComTest.EVERYLINEINITS2;
+<A NAME="559"></A>        <FONT ID="Private">private</FONT> String EQUALSMARKER         = ComTest.EQUALSMARKER;
+<A NAME="560"></A>        <FONT ID="Private">private</FONT> String EQUALSMARKER2        = ComTest.EQUALSMARKER2;
+<A NAME="561"></A>        <FONT ID="Private">private</FONT> String ALMOSTMARKER1        = ComTest.ALMOSTMARKER1;
+<A NAME="562"></A>        <FONT ID="Private">private</FONT> String ALMOSTMARKER2        = ComTest.ALMOSTMARKER2;
+<A NAME="563"></A>        <FONT ID="Private">private</FONT> String REGEXPMARKER1        = ComTest.REGEXPMARKER1;
+<A NAME="564"></A>        <FONT ID="Private">private</FONT> String REGEXPMARKER2        = ComTest.REGEXPMARKER2;
+<A NAME="565"></A>        <FONT ID="Private">private</FONT> String TOLERANCE            = ComTest.TOLERANCE;
+<A NAME="566"></A>        <FONT ID="Private">private</FONT> String THROWSMARKER         = ComTest.THROWSMARKER;
+<A NAME="567"></A>        <FONT ID="Private">private</FONT> String IMPORTMARKER         = ComTest.IMPORTMARKER;
+<A NAME="568"></A>        <FONT ID="Private">private</FONT> String PACKAGEMARKER        = ComTest.PACKAGEMARKER;
+<A NAME="569"></A>        <FONT ID="Private">private</FONT> String DIRECTORYMARKER      = ComTest.DIRECTORYMARKER;
+<A NAME="570"></A>        <FONT ID="Private">private</FONT> String BEFORETESTCLASS      = ComTest.BEFORETESTCLASS;
+<A NAME="571"></A>        <FONT ID="Private">private</FONT> String JUNITIMPORTS         = ComTest.JUNITIMPORTS;
+<A NAME="572"></A>        
+<A NAME="573"></A>
+<A NAME="574"></A>        <FONT ID="FormalComment">/**
+<A NAME="575"></A>         * Constructs the new ComTestScanner from stringlist contents
+<A NAME="576"></A>         * @param contents where to scan the comment tests
+<A NAME="577"></A>         */</FONT>
+<A NAME="578"></A>        ComTestScanner(<A HREF="../comtest/Strings.java.html">Strings</A> contents) { 
+<A NAME="579"></A>            <FONT ID="This">this</FONT>.contents = contents;
+<A NAME="580"></A>            outlines = <FONT ID="New">new</FONT> <A HREF="../comtest/Strings.java.html">Strings</A>();
+<A NAME="581"></A>        }
+<A NAME="582"></A>
+<A NAME="583"></A>
+<A NAME="584"></A>        
+<A NAME="585"></A>        <FONT ID="FormalComment">/**
+<A NAME="586"></A>         * Checks if s is for setting imports.  If is, then true
+<A NAME="587"></A>         * is returned and the import is handled.
+<A NAME="588"></A>         * @param line line to check
+<A NAME="589"></A>         * @return true if import line, false otherwise 
+<A NAME="590"></A>         */</FONT>
+<A NAME="591"></A>        <FONT ID="Private">private</FONT> <FONT ID="Boolean">boolean</FONT> handleImports(String line) { <FONT ID="SingleLineComment">// NOPMD by vesal on 13.1.2008 21:05
+<A NAME="592"></A></FONT>            String s = line.trim();
+<A NAME="593"></A>            
+<A NAME="594"></A>            <FONT ID="If">if</FONT> ( indexOfNotInQuotes(s,NOIMPORT) == <FONT ID="IntegerLiteral">0</FONT> ) {
+<A NAME="595"></A>                imports.clear();
+<A NAME="596"></A>                doStaticImport = <FONT ID="False">false</FONT>;
+<A NAME="597"></A>                <FONT ID="SingleLineComment">// noAutoImport = true;
+<A NAME="598"></A></FONT>                fullAutoImport = <FONT ID="False">false</FONT>;
+<A NAME="599"></A>                <FONT ID="If">if</FONT> ( indexOfNotInQuotes(s, <FONT ID="StringLiteral">"=all"</FONT>) &gt; <FONT ID="IntegerLiteral">0</FONT> ) noImportAtAll = <FONT ID="True">true</FONT>; 
+<A NAME="600"></A>                <FONT ID="Return">return</FONT> <FONT ID="True">true</FONT>;
+<A NAME="601"></A>            }
+<A NAME="602"></A>            <FONT ID="If">if</FONT> ( indexOfNotInQuotes(s,STATICIMPORT) == <FONT ID="IntegerLiteral">0</FONT> ) {
+<A NAME="603"></A>                doStaticImport = <FONT ID="True">true</FONT>;
+<A NAME="604"></A>                <FONT ID="SingleLineComment">// noAutoImport = true;
+<A NAME="605"></A></FONT>                fullAutoImport = <FONT ID="False">false</FONT>;
+<A NAME="606"></A>                <FONT ID="Return">return</FONT> <FONT ID="True">true</FONT>;
+<A NAME="607"></A>            }
+<A NAME="608"></A>            <FONT ID="If">if</FONT> ( indexOfNotInQuotes(s,DYNAMICIMPORT) == <FONT ID="IntegerLiteral">0</FONT> ) {
+<A NAME="609"></A>                <FONT ID="If">if</FONT> ( originalPackageName.length() == <FONT ID="IntegerLiteral">0</FONT>) <FONT ID="Return">return</FONT> <FONT ID="True">true</FONT>; 
+<A NAME="610"></A>                imports.add(JAVAIMPOPRT + originalPackageName + <FONT ID="StringLiteral">"."</FONT> + className + <FONT ID="StringLiteral">".*;"</FONT>);
+<A NAME="611"></A>                <FONT ID="SingleLineComment">// noAutoImport = true;
+<A NAME="612"></A></FONT>                fullAutoImport = <FONT ID="False">false</FONT>;
+<A NAME="613"></A>                <FONT ID="Return">return</FONT> <FONT ID="True">true</FONT>;
+<A NAME="614"></A>            }
+<A NAME="615"></A>            <FONT ID="If">if</FONT> ( indexOfNotInQuotes(s,CLASSIMPORT) == <FONT ID="IntegerLiteral">0</FONT> ) {
+<A NAME="616"></A>                <FONT ID="If">if</FONT> ( originalPackageName.length() == <FONT ID="IntegerLiteral">0</FONT>) <FONT ID="Return">return</FONT> <FONT ID="True">true</FONT>; 
+<A NAME="617"></A>                imports.add(JAVAIMPOPRT + originalPackageName + <FONT ID="StringLiteral">"."</FONT> + className +<FONT ID="StringLiteral">";"</FONT>);
+<A NAME="618"></A>                <FONT ID="SingleLineComment">// noAutoImport = true;
+<A NAME="619"></A></FONT>                fullAutoImport = <FONT ID="False">false</FONT>;
+<A NAME="620"></A>                <FONT ID="Return">return</FONT> <FONT ID="True">true</FONT>;
+<A NAME="621"></A>            }
+<A NAME="622"></A>            <FONT ID="If">if</FONT> ( indexOfNotInQuotes(s,PACKAGEIMPORT) == <FONT ID="IntegerLiteral">0</FONT> ) {
+<A NAME="623"></A>                <FONT ID="If">if</FONT> ( originalPackageName.length() == <FONT ID="IntegerLiteral">0</FONT>) <FONT ID="Return">return</FONT> <FONT ID="True">true</FONT>; 
+<A NAME="624"></A>                imports.add(JAVAIMPOPRT + originalPackageName + <FONT ID="StringLiteral">".*;"</FONT>);
+<A NAME="625"></A>                <FONT ID="SingleLineComment">// noAutoImport = true;
+<A NAME="626"></A></FONT>                <FONT ID="SingleLineComment">// fullAutoImport = false;
+<A NAME="627"></A></FONT>                <FONT ID="Return">return</FONT> <FONT ID="True">true</FONT>;
+<A NAME="628"></A>            }
+<A NAME="629"></A>            <FONT ID="If">if</FONT> ( indexOfNotInQuotes(s, IMPORTMARKER) == <FONT ID="IntegerLiteral">0</FONT> ) {
+<A NAME="630"></A>                String imp = s.substring(IMPORTMARKER.length()+<FONT ID="IntegerLiteral">1</FONT>).trim();
+<A NAME="631"></A>                imports.add(JAVAIMPOPRT + imp);
+<A NAME="632"></A>                <FONT ID="SingleLineComment">// noAutoImport = true;
+<A NAME="633"></A></FONT>                <FONT ID="Return">return</FONT> <FONT ID="True">true</FONT>;
+<A NAME="634"></A>            }
+<A NAME="635"></A>            
+<A NAME="636"></A>            <FONT ID="Return">return</FONT> <FONT ID="False">false</FONT>;
+<A NAME="637"></A>        }
+<A NAME="638"></A>
+<A NAME="639"></A>        <FONT ID="FormalComment">/**
+<A NAME="640"></A>         * Handles directory and package specific lines
+<A NAME="641"></A>         * @param line line to handle
+<A NAME="642"></A>         * @return true if handled
+<A NAME="643"></A>         */</FONT>
+<A NAME="644"></A>        <FONT ID="Private">private</FONT> <FONT ID="Boolean">boolean</FONT> handleDirAndPackage(String line) {
+<A NAME="645"></A>            String s = line.trim();
+<A NAME="646"></A>            <FONT ID="If">if</FONT> ( indexOfNotInQuotes(s, DIRECTORYMARKER) == <FONT ID="IntegerLiteral">0</FONT> ) {
+<A NAME="647"></A>                directory = s.substring(DIRECTORYMARKER.length()).trim();
+<A NAME="648"></A>                <FONT ID="Return">return</FONT> <FONT ID="True">true</FONT>;
+<A NAME="649"></A>            }
+<A NAME="650"></A>            
+<A NAME="651"></A>            <FONT ID="If">if</FONT> ( indexOfNotInQuotes(s, PACKAGEMARKER) == <FONT ID="IntegerLiteral">0</FONT> ) {
+<A NAME="652"></A>                packageName = s.substring(PACKAGEMARKER.length()).trim();
+<A NAME="653"></A>                <FONT ID="Return">return</FONT> <FONT ID="True">true</FONT>;
+<A NAME="654"></A>            }
+<A NAME="655"></A>            <FONT ID="Return">return</FONT> <FONT ID="False">false</FONT>;
+<A NAME="656"></A>        }
+<A NAME="657"></A>        
+<A NAME="658"></A>        
+<A NAME="659"></A>
+<A NAME="660"></A>        <FONT ID="FormalComment">/**
+<A NAME="661"></A>         * Check if s is a substitution to specified variable
+<A NAME="662"></A>         * @param s        string to looks for
+<A NAME="663"></A>         * @param varName  varName to look
+<A NAME="664"></A>         * @return         new value for variable, null if not variable
+<A NAME="665"></A>         */</FONT>
+<A NAME="666"></A>        <FONT ID="Private">private</FONT> String checkVariable(String s, String varName) {
+<A NAME="667"></A>            <FONT ID="If">if</FONT> ( !s.startsWith(<FONT ID="StringLiteral">"#"</FONT>+varName+<FONT ID="StringLiteral">"="</FONT>) ) <FONT ID="Return">return</FONT> <FONT ID="Null">null</FONT>;
+<A NAME="668"></A>            String val = s.substring(varName.length()+<FONT ID="IntegerLiteral">2</FONT>).trim();
+<A NAME="669"></A>            val = val.replace(<FONT ID="StringLiteral">"\""</FONT>, <FONT ID="StringLiteral">""</FONT>);
+<A NAME="670"></A>            val = val.replace(<FONT ID="StringLiteral">"'"</FONT>, <FONT ID="StringLiteral">""</FONT>);
+<A NAME="671"></A>            <FONT ID="Return">return</FONT> val;
+<A NAME="672"></A>        }
+<A NAME="673"></A>        
+<A NAME="674"></A>        <FONT ID="FormalComment">/**
+<A NAME="675"></A>         * Check if s is a substitution to specified variable.  Retain Quotes
+<A NAME="676"></A>         * @param s        string to looks for
+<A NAME="677"></A>         * @param varName  varName to look
+<A NAME="678"></A>         * @return         new value for variable, null if not variable
+<A NAME="679"></A>         */</FONT>
+<A NAME="680"></A>        <FONT ID="Private">private</FONT> String checkVariableQ(String s, String varName) {
+<A NAME="681"></A>            <FONT ID="If">if</FONT> ( !s.startsWith(<FONT ID="StringLiteral">"#"</FONT>+varName+<FONT ID="StringLiteral">"="</FONT>) ) <FONT ID="Return">return</FONT> <FONT ID="Null">null</FONT>;
+<A NAME="682"></A>            String val = s.substring(varName.length()+<FONT ID="IntegerLiteral">2</FONT>).trim();
+<A NAME="683"></A>            <FONT ID="Return">return</FONT> val;
+<A NAME="684"></A>        }
+<A NAME="685"></A>        
+<A NAME="686"></A>        <FONT ID="FormalComment">/**
+<A NAME="687"></A>         * Check if d is substitution to any know variable
+<A NAME="688"></A>         * @param st string to check
+<A NAME="689"></A>         * @return true if any variable, false otherwise
+<A NAME="690"></A>         */</FONT>
+<A NAME="691"></A>        <FONT ID="Private">private</FONT> <FONT ID="Boolean">boolean</FONT> checkVariables(String st) { <FONT ID="SingleLineComment">// NOPMD by vesal on 13.1.2008 15:29
+<A NAME="692"></A></FONT>            String val;
+<A NAME="693"></A>            String s = removeAllAfter(st,<FONT ID="StringLiteral">";"</FONT>).trim();
+<A NAME="694"></A>            val = checkVariable(s,<FONT ID="StringLiteral">"COLUMNSEPARATOR"</FONT>     ); <FONT ID="If">if</FONT> ( val != <FONT ID="Null">null</FONT> ) { COLUMNSEPARATOR      = val; <FONT ID="Return">return</FONT> <FONT ID="True">true</FONT>; }
+<A NAME="695"></A>            val = checkVariable(s,<FONT ID="StringLiteral">"TEMPLATELINEMARKER"</FONT>  ); <FONT ID="If">if</FONT> ( val != <FONT ID="Null">null</FONT> ) { TEMPLATELINEMARKER   = val; <FONT ID="Return">return</FONT> <FONT ID="True">true</FONT>; }
+<A NAME="696"></A>            val = checkVariable(s,<FONT ID="StringLiteral">"DELETESENTENCEMARKER"</FONT>); <FONT ID="If">if</FONT> ( val != <FONT ID="Null">null</FONT> ) { DELETESENTENCEMARKER = val; <FONT ID="Return">return</FONT> <FONT ID="True">true</FONT>; }
+<A NAME="697"></A>            val = checkVariable(s,<FONT ID="StringLiteral">"COLUMNCHAR"</FONT>          ); <FONT ID="If">if</FONT> ( val != <FONT ID="Null">null</FONT> ) { COLUMNCHAR           = val; <FONT ID="Return">return</FONT> <FONT ID="True">true</FONT>; }
+<A NAME="698"></A>            val = checkVariable(s,<FONT ID="StringLiteral">"INITLINE"</FONT>            ); <FONT ID="If">if</FONT> ( val != <FONT ID="Null">null</FONT> ) { INITLINE             = val; <FONT ID="Return">return</FONT> <FONT ID="True">true</FONT>; }
+<A NAME="699"></A>            val = checkVariable(s,<FONT ID="StringLiteral">"EVERYLINEINITS1"</FONT>     ); <FONT ID="If">if</FONT> ( val != <FONT ID="Null">null</FONT> ) { EVERYLINEINITS1      = val; <FONT ID="Return">return</FONT> <FONT ID="True">true</FONT>; }
+<A NAME="700"></A>            val = checkVariable(s,<FONT ID="StringLiteral">"EVERYLINEINITS2"</FONT>     ); <FONT ID="If">if</FONT> ( val != <FONT ID="Null">null</FONT> ) { EVERYLINEINITS2      = val; <FONT ID="Return">return</FONT> <FONT ID="True">true</FONT>; }
+<A NAME="701"></A>            val = checkVariable(s,<FONT ID="StringLiteral">"EQUALSMARKER"</FONT>        ); <FONT ID="If">if</FONT> ( val != <FONT ID="Null">null</FONT> ) { EQUALSMARKER         = val; <FONT ID="Return">return</FONT> <FONT ID="True">true</FONT>; }
+<A NAME="702"></A>            val = checkVariable(s,<FONT ID="StringLiteral">"EQUALSMARKER2"</FONT>       ); <FONT ID="If">if</FONT> ( val != <FONT ID="Null">null</FONT> ) { EQUALSMARKER2        = val; <FONT ID="Return">return</FONT> <FONT ID="True">true</FONT>; }
+<A NAME="703"></A>            val = checkVariable(s,<FONT ID="StringLiteral">"ALMOSTMARKER1"</FONT>       ); <FONT ID="If">if</FONT> ( val != <FONT ID="Null">null</FONT> ) { ALMOSTMARKER1        = val; <FONT ID="Return">return</FONT> <FONT ID="True">true</FONT>; }
+<A NAME="704"></A>            val = checkVariable(s,<FONT ID="StringLiteral">"ALMOSTMARKER2"</FONT>       ); <FONT ID="If">if</FONT> ( val != <FONT ID="Null">null</FONT> ) { ALMOSTMARKER2        = val; <FONT ID="Return">return</FONT> <FONT ID="True">true</FONT>; }
+<A NAME="705"></A>            val = checkVariable(s,<FONT ID="StringLiteral">"REGEXPMARKER1"</FONT>       ); <FONT ID="If">if</FONT> ( val != <FONT ID="Null">null</FONT> ) { REGEXPMARKER1        = val; <FONT ID="Return">return</FONT> <FONT ID="True">true</FONT>; }
+<A NAME="706"></A>            val = checkVariable(s,<FONT ID="StringLiteral">"REGEXPMARKER2"</FONT>       ); <FONT ID="If">if</FONT> ( val != <FONT ID="Null">null</FONT> ) { REGEXPMARKER2        = val; <FONT ID="Return">return</FONT> <FONT ID="True">true</FONT>; }
+<A NAME="707"></A>            val = checkVariable(s,<FONT ID="StringLiteral">"TOLERANCE"</FONT>           ); <FONT ID="If">if</FONT> ( val != <FONT ID="Null">null</FONT> ) { TOLERANCE            = val; <FONT ID="Return">return</FONT> <FONT ID="True">true</FONT>;}
+<A NAME="708"></A>            val = checkVariable(s,<FONT ID="StringLiteral">"THROWSMARKER"</FONT>        ); <FONT ID="If">if</FONT> ( val != <FONT ID="Null">null</FONT> ) { THROWSMARKER         = val; <FONT ID="Return">return</FONT> <FONT ID="True">true</FONT>; }
+<A NAME="709"></A>            val = checkVariable(s,<FONT ID="StringLiteral">"IMPORTMARKER"</FONT>        ); <FONT ID="If">if</FONT> ( val != <FONT ID="Null">null</FONT> ) { IMPORTMARKER         = val; <FONT ID="Return">return</FONT> <FONT ID="True">true</FONT>; }
+<A NAME="710"></A>            val = checkVariable(s,<FONT ID="StringLiteral">"PACKAGEMARKER"</FONT>       ); <FONT ID="If">if</FONT> ( val != <FONT ID="Null">null</FONT> ) { PACKAGEMARKER        = val; <FONT ID="Return">return</FONT> <FONT ID="True">true</FONT>; }
+<A NAME="711"></A>            val = checkVariable(s,<FONT ID="StringLiteral">"DIRECTORYMARKER"</FONT>     ); <FONT ID="If">if</FONT> ( val != <FONT ID="Null">null</FONT> ) { DIRECTORYMARKER      = val; <FONT ID="Return">return</FONT> <FONT ID="True">true</FONT>; }
+<A NAME="712"></A>            val = checkVariableQ(s,<FONT ID="StringLiteral">"BEFORETESTCLASS"</FONT>    ); <FONT ID="If">if</FONT> ( val != <FONT ID="Null">null</FONT> ) { BEFORETESTCLASS      = val; <FONT ID="Return">return</FONT> <FONT ID="True">true</FONT>; }
+<A NAME="713"></A>            val = checkVariableQ(s,<FONT ID="StringLiteral">"JUNITIMPORTS"</FONT>       ); <FONT ID="If">if</FONT> ( val != <FONT ID="Null">null</FONT> ) { JUNITIMPORTS         = val; <FONT ID="Return">return</FONT> <FONT ID="True">true</FONT>; }
+<A NAME="714"></A>            <FONT ID="Return">return</FONT> <FONT ID="False">false</FONT>;
+<A NAME="715"></A>        }
+<A NAME="716"></A>
+<A NAME="717"></A>
+<A NAME="718"></A>        <FONT ID="FormalComment">/**
+<A NAME="719"></A>         * Add string s to outlines 
+<A NAME="720"></A>         * @param s
+<A NAME="721"></A>         */</FONT>
+<A NAME="722"></A>        <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> addOut(String s) {
+<A NAME="723"></A>            outlines.add(s);
+<A NAME="724"></A>        }
+<A NAME="725"></A>
+<A NAME="726"></A>        <FONT ID="FormalComment">/**
+<A NAME="727"></A>         * Add string s to outlines with new line
+<A NAME="728"></A>         * @param s
+<A NAME="729"></A>         */</FONT>
+<A NAME="730"></A>        <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> addOutln(String s) {
+<A NAME="731"></A>            outlines.add(s+<FONT ID="StringLiteral">"\n"</FONT>);
+<A NAME="732"></A>        }
+<A NAME="733"></A>        
+<A NAME="734"></A>        <FONT ID="FormalComment">/**
+<A NAME="735"></A>         * Add strings from list to outlines by separating from new line
+<A NAME="736"></A>         * @param list strings to add
+<A NAME="737"></A>         */</FONT>
+<A NAME="738"></A>        <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> addOut(<A HREF="../comtest/Strings.java.html">Strings</A> list) {
+<A NAME="739"></A>            <FONT ID="For">for</FONT> (String s:list) addOut(s);
+<A NAME="740"></A>        }
+<A NAME="741"></A>
+<A NAME="742"></A>        <FONT ID="FormalComment">/**
+<A NAME="743"></A>         * Prints the stringlist by replacing target-strings by replacement strings
+<A NAME="744"></A>         * @param out     stream to print
+<A NAME="745"></A>         * @param list    stringlist to print
+<A NAME="746"></A>         * @param sep     string to separate items 
+<A NAME="747"></A>         */</FONT>
+<A NAME="748"></A>        <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> println(PrintWriter out, <A HREF="../comtest/Strings.java.html">Strings</A> list, String sep) {
+<A NAME="749"></A>            <FONT ID="For">for</FONT> (String s:list) out.print(s+sep);
+<A NAME="750"></A>        }
+<A NAME="751"></A>        
+<A NAME="752"></A>        
+<A NAME="753"></A>        <FONT ID="FormalComment">/**
+<A NAME="754"></A>         * Prints the stringlist by replacing target-strings by replacement strings
+<A NAME="755"></A>         * Separator is not printed after last line
+<A NAME="756"></A>         * @param list    stringlist to print
+<A NAME="757"></A>         * @param target  string that is replaced 
+<A NAME="758"></A>         * @param replacement string by what to replace
+<A NAME="759"></A>         */</FONT>
+<A NAME="760"></A>        <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> addOut(<A HREF="../comtest/Strings.java.html">Strings</A> list, String target, String replacement) {
+<A NAME="761"></A>            <FONT ID="If">if</FONT> ( list.size() == <FONT ID="IntegerLiteral">0</FONT> ) <FONT ID="Return">return</FONT>;
+<A NAME="762"></A>            <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> i=<FONT ID="IntegerLiteral">0</FONT>; i&lt;list.size();i++) 
+<A NAME="763"></A>                addOut(list.get(i).replace(target, replacement));
+<A NAME="764"></A>        }
+<A NAME="765"></A>        
+<A NAME="766"></A>        <FONT ID="FormalComment">/**
+<A NAME="767"></A>         * Deletes from the list all lines that contains target
+<A NAME="768"></A>         * outside of quotes and comments
+<A NAME="769"></A>         * @param list   where to delete
+<A NAME="770"></A>         * @param target what is condition for delete
+<A NAME="771"></A>         * @return the list itself
+<A NAME="772"></A>         */</FONT>
+<A NAME="773"></A>        <FONT ID="Private">private</FONT> <A HREF="../comtest/Strings.java.html">Strings</A> delete(<A HREF="../comtest/Strings.java.html">Strings</A> list, String target, String quotes) {
+<A NAME="774"></A>           <FONT ID="Int">int</FONT> ir,iw = <FONT ID="IntegerLiteral">0</FONT>; 
+<A NAME="775"></A>           <FONT ID="For">for</FONT> (ir=<FONT ID="IntegerLiteral">0</FONT>; ir&lt;list.size(); ir++) {
+<A NAME="776"></A>               String s = list.get(ir);
+<A NAME="777"></A>               <FONT ID="Int">int</FONT> p = indexOfNotInQuotes(s, target, quotes);
+<A NAME="778"></A>               <FONT ID="Int">int</FONT> pc = indexOfNotInQuotes(s, <FONT ID="StringLiteral">"//"</FONT>, quotes);
+<A NAME="779"></A>               <FONT ID="SingleLineComment">// int p = s.indexOf(target);
+<A NAME="780"></A></FONT>               <FONT ID="If">if</FONT> ( p &lt; <FONT ID="IntegerLiteral">0</FONT> || ( <FONT ID="IntegerLiteral">0</FONT> &lt;= pc  &amp;&amp; pc &lt; p ) ) list.set(iw++, s);
+<A NAME="781"></A>           }
+<A NAME="782"></A>           <FONT ID="If">if</FONT> ( ir != iw ) list.removeRange(iw,ir);
+<A NAME="783"></A>           <FONT ID="Return">return</FONT> list;
+<A NAME="784"></A>        }
+<A NAME="785"></A>        
+<A NAME="786"></A>        
+<A NAME="787"></A>        <FONT ID="FormalComment">/**
+<A NAME="788"></A>         * This method is just for testing purposes to return
+<A NAME="789"></A>         * current outlines.
+<A NAME="790"></A>         * @return current outlines.
+<A NAME="791"></A>         */</FONT>
+<A NAME="792"></A>        <FONT ID="Public">public</FONT> <A HREF="../comtest/Strings.java.html">Strings</A> getOutlines() {
+<A NAME="793"></A>            <FONT ID="Return">return</FONT> outlines;
+<A NAME="794"></A>        }
+<A NAME="795"></A>        
+<A NAME="796"></A>        <FONT ID="FormalComment">/**
+<A NAME="797"></A>         * This factory method is just for testing purposes
+<A NAME="798"></A>         * @return a new handler
+<A NAME="799"></A>         */</FONT>
+<A NAME="800"></A>        <FONT ID="Public">public</FONT> CommentCodeHandler createCommentCodeHandler() {
+<A NAME="801"></A>            <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> CommentCodeHandler(); 
+<A NAME="802"></A>        }
+<A NAME="803"></A>        
+<A NAME="804"></A>        <FONT ID="FormalComment">/**
+<A NAME="805"></A>         * Handles to ComTest-comment and returns the position
+<A NAME="806"></A>         * of last handled line. 
+<A NAME="807"></A>         * The main method is readCode and all others are just helper
+<A NAME="808"></A>         * methods to handle the lines. 
+<A NAME="809"></A>         * Precondition: inside JavaDoc comment
+<A NAME="810"></A>         * Postcondition: still inside JavaDoc comment 
+<A NAME="811"></A>         */</FONT>
+<A NAME="812"></A>        <FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> CommentCodeHandler { <FONT ID="SingleLineComment">// NOPMD by vesal on 13.1.2008 15:29
+<A NAME="813"></A></FONT>            <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Final">final</FONT> String javaShortComment = <FONT ID="StringLiteral">"  // "</FONT>;
+<A NAME="814"></A>            <FONT ID="Private">private</FONT> <FONT ID="Int">int</FONT> lineNr;
+<A NAME="815"></A>            <FONT ID="Private">private</FONT> String methodName = <FONT ID="Null">null</FONT>;
+<A NAME="816"></A>            <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> <A HREF="../comtest/Strings.java.html">Strings</A> template = <FONT ID="New">new</FONT> <A HREF="../comtest/Strings.java.html">Strings</A>();
+<A NAME="817"></A>            <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> <A HREF="../comtest/Strings.java.html">Strings</A> initCmds = <FONT ID="New">new</FONT> <A HREF="../comtest/Strings.java.html">Strings</A>();
+<A NAME="818"></A>            <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> <A HREF="../comtest/Strings.java.html">Strings</A> methodHeader = <FONT ID="New">new</FONT> <A HREF="../comtest/Strings.java.html">Strings</A>();
+<A NAME="819"></A>            <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> <A HREF="../comtest/Strings.java.html">Strings</A> methodFooter = <FONT ID="New">new</FONT> <A HREF="../comtest/Strings.java.html">Strings</A>();
+<A NAME="820"></A>            <FONT ID="Private">private</FONT> <FONT ID="Boolean">boolean</FONT> methodHeaderPrinted = <FONT ID="False">false</FONT>;
+<A NAME="821"></A>            <FONT ID="Private">private</FONT> <FONT ID="Int">int</FONT> methodIndex = <FONT ID="IntegerLiteral">1</FONT>;
+<A NAME="822"></A>            <FONT ID="Private">private</FONT> String sMethodIndex = <FONT ID="StringLiteral">""</FONT>;
+<A NAME="823"></A>            <FONT ID="Private">private</FONT> <A HREF="../comtest/Strings.java.html">Strings</A> vars = <FONT ID="Null">null</FONT>;
+<A NAME="824"></A>            <FONT ID="Private">private</FONT> <A HREF="../comtest/Strings.java.html">Strings</A> values = <FONT ID="Null">null</FONT>;
+<A NAME="825"></A>            <FONT ID="Private">private</FONT> <FONT ID="Int">int</FONT> initLine = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="826"></A>            <FONT ID="Private">private</FONT> <FONT ID="Boolean">boolean</FONT> everyLineInits = <FONT ID="False">false</FONT>; 
+<A NAME="827"></A>            <FONT ID="Private">private</FONT> <FONT ID="Boolean">boolean</FONT> tablePrinted = <FONT ID="False">false</FONT>;
+<A NAME="828"></A>            <FONT ID="Private">private</FONT> <FONT ID="Boolean">boolean</FONT> oneTablePrinted = <FONT ID="False">false</FONT>;
+<A NAME="829"></A>            <FONT ID="Private">private</FONT> <FONT ID="Boolean">boolean</FONT> rawMode = <FONT ID="False">false</FONT>;
+<A NAME="830"></A>            <FONT ID="Private">private</FONT> String baseIndent = <FONT ID="StringLiteral">"  "</FONT>;
+<A NAME="831"></A>            <FONT ID="Private">private</FONT> String indent = baseIndent;
+<A NAME="832"></A>            <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> <A HREF="../comtest/Strings.java.html">Strings</A> startOfLine = <FONT ID="New">new</FONT> <A HREF="../comtest/Strings.java.html">Strings</A>();
+<A NAME="833"></A>            <FONT ID="Private">private</FONT> <FONT ID="Final">final</FONT> <A HREF="../comtest/Strings.java.html">Strings</A> endOfLine = <FONT ID="New">new</FONT> <A HREF="../comtest/Strings.java.html">Strings</A>();
+<A NAME="834"></A>            <FONT ID="Private">private</FONT> String methodThrows = <FONT ID="StringLiteral">""</FONT>;
+<A NAME="835"></A>            
+<A NAME="836"></A>
+<A NAME="837"></A>            <FONT ID="FormalComment">/**
+<A NAME="838"></A>             * This is just for testing purposes to return the initCmds
+<A NAME="839"></A>             * @return initCmnds
+<A NAME="840"></A>             */</FONT>
+<A NAME="841"></A>            <FONT ID="Public">public</FONT> <A HREF="../comtest/Strings.java.html">Strings</A> getInitCmnds() {
+<A NAME="842"></A>                <FONT ID="Return">return</FONT> initCmds;
+<A NAME="843"></A>            }
+<A NAME="844"></A>            
+<A NAME="845"></A>            
+<A NAME="846"></A>            <FONT ID="FormalComment">/**
+<A NAME="847"></A>             * Try to find name for next method.  If no name is found, then
+<A NAME="848"></A>             * a sequence number is used. 
+<A NAME="849"></A>             * This is very unfinished and works only for nice code
+<A NAME="850"></A>             * where the method name and type is on the same line.
+<A NAME="851"></A>             * @param contents where to find the name
+<A NAME="852"></A>             * @param lineNr where to start
+<A NAME="853"></A>             * @return test method name
+<A NAME="854"></A>             */</FONT>
+<A NAME="855"></A>            <FONT ID="Public">public</FONT> String tryToFindMethodName(<A HREF="../comtest/Strings.java.html">Strings</A> contents, <FONT ID="Int">int</FONT> lineNr) { <FONT ID="SingleLineComment">// NOPMD by vesal on 13.1.2008 15:29
+<A NAME="856"></A></FONT>                String autoNumber = <FONT ID="StringLiteral">""</FONT>+(lineNr+<FONT ID="IntegerLiteral">1</FONT>);
+<A NAME="857"></A>                String name;
+<A NAME="858"></A>                String type=<FONT ID="StringLiteral">""</FONT>;
+<A NAME="859"></A>                <FONT ID="Boolean">boolean</FONT> mayneedStatic = <FONT ID="False">false</FONT>;
+<A NAME="860"></A>                <FONT ID="Boolean">boolean</FONT> isClass = <FONT ID="False">false</FONT>;
+<A NAME="861"></A>                <FONT ID="Boolean">boolean</FONT> inComment = <FONT ID="True">true</FONT>; 
+<A NAME="862"></A>                <FONT ID="For">for</FONT> ( <FONT ID="Int">int</FONT> i=lineNr; i&lt;contents.size(); i++ ) {
+<A NAME="863"></A>                    StringBuilder sb = <FONT ID="New">new</FONT> StringBuilder(contents.get(i));
+<A NAME="864"></A>                    removeAllAfter(sb, <FONT ID="StringLiteral">"//"</FONT>); trim(sb);
+<A NAME="865"></A>                    <FONT ID="If">if</FONT> ( sb.length() == <FONT ID="IntegerLiteral">0</FONT> ) <FONT ID="Continue">continue</FONT>;
+<A NAME="866"></A>                    <FONT ID="If">if</FONT> ( indexOfNotInQuotes(sb,<FONT ID="StringLiteral">"/*"</FONT>) &gt;= <FONT ID="IntegerLiteral">0</FONT> ) { inComment = <FONT ID="True">true</FONT>; <FONT ID="Continue">continue</FONT>; }
+<A NAME="867"></A>                    <FONT ID="If">if</FONT> ( indexOfNotInQuotes(sb,<FONT ID="StringLiteral">"*/"</FONT>) &gt;= <FONT ID="IntegerLiteral">0</FONT> ) { inComment = <FONT ID="False">false</FONT>; <FONT ID="Continue">continue</FONT>; }
+<A NAME="868"></A>                    <FONT ID="If">if</FONT> ( inComment ) <FONT ID="Continue">continue</FONT>;
+<A NAME="869"></A>                    remove(sb,<FONT ID="StringLiteral">"public"</FONT>);
+<A NAME="870"></A>                    remove(sb,<FONT ID="StringLiteral">"protected"</FONT>);
+<A NAME="871"></A>                    remove(sb,<FONT ID="StringLiteral">"private"</FONT>);
+<A NAME="872"></A>                    <FONT ID="If">if</FONT> ( remove(sb,<FONT ID="StringLiteral">"static"</FONT>) ) mayneedStatic = <FONT ID="True">true</FONT>; 
+<A NAME="873"></A>                    remove(sb,<FONT ID="StringLiteral">"final"</FONT>);
+<A NAME="874"></A>                    <FONT ID="If">if</FONT> ( remove(sb,<FONT ID="StringLiteral">"class"</FONT>) ) isClass = <FONT ID="True">true</FONT>;
+<A NAME="875"></A>                    removeAllAfter(sb,<FONT ID="StringLiteral">"extends"</FONT>);
+<A NAME="876"></A>                    removeAllAfter(sb,<FONT ID="StringLiteral">"implements"</FONT>);
+<A NAME="877"></A>                    String s = sb.toString(); 
+<A NAME="878"></A>                    s = s.replaceAll(<FONT ID="StringLiteral">"@.[^\\s]*\\s*"</FONT>,<FONT ID="StringLiteral">""</FONT>); <FONT ID="SingleLineComment">// Remove annotations
+<A NAME="879"></A></FONT>                    s = s.trim();
+<A NAME="880"></A>                    <FONT ID="If">if</FONT> ( s.length() == <FONT ID="IntegerLiteral">0</FONT> ) <FONT ID="Continue">continue</FONT>;
+<A NAME="881"></A>                    <FONT ID="Int">int</FONT> p = s.indexOf(<FONT ID="CharacerLiteral">' '</FONT>);
+<A NAME="882"></A>                    <FONT ID="If">if</FONT> ( p &gt;= <FONT ID="IntegerLiteral">0</FONT> ) { type = s.substring(<FONT ID="IntegerLiteral">0</FONT>,p); s = s.substring(p+<FONT ID="IntegerLiteral">1</FONT>); }
+<A NAME="883"></A>                    <FONT ID="Int">int</FONT> ic;
+<A NAME="884"></A>                    <FONT ID="For">for</FONT> ( ic=<FONT ID="IntegerLiteral">0</FONT>; ic&lt;s.length(); ic++)
+<A NAME="885"></A>                        <FONT ID="If">if</FONT> ( !Character.isJavaIdentifierPart(s.charAt(ic)) ) <FONT ID="Break">break</FONT>;
+<A NAME="886"></A>                    name = s.substring(<FONT ID="IntegerLiteral">0</FONT>,ic);
+<A NAME="887"></A>                    <FONT ID="If">if</FONT> ( name.length() == <FONT ID="IntegerLiteral">0</FONT> ) name = type; 
+<A NAME="888"></A>                    <FONT ID="If">if</FONT> ( name.length() == <FONT ID="IntegerLiteral">0</FONT> ) <FONT ID="Return">return</FONT> TEST + autoNumber;
+<A NAME="889"></A>                    name = Character.toUpperCase(name.charAt(<FONT ID="IntegerLiteral">0</FONT>)) + name.substring(<FONT ID="IntegerLiteral">1</FONT>);
+<A NAME="890"></A>                    <FONT ID="If">if</FONT> ( !isClass &amp;&amp;  mayneedStatic ) needsStaticImport = <FONT ID="True">true</FONT>;
+<A NAME="891"></A>                    <FONT ID="Else">else</FONT> needsClassImport = <FONT ID="True">true</FONT>;
+<A NAME="892"></A>                    <FONT ID="Return">return</FONT> TEST + name + autoNumber;
+<A NAME="893"></A>                }
+<A NAME="894"></A>                <FONT ID="Return">return</FONT> TEST + autoNumber;
+<A NAME="895"></A>            }
+<A NAME="896"></A>
+<A NAME="897"></A>            
+<A NAME="898"></A>            <FONT ID="FormalComment">/**
+<A NAME="899"></A>             * Check if line is THROWS line.  If it is, correct
+<A NAME="900"></A>             * the start and end lists as needed.
+<A NAME="901"></A>             * @param s line to look.
+<A NAME="902"></A>             * @return line without THROWS sentence
+<A NAME="903"></A>             */</FONT>
+<A NAME="904"></A>            <FONT ID="Private">private</FONT> String checkThrows(String s) {
+<A NAME="905"></A>                <FONT ID="Int">int</FONT> p = indexOfNotInQuotes(s, THROWSMARKER);
+<A NAME="906"></A>                <FONT ID="If">if</FONT> ( p &lt; <FONT ID="IntegerLiteral">0</FONT> ) <FONT ID="Return">return</FONT> s;
+<A NAME="907"></A>                indent = baseIndent + <FONT ID="StringLiteral">""</FONT>;
+<A NAME="908"></A>                String sentence = s.substring(<FONT ID="IntegerLiteral">0</FONT>,p);
+<A NAME="909"></A>                String exception = s.substring(p+THROWSMARKER.length()).trim();
+<A NAME="910"></A>                startOfLine.add(<FONT ID="IntegerLiteral">0</FONT>,baseIndent + <FONT ID="StringLiteral">"  try {\n"</FONT>);
+<A NAME="911"></A>                endOfLine.add(<FONT ID="IntegerLiteral">0</FONT>,<FONT ID="StringLiteral">"\n"</FONT>+indent + <FONT ID="StringLiteral">"  fail(\""</FONT> + className + <FONT ID="StringLiteral">": "</FONT> + (lineNr+<FONT ID="IntegerLiteral">1</FONT>) +<FONT ID="StringLiteral">" Did not throw "</FONT> + exception + <FONT ID="StringLiteral">"\");\n"</FONT>);
+<A NAME="912"></A>                endOfLine.add(<FONT ID="IntegerLiteral">1</FONT>,baseIndent + <FONT ID="StringLiteral">"  } catch("</FONT> + exception + <FONT ID="StringLiteral">" e){ e.getMessage(); }"</FONT>);
+<A NAME="913"></A>                <FONT ID="Return">return</FONT> sentence;
+<A NAME="914"></A>            }
+<A NAME="915"></A>            
+<A NAME="916"></A>            <FONT ID="FormalComment">/**
+<A NAME="917"></A>             * Check if line is THROWS line.  If it is, correct
+<A NAME="918"></A>             * the start and end lists as needed.
+<A NAME="919"></A>             * @param s line to look.
+<A NAME="920"></A>             * @return line without THROWS sentence
+<A NAME="921"></A>             */</FONT>
+<A NAME="922"></A>            <FONT ID="Private">private</FONT> String checkMethodThrows(String s) {
+<A NAME="923"></A>                <FONT ID="Int">int</FONT> p = indexOfNotInQuotes(s, THROWSMARKER);
+<A NAME="924"></A>                <FONT ID="If">if</FONT> ( p &lt; <FONT ID="IntegerLiteral">0</FONT> ) <FONT ID="Return">return</FONT> s;
+<A NAME="925"></A>                String sentence = remove(s.substring(<FONT ID="IntegerLiteral">0</FONT>,p),<FONT ID="StringLiteral">"*"</FONT>).trim();
+<A NAME="926"></A>                <FONT ID="If">if</FONT> ( sentence.length() &gt; <FONT ID="IntegerLiteral">0</FONT> ) <FONT ID="Return">return</FONT> s;
+<A NAME="927"></A>                String exception = s.substring(p+THROWSMARKER.length()).trim();
+<A NAME="928"></A>                methodThrows = <FONT ID="StringLiteral">"throws "</FONT> + exception + <FONT ID="StringLiteral">" "</FONT>;
+<A NAME="929"></A>                <FONT ID="Return">return</FONT> sentence;
+<A NAME="930"></A>            }
+<A NAME="931"></A>            
+<A NAME="932"></A>            
+<A NAME="933"></A>            <FONT ID="FormalComment">/**
+<A NAME="934"></A>             * Find comments and put possible try catch to start and end
+<A NAME="935"></A>             * of the the current line's start and end lists.
+<A NAME="936"></A>             * @param s line to handle
+<A NAME="937"></A>             * @return the line where comments and THROWS-sentence is removed.
+<A NAME="938"></A>             */</FONT>
+<A NAME="939"></A>            <FONT ID="Private">private</FONT> String saveStartAndEndOfLine(String s) {
+<A NAME="940"></A>                startOfLine.clear();
+<A NAME="941"></A>                endOfLine.clear();
+<A NAME="942"></A>                indent = baseIndent;
+<A NAME="943"></A>                <FONT ID="Int">int</FONT> p = indexOfNotInQuotes(s, <FONT ID="StringLiteral">"//"</FONT>);
+<A NAME="944"></A>                <FONT ID="If">if</FONT> ( p &lt; <FONT ID="IntegerLiteral">0</FONT> ) {
+<A NAME="945"></A>                  endOfLine.add(<FONT ID="StringLiteral">"\n"</FONT>);
+<A NAME="946"></A>                  <FONT ID="Return">return</FONT> checkThrows(s);
+<A NAME="947"></A>                }
+<A NAME="948"></A>                endOfLine.add(<FONT ID="StringLiteral">" "</FONT> + s.substring(p) + <FONT ID="StringLiteral">"\n"</FONT>); 
+<A NAME="949"></A>                <FONT ID="Return">return</FONT> checkThrows(s.substring(<FONT ID="IntegerLiteral">0</FONT>,p)); 
+<A NAME="950"></A>            }
+<A NAME="951"></A>
+<A NAME="952"></A>
+<A NAME="953"></A>            <FONT ID="FormalComment">/**
+<A NAME="954"></A>             * Copies method footer to outlines if method header is
+<A NAME="955"></A>             * already moved.  Nothing is done if method header
+<A NAME="956"></A>             * is not copied.
+<A NAME="957"></A>             * @param realLineNr current line number 
+<A NAME="958"></A>             */</FONT>
+<A NAME="959"></A>            <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> outFooter(<FONT ID="Int">int</FONT> realLineNr) {
+<A NAME="960"></A>                <FONT ID="If">if</FONT> ( methodHeaderPrinted ) { 
+<A NAME="961"></A>                    addOut(methodFooter);
+<A NAME="962"></A>                    <FONT ID="If">if</FONT> ( realLineNr &gt; <FONT ID="IntegerLiteral">0</FONT> ) initLine = realLineNr;
+<A NAME="963"></A>                }
+<A NAME="964"></A>                methodHeaderPrinted = <FONT ID="False">false</FONT>;
+<A NAME="965"></A>            }
+<A NAME="966"></A>
+<A NAME="967"></A>            
+<A NAME="968"></A>            <FONT ID="FormalComment">/**
+<A NAME="969"></A>             * Moves header lines to outlines.  Possible method
+<A NAME="970"></A>             * index markers are replaced by method index.
+<A NAME="971"></A>             */</FONT>
+<A NAME="972"></A>            <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> outNewHeader() {
+<A NAME="973"></A>                outFooter(<FONT ID="IntegerLiteral">0</FONT>);
+<A NAME="974"></A>                addOut(methodHeader, METHODINDEXMARKER, sMethodIndex);
+<A NAME="975"></A>                methodIndex++; 
+<A NAME="976"></A>                sMethodIndex = <FONT ID="StringLiteral">""</FONT>+methodIndex; 
+<A NAME="977"></A>                methodHeaderPrinted = <FONT ID="True">true</FONT>;
+<A NAME="978"></A>                <FONT ID="If">if</FONT> ( initLine == <FONT ID="IntegerLiteral">0</FONT> ) initLine = lineNr+<FONT ID="IntegerLiteral">1</FONT>;
+<A NAME="979"></A>                addOutln(baseIndent + javaShortComment + className + <FONT ID="StringLiteral">": "</FONT> + initLine);
+<A NAME="980"></A>                addOut(initCmds);
+<A NAME="981"></A>            }
+<A NAME="982"></A>            
+<A NAME="983"></A>            <FONT ID="FormalComment">/**
+<A NAME="984"></A>             * Moves list to outlines.  If header is not moved,
+<A NAME="985"></A>             * then move it now. Possible target strings are replaced
+<A NAME="986"></A>             * by replacement strings while moving.
+<A NAME="987"></A>             * @param list what to move
+<A NAME="988"></A>             * @param target what is replaced
+<A NAME="989"></A>             * @param replacement by what to replace
+<A NAME="990"></A>             */</FONT>
+<A NAME="991"></A>            <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> outWithHeader(<A HREF="../comtest/Strings.java.html">Strings</A> list, String target, String replacement) {
+<A NAME="992"></A>                <FONT ID="If">if</FONT> ( !methodHeaderPrinted ) outNewHeader();
+<A NAME="993"></A>                addOut(list,target,replacement);
+<A NAME="994"></A>            }
+<A NAME="995"></A>            
+<A NAME="996"></A>            
+<A NAME="997"></A>            <FONT ID="FormalComment">/**
+<A NAME="998"></A>             * Add sentences to init section.  Possible line number markers
+<A NAME="999"></A>             * are replaced by current line number.
+<A NAME="1000"></A>             * @param commands sentences to add
+<A NAME="1001"></A>             * @param realLineNr real line number for current line
+<A NAME="1002"></A>             */</FONT>
+<A NAME="1003"></A>            <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> addInit(<A HREF="../comtest/Strings.java.html">Strings</A> commands, <FONT ID="Int">int</FONT> realLineNr) {
+<A NAME="1004"></A>                <FONT ID="If">if</FONT> ( initLine == <FONT ID="IntegerLiteral">0</FONT> ) initLine = realLineNr;
+<A NAME="1005"></A>                initCmds.add(commands.replace(LINENUMBERMARKER, <FONT ID="StringLiteral">""</FONT>+realLineNr));
+<A NAME="1006"></A>            }
+<A NAME="1007"></A>            
+<A NAME="1008"></A>            
+<A NAME="1009"></A>            <FONT ID="FormalComment">/**
+<A NAME="1010"></A>             * Moves commands to outlines.  If header is not moved,
+<A NAME="1011"></A>             * then move it now. Possible line number markers
+<A NAME="1012"></A>             * are replaced by current line number.
+<A NAME="1013"></A>             * @param commands what to move
+<A NAME="1014"></A>             * @param realLineNr real line number for current line
+<A NAME="1015"></A>             */</FONT>
+<A NAME="1016"></A>            <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> outLines(<A HREF="../comtest/Strings.java.html">Strings</A> commands, <FONT ID="Int">int</FONT> realLineNr) {
+<A NAME="1017"></A>                outWithHeader(commands,LINENUMBERMARKER, <FONT ID="StringLiteral">""</FONT>+realLineNr);
+<A NAME="1018"></A>            }
+<A NAME="1019"></A>            
+<A NAME="1020"></A>            
+<A NAME="1021"></A>            <FONT ID="FormalComment">/**
+<A NAME="1022"></A>             * Check if s is one of the JUnit annotation.
+<A NAME="1023"></A>             * @param s line to look
+<A NAME="1024"></A>             * @return true if annotation, false otherwise.
+<A NAME="1025"></A>             */</FONT>
+<A NAME="1026"></A>            <FONT ID="Private">private</FONT> <FONT ID="Boolean">boolean</FONT> jUnitAnnotate(String s) {
+<A NAME="1027"></A>                <FONT ID="If">if</FONT> ( s.startsWith(<FONT ID="StringLiteral">"@Test"</FONT>) )   <FONT ID="Return">return</FONT> <FONT ID="True">true</FONT>;
+<A NAME="1028"></A>                <FONT ID="If">if</FONT> ( s.startsWith(<FONT ID="StringLiteral">"@Before"</FONT>) ) <FONT ID="Return">return</FONT> <FONT ID="True">true</FONT>;
+<A NAME="1029"></A>                <FONT ID="If">if</FONT> ( s.startsWith(<FONT ID="StringLiteral">"@After"</FONT>) )  <FONT ID="Return">return</FONT> <FONT ID="True">true</FONT>;
+<A NAME="1030"></A>                <FONT ID="Return">return</FONT> <FONT ID="False">false</FONT>;
+<A NAME="1031"></A>            }
+<A NAME="1032"></A>            
+<A NAME="1033"></A>            
+<A NAME="1034"></A>            <FONT ID="FormalComment">/**
+<A NAME="1035"></A>             * Annotations in comments must be prefixed with something.
+<A NAME="1036"></A>             * This takes the prefixing away. 
+<A NAME="1037"></A>             * @param s where to look annotation
+<A NAME="1038"></A>             * @return s if no annotation, otherwise annotation with
+<A NAME="1039"></A>             *           prefix info removed. 
+<A NAME="1040"></A>             * @example
+<A NAME="1041"></A>             * &lt;pre name="test"&gt;
+<A NAME="1042"></A>             *   TestHelpper t = new TestHelpper();
+<A NAME="1043"></A>             *   t.codeHandler.handleAnnotationInComments("a") === "a";    
+<A NAME="1044"></A>             *   t.codeHandler.handleAnnotationInComments("* #@Test") === "@Test";    
+<A NAME="1045"></A>             *   t.codeHandler.handleAnnotationInComments("* #@example") === "* #@example";    
+<A NAME="1046"></A>             * 
+<A NAME="1047"></A>             * &lt;/pre&gt;    
+<A NAME="1048"></A>             */</FONT>
+<A NAME="1049"></A>            <FONT ID="Public">public</FONT> String handleAnnotationInComments(String s) {
+<A NAME="1050"></A>                <FONT ID="Int">int</FONT> p = indexOfNotInQuotes(s, <FONT ID="StringLiteral">"@"</FONT>);
+<A NAME="1051"></A>                <FONT ID="If">if</FONT> ( p &lt; <FONT ID="IntegerLiteral">0</FONT> ) <FONT ID="Return">return</FONT> s;
+<A NAME="1052"></A>                String st = s.substring(p);
+<A NAME="1053"></A>                <FONT ID="If">if</FONT> ( jUnitAnnotate(st) ) <FONT ID="Return">return</FONT> st; 
+<A NAME="1054"></A>                <FONT ID="Return">return</FONT> s;
+<A NAME="1055"></A>            }
+<A NAME="1056"></A>            
+<A NAME="1057"></A>            <FONT ID="FormalComment">/**
+<A NAME="1058"></A>             * Deletes \n from the last line of cmds
+<A NAME="1059"></A>             * @param cmds where to delete
+<A NAME="1060"></A>             */</FONT>
+<A NAME="1061"></A>            <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> deleteLastNewLine(<A HREF="../comtest/Strings.java.html">Strings</A> cmds) {
+<A NAME="1062"></A>                <FONT ID="If">if</FONT> ( cmds.size() &lt;= <FONT ID="IntegerLiteral">0</FONT> ) <FONT ID="Return">return</FONT>;
+<A NAME="1063"></A>                String s = cmds.get(cmds.size()-<FONT ID="IntegerLiteral">1</FONT>);
+<A NAME="1064"></A>                <FONT ID="If">if</FONT> ( s.length() == <FONT ID="IntegerLiteral">0</FONT> ) <FONT ID="Return">return</FONT>;
+<A NAME="1065"></A>                <FONT ID="If">if</FONT> ( s.charAt(s.length()-<FONT ID="IntegerLiteral">1</FONT>) != <FONT ID="CharacerLiteral">'\n'</FONT> ) <FONT ID="Return">return</FONT>;
+<A NAME="1066"></A>                cmds.set(cmds.size()-<FONT ID="IntegerLiteral">1</FONT>,s.substring(<FONT ID="IntegerLiteral">0</FONT>,s.length()-<FONT ID="IntegerLiteral">1</FONT>)+<FONT ID="StringLiteral">" "</FONT>); 
+<A NAME="1067"></A>            }
+<A NAME="1068"></A>            
+<A NAME="1069"></A>            <FONT ID="FormalComment">/**
+<A NAME="1070"></A>             * Check if the line is a table line, so containing either " | "
+<A NAME="1071"></A>             * or | at the beginning or end.
+<A NAME="1072"></A>             * @param s line to check
+<A NAME="1073"></A>             * @return true if was a table line.
+<A NAME="1074"></A>             * @example
+<A NAME="1075"></A>             * &lt;pre name="test"&gt;
+<A NAME="1076"></A>             *   TestHelpper t = new TestHelpper();
+<A NAME="1077"></A>             *   t.codeHandler.isTableLine("") === false;    
+<A NAME="1078"></A>             *   t.codeHandler.isTableLine("a") === false;    
+<A NAME="1079"></A>             *   t.codeHandler.isTableLine("a|") === true;    
+<A NAME="1080"></A>             *   t.codeHandler.isTableLine("|a") === true;    
+<A NAME="1081"></A>             *   t.codeHandler.isTableLine(" a|b ") === false;    
+<A NAME="1082"></A>             *   t.codeHandler.isTableLine(" a | b ") === true;    
+<A NAME="1083"></A>             * &lt;/pre&gt;
+<A NAME="1084"></A>             */</FONT>
+<A NAME="1085"></A>            <FONT ID="Public">public</FONT> <FONT ID="Boolean">boolean</FONT> isTableLine(String s) {
+<A NAME="1086"></A>                <FONT ID="If">if</FONT> ( indexOfNotInQuotes(s,COLUMNSEPARATOR) &gt;= <FONT ID="IntegerLiteral">0</FONT> ) <FONT ID="Return">return</FONT> <FONT ID="True">true</FONT>;
+<A NAME="1087"></A>                <FONT ID="If">if</FONT> ( s.startsWith(COLUMNCHAR) ) <FONT ID="Return">return</FONT> <FONT ID="True">true</FONT>;
+<A NAME="1088"></A>                <FONT ID="If">if</FONT> ( s.endsWith(COLUMNCHAR) ) <FONT ID="Return">return</FONT> <FONT ID="True">true</FONT>;
+<A NAME="1089"></A>                <FONT ID="Return">return</FONT> <FONT ID="False">false</FONT>;
+<A NAME="1090"></A>            }
+<A NAME="1091"></A>
+<A NAME="1092"></A>            <FONT ID="FormalComment">/**
+<A NAME="1093"></A>             * Handles lines like     "  $s        |  $what |  $result"
+<A NAME="1094"></A>             * or                     " "aab"      |  "a"   |  "ab"  "
+<A NAME="1095"></A>             * If there is a $ on the line, it is kept as a header line.
+<A NAME="1096"></A>             * Otherwise as a normal values line.  From header line
+<A NAME="1097"></A>             * the variable names a collected.  In normal line the
+<A NAME="1098"></A>             * variable values a replaced in the corresponding template
+<A NAME="1099"></A>             * line.  Sentences with unused variable names are removed. 
+<A NAME="1100"></A>             * @param line line to handle.
+<A NAME="1101"></A>             */</FONT>
+<A NAME="1102"></A>            <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> handleTableLine(String line) { <FONT ID="SingleLineComment">// NOPMD by vesal on 13.1.2008 15:29
+<A NAME="1103"></A></FONT>                String s = line;
+<A NAME="1104"></A>                <FONT ID="If">if</FONT> ( template.size() == <FONT ID="IntegerLiteral">0</FONT> ) <FONT ID="Return">return</FONT>; <FONT ID="SingleLineComment">// No use of table if no template
+<A NAME="1105"></A></FONT>                <FONT ID="If">if</FONT> ( s.startsWith(COLUMNCHAR) ) s = s.substring(<FONT ID="IntegerLiteral">1</FONT>);
+<A NAME="1106"></A>                <FONT ID="If">if</FONT> ( s.endsWith(COLUMNCHAR) ) s = s.substring(<FONT ID="IntegerLiteral">1</FONT>,s.length()-<FONT ID="IntegerLiteral">1</FONT>);
+<A NAME="1107"></A>                <FONT ID="If">if</FONT> ( vars == <FONT ID="Null">null</FONT> ) { <FONT ID="SingleLineComment">// || indexOfNotInQuotes(s, TEMPLATELINEMARKER ) &gt;= 0 ) {
+<A NAME="1108"></A></FONT>                    vars = splitBy(s,COLUMNSEPARATOR,COLUMNSEPARATOR.length(),<FONT ID="True">true</FONT>);
+<A NAME="1109"></A>                    <FONT ID="Return">return</FONT>;
+<A NAME="1110"></A>                }
+<A NAME="1111"></A>                values = splitBy(s,COLUMNSEPARATOR,COLUMNSEPARATOR.length(),<FONT ID="True">true</FONT>); 
+<A NAME="1112"></A>                <A HREF="../comtest/Strings.java.html">Strings</A> cmds = template.clone();
+<A NAME="1113"></A>                <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> v=<FONT ID="IntegerLiteral">0</FONT>; v&lt;values.size(); v++ ) {
+<A NAME="1114"></A>                    <FONT ID="If">if</FONT> ( v &gt;= vars.size() ) <FONT ID="Break">break</FONT>;
+<A NAME="1115"></A>                    String value = values.get(v).trim();
+<A NAME="1116"></A>                    String var = vars.get(v).trim();
+<A NAME="1117"></A>                    <FONT ID="If">if</FONT> ( value.equals(DELETESENTENCEMARKER) ) delete(cmds,var,<FONT ID="StringLiteral">""</FONT>);
+<A NAME="1118"></A>                    <FONT ID="Else">else</FONT> cmds.replace(var, value);
+<A NAME="1119"></A>                }
+<A NAME="1120"></A>                <FONT ID="If">if</FONT> ( everyLineInits ) outFooter(lineNr+<FONT ID="IntegerLiteral">1</FONT>);
+<A NAME="1121"></A>                delete(cmds, <FONT ID="StringLiteral">"$"</FONT>, QUOTES);  <FONT ID="SingleLineComment">// remove sentences with $ outside ""
+<A NAME="1122"></A></FONT>                deleteLastNewLine(cmds);
+<A NAME="1123"></A>                cmds.addAll(<FONT ID="IntegerLiteral">0</FONT>, startOfLine);
+<A NAME="1124"></A>                cmds.add(endOfLine);
+<A NAME="1125"></A>                outWithHeader(cmds,LINENUMBERMARKER, <FONT ID="StringLiteral">""</FONT>+(lineNr+<FONT ID="IntegerLiteral">1</FONT>));
+<A NAME="1126"></A>                printedTableLines += cmds.size();
+<A NAME="1127"></A>
+<A NAME="1128"></A>                <FONT ID="If">if</FONT> ( everyLineInits ) 
+<A NAME="1129"></A>                    outFooter(lineNr+<FONT ID="IntegerLiteral">1</FONT>);
+<A NAME="1130"></A>                tablePrinted = <FONT ID="True">true</FONT>;
+<A NAME="1131"></A>                oneTablePrinted = <FONT ID="True">true</FONT>;
+<A NAME="1132"></A>            }
+<A NAME="1133"></A>
+<A NAME="1134"></A>            
+<A NAME="1135"></A>            <FONT ID="FormalComment">/**
+<A NAME="1136"></A>             * Check if there is coming a ; then nothing is done.
+<A NAME="1137"></A>             * If there is no ; coming, then one ; is added to commands.
+<A NAME="1138"></A>             * @param sentences where to look ;
+<A NAME="1139"></A>             * @param i from what index to look ;
+<A NAME="1140"></A>             * @param commands where to add ; if needed
+<A NAME="1141"></A>             */</FONT>
+<A NAME="1142"></A>            <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> checkSemiColon(<A HREF="../comtest/Strings.java.html">Strings</A> sentences, <FONT ID="Int">int</FONT> i, <A HREF="../comtest/Strings.java.html">Strings</A> commands) {
+<A NAME="1143"></A>                <FONT ID="If">if</FONT> ( ( i &lt; sentences.size() - <FONT ID="IntegerLiteral">1</FONT> ) &amp;&amp;  
+<A NAME="1144"></A>                     ( sentences.get(i+<FONT ID="IntegerLiteral">1</FONT>).indexOf(<FONT ID="StringLiteral">";"</FONT>) &gt;= <FONT ID="IntegerLiteral">0</FONT> ) ) <FONT ID="Return">return</FONT>;
+<A NAME="1145"></A>                commands.add(<FONT ID="StringLiteral">";"</FONT>);
+<A NAME="1146"></A>            }
+<A NAME="1147"></A>            
+<A NAME="1148"></A>
+<A NAME="1149"></A>            <FONT ID="FormalComment">/**
+<A NAME="1150"></A>             * Check if line is pseudo comment /.* or  *./
+<A NAME="1151"></A>             * @return comments handled or s
+<A NAME="1152"></A>             */</FONT>
+<A NAME="1153"></A>            <FONT ID="Private">private</FONT> String isPseudoComment(String line) {
+<A NAME="1154"></A>                String s = line;
+<A NAME="1155"></A>                s = s.replaceAll(<FONT ID="StringLiteral">"\\/\\.\\*"</FONT>, <FONT ID="StringLiteral">"/*"</FONT>); 
+<A NAME="1156"></A>                s = s.replaceAll(<FONT ID="StringLiteral">"\\*\\.\\/"</FONT>, <FONT ID="StringLiteral">"*/"</FONT>);
+<A NAME="1157"></A>                <FONT ID="Return">return</FONT> s;
+<A NAME="1158"></A>            }
+<A NAME="1159"></A>            
+<A NAME="1160"></A>            <FONT ID="FormalComment">/**
+<A NAME="1161"></A>             * Handles normal lines and table lines from ComTest lines.
+<A NAME="1162"></A>             * The line is first divided to "sentences" so that
+<A NAME="1163"></A>             * ; { } are each one "sentence".  Then ===, ~~ is try to
+<A NAME="1164"></A>             * find and in case of success the corresponding assert is generated.
+<A NAME="1165"></A>             * If the line has at least on $ sign, all sentences are kept as
+<A NAME="1166"></A>             * a template sentences.  Also after starting the template, all
+<A NAME="1167"></A>             * lines are kept as template lines.
+<A NAME="1168"></A>             * If generated assert-line does not include ; , then it is added.
+<A NAME="1169"></A>             * @param line line to handle.
+<A NAME="1170"></A>             * 
+<A NAME="1171"></A>             * @example
+<A NAME="1172"></A>             * &lt;pre name="test"&gt;
+<A NAME="1173"></A>             *   TestHelpper t = new TestHelpper();
+<A NAME="1174"></A>             *     
+<A NAME="1175"></A>             *   t.codeHandler.handleSentences("int a = 5;");
+<A NAME="1176"></A>             *   t.initCmnds.get(1) === "int a = 5";
+<A NAME="1177"></A>             *   
+<A NAME="1178"></A>             *   t.initCmnds.clear();
+<A NAME="1179"></A>             *   t.codeHandler.handleSentences("int a = 5; int b = 7;");
+<A NAME="1180"></A>             *   t.initCmnds.get(0) === "    ";
+<A NAME="1181"></A>             *   t.initCmnds.get(1) === "int a = 5";
+<A NAME="1182"></A>             *   t.initCmnds.get(2) === "; ";
+<A NAME="1183"></A>             *   t.initCmnds.get(3) === "int b = 7";
+<A NAME="1184"></A>             *   t.initCmnds.get(4) === "; ";
+<A NAME="1185"></A>             *   
+<A NAME="1186"></A>             *   t.initCmnds.clear();
+<A NAME="1187"></A>             *   t.codeHandler.handleSentences("a === 5;");
+<A NAME="1188"></A>             *   t.initCmnds.get(1) === "assertEquals(\"From: test line: 1\", 5, a)";
+<A NAME="1189"></A>             *
+<A NAME="1190"></A>             *   t.initCmnds.clear();
+<A NAME="1191"></A>             *   t.codeHandler.handleSentences("get(request,new String[]{\"str\",\"id\"},13,true) === 123;");
+<A NAME="1192"></A>             *   t.initCmnds.get(1) === "assertEquals(\"From: test line: 1\", 123, get(request,new String[]{\"str\",\"id\"},13,true))";
+<A NAME="1193"></A>             *   
+<A NAME="1194"></A>             *   t.initCmnds.clear();
+<A NAME="1195"></A>             *   t.codeHandler.handleSentences("\"cat\" =R= \"c.*t\";"); // "cat" =R= "c.*t";
+<A NAME="1196"></A>             *   t.initCmnds.get(1) === "{ String l=\"cat\",r=\"c.*t\"; if ( !l.matches(r) ) fail(\"From: test line: 1\" + \" does not match: [\"+ l + \"] != [\" + r + \"]\");}";
+<A NAME="1197"></A>             *   
+<A NAME="1198"></A>             *   t.initCmnds.clear();
+<A NAME="1199"></A>             *   t.codeHandler.handleSentences("a ~~~ 6.0;");  
+<A NAME="1200"></A>             *   t.initCmnds.get(1) === "assertEquals(\"From: test line: 1\", 6.0, a, 0.000001)";
+<A NAME="1201"></A>             *   
+<A NAME="1202"></A>             *   t.initCmnds.clear();
+<A NAME="1203"></A>             *   t.codeHandler.handleSentences("\"a$1\""); /// Not a template line  
+<A NAME="1204"></A>             *   t.initCmnds.get(1) === "\"a$1\"";
+<A NAME="1205"></A>             *   
+<A NAME="1206"></A>             *   t.template.size() === 0;
+<A NAME="1207"></A>             * &lt;/pre&gt;
+<A NAME="1208"></A>             * 
+<A NAME="1209"></A>             * 
+<A NAME="1210"></A>             * @example
+<A NAME="1211"></A>             * &lt;pre name="test"&gt;
+<A NAME="1212"></A>             *   String s="$a"; s === "$b"; $
+<A NAME="1213"></A>             *     $a | $b
+<A NAME="1214"></A>             *    ---------
+<A NAME="1215"></A>             *      1 | 1    
+<A NAME="1216"></A>             *   
+<A NAME="1217"></A>             *  $a; "a".matches("^a$") === false;  // does not generate code
+<A NAME="1218"></A>             * &lt;/pre&gt;
+<A NAME="1219"></A>             * 
+<A NAME="1220"></A>             * @example
+<A NAME="1221"></A>             * &lt;pre name="test"&gt;
+<A NAME="1222"></A>             *   String s=null; s === null; 
+<A NAME="1223"></A>             *   "a".matches("^a$") === true;  // generate code
+<A NAME="1224"></A>             * &lt;/pre&gt;
+<A NAME="1225"></A>             * 
+<A NAME="1226"></A>             * @example
+<A NAME="1227"></A>             * &lt;pre name="test"&gt;
+<A NAME="1228"></A>             * String s="$a"; s === "$b"; $; 
+<A NAME="1229"></A>             *     $a | $b
+<A NAME="1230"></A>             *    ---------
+<A NAME="1231"></A>             *      $ | $    
+<A NAME="1232"></A>             *   "a".matches("^a$") === true;  // this generates
+<A NAME="1233"></A>             * &lt;/pre&gt;
+<A NAME="1234"></A>             */</FONT>
+<A NAME="1235"></A>            <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> handleSentences(String line) { <FONT ID="SingleLineComment">// NOPMD by vesal on 13.1.2008 15:29
+<A NAME="1236"></A></FONT>                <FONT ID="Int">int</FONT> p;
+<A NAME="1237"></A>                String eq,tol;
+<A NAME="1238"></A>                String s = line;
+<A NAME="1239"></A>                <FONT ID="Boolean">boolean</FONT> isTemplateLine = indexOfNotInQuotes(s,TEMPLATELINEMARKER) &gt;= <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="1240"></A>                
+<A NAME="1241"></A>                <FONT ID="Boolean">boolean</FONT> isRegExp = <FONT ID="False">false</FONT>;
+<A NAME="1242"></A>                
+<A NAME="1243"></A>                <A HREF="../comtest/Strings.java.html">Strings</A> commands = <FONT ID="New">new</FONT> <A HREF="../comtest/Strings.java.html">Strings</A>();
+<A NAME="1244"></A>                commands.add(indent + <FONT ID="StringLiteral">"  "</FONT>);
+<A NAME="1245"></A>                <A HREF="../comtest/Strings.java.html">Strings</A> sentences = splitToSentences(s);
+<A NAME="1246"></A>                <FONT ID="If">if</FONT> ( tablePrinted ) { template.clear(); tablePrinted = <FONT ID="False">false</FONT>; everyLineInits = <FONT ID="False">false</FONT>; vars = <FONT ID="Null">null</FONT>; } <FONT ID="SingleLineComment">// NOPMD by vesal on 13.1.2008 15:30
+<A NAME="1247"></A></FONT>                <FONT ID="For">for</FONT> ( <FONT ID="Int">int</FONT> i=<FONT ID="IntegerLiteral">0</FONT>; i&lt;sentences.size(); i++ ) {
+<A NAME="1248"></A>                    String st = sentences.get(i);
+<A NAME="1249"></A>                    isRegExp = <FONT ID="False">false</FONT>;
+<A NAME="1250"></A>                    
+<A NAME="1251"></A>                    <FONT ID="If">if</FONT> ( st.length() == <FONT ID="IntegerLiteral">0</FONT> ) <FONT ID="Continue">continue</FONT>;
+<A NAME="1252"></A>                    <FONT ID="If">if</FONT> ( rawMode ) s = removeFromBegining(st,<FONT ID="StringLiteral">" "</FONT>,<FONT ID="IntegerLiteral">1</FONT>); <FONT ID="Else">else</FONT> s = removeFromBegining(st, <FONT ID="StringLiteral">" "</FONT>);
+<A NAME="1253"></A>                    <FONT ID="If">if</FONT> ( s.length() == <FONT ID="IntegerLiteral">0</FONT> ) <FONT ID="Continue">continue</FONT>;
+<A NAME="1254"></A>                    
+<A NAME="1255"></A>                    p = indexOfNotInQuotes(s,ALMOSTMARKER1);  eq = ALMOSTMARKER1; tol = <FONT ID="StringLiteral">", "</FONT> + TOLERANCE;  <FONT ID="SingleLineComment">/// ~~~
+<A NAME="1256"></A></FONT>                    <FONT ID="If">if</FONT> ( p &lt; <FONT ID="IntegerLiteral">0</FONT> ) { p = indexOfNotInQuotes(s,ALMOSTMARKER2); eq = ALMOSTMARKER2; }          <FONT ID="SingleLineComment">/// ~~
+<A NAME="1257"></A></FONT>                    <FONT ID="If">if</FONT> ( p &lt; <FONT ID="IntegerLiteral">0</FONT> ) { p = indexOfNotInQuotes(s,EQUALSMARKER);  eq = EQUALSMARKER; tol = <FONT ID="StringLiteral">""</FONT>; } <FONT ID="SingleLineComment">/// ===
+<A NAME="1258"></A></FONT>                    <FONT ID="If">if</FONT> ( p &lt; <FONT ID="IntegerLiteral">0</FONT> ) { p = indexOfNotInQuotes(s,EQUALSMARKER2); eq = EQUALSMARKER2; }          <FONT ID="SingleLineComment">/// =&gt;
+<A NAME="1259"></A></FONT>                    <FONT ID="If">if</FONT> ( p &lt; <FONT ID="IntegerLiteral">0</FONT> ) { p = indexOfNotInQuotes(s,REGEXPMARKER1); eq = REGEXPMARKER1; isRegExp = <FONT ID="True">true</FONT>; } <FONT ID="SingleLineComment">/// =R=
+<A NAME="1260"></A></FONT>                    <FONT ID="If">if</FONT> ( p &lt; <FONT ID="IntegerLiteral">0</FONT> ) { p = indexOfNotInQuotes(s,REGEXPMARKER2); eq = REGEXPMARKER2; isRegExp = <FONT ID="True">true</FONT>; } <FONT ID="SingleLineComment">/// =~
+<A NAME="1261"></A></FONT>                    <FONT ID="If">if</FONT> ( p &gt;= <FONT ID="IntegerLiteral">0</FONT> ) {
+<A NAME="1262"></A>                        String leftSide = s.substring(<FONT ID="IntegerLiteral">0</FONT>,p).trim();
+<A NAME="1263"></A>                        String rightSide = s.substring(p+eq.length()).trim();
+<A NAME="1264"></A>                        String message = <FONT ID="StringLiteral">"\"From: "</FONT> + className + <FONT ID="StringLiteral">" line: "</FONT>+ LINENUMBERMARKER + <FONT ID="StringLiteral">"\""</FONT>;
+<A NAME="1265"></A>                        <FONT ID="If">if</FONT> ( isRegExp ) {
+<A NAME="1266"></A>                          commands.add(<FONT ID="StringLiteral">"{ String l="</FONT>+leftSide+<FONT ID="StringLiteral">",r="</FONT>+rightSide+<FONT ID="StringLiteral">"; if ( !l.matches(r) ) fail("</FONT> + message + <FONT ID="StringLiteral">" + \" does not match: [\"+ l + \"] != [\" + r + \"]\");}"</FONT>);  
+<A NAME="1267"></A>                        } <FONT ID="Else">else</FONT> { 
+<A NAME="1268"></A>                          commands.add(<FONT ID="StringLiteral">"assertEquals("</FONT> + message + <FONT ID="StringLiteral">", "</FONT>+rightSide + <FONT ID="StringLiteral">", "</FONT> + leftSide + tol + <FONT ID="StringLiteral">")"</FONT>);
+<A NAME="1269"></A>                          checkSemiColon(sentences,i,commands);
+<A NAME="1270"></A>                        }  
+<A NAME="1271"></A>                        <FONT ID="Continue">continue</FONT>;
+<A NAME="1272"></A>                    }
+<A NAME="1273"></A>                    
+<A NAME="1274"></A>                    commands.add(s);
+<A NAME="1275"></A>                }
+<A NAME="1276"></A>                commands.addAll(<FONT ID="IntegerLiteral">0</FONT>,startOfLine);
+<A NAME="1277"></A>                commands.add(endOfLine);
+<A NAME="1278"></A>                <FONT ID="If">if</FONT> ( isTemplateLine || template.size() &gt; <FONT ID="IntegerLiteral">0</FONT> ) template.add(commands);
+<A NAME="1279"></A>                <FONT ID="Else">else</FONT> <FONT ID="If">if</FONT> ( oneTablePrinted || rawMode )
+<A NAME="1280"></A>                    outLines(commands,lineNr+<FONT ID="IntegerLiteral">1</FONT>);
+<A NAME="1281"></A>                <FONT ID="Else">else</FONT>
+<A NAME="1282"></A>                    addInit(commands,lineNr+<FONT ID="IntegerLiteral">1</FONT>);
+<A NAME="1283"></A>            }
+<A NAME="1284"></A>            
+<A NAME="1285"></A>            
+<A NAME="1286"></A>            <FONT ID="FormalComment">/**
+<A NAME="1287"></A>             * Creates a header and footer for new ComTest test method.
+<A NAME="1288"></A>             * If the name is for raw-code, then no method header is done.
+<A NAME="1289"></A>             * If there is no name for the test method, then next method is
+<A NAME="1290"></A>             * searched and that method name is used as a test method name. 
+<A NAME="1291"></A>             * @param s line to start the test.
+<A NAME="1292"></A>             */</FONT>
+<A NAME="1293"></A>            <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> createHeaderAndFooter(String s) {
+<A NAME="1294"></A>                <FONT ID="Int">int</FONT> p = s.indexOf(STARTOFTEST); 
+<A NAME="1295"></A>                <FONT ID="If">if</FONT> ( p &lt; <FONT ID="IntegerLiteral">0</FONT> ) <FONT ID="Return">return</FONT>;
+<A NAME="1296"></A>                <FONT ID="If">if</FONT> ( s.indexOf(<FONT ID="StringLiteral">"JAVA"</FONT>) &gt; <FONT ID="IntegerLiteral">0</FONT> ) { <FONT ID="SingleLineComment">// start Raw mode
+<A NAME="1297"></A></FONT>                    methodName = <FONT ID="StringLiteral">""</FONT>;
+<A NAME="1298"></A>                    methodHeader.add(<FONT ID="StringLiteral">"\n"</FONT>);
+<A NAME="1299"></A>                    methodHeader.add(javaShortComment + COMTESTID + <FONT ID="StringLiteral">" "</FONT> + COMTESTBEGIN + <FONT ID="StringLiteral">""</FONT>);
+<A NAME="1300"></A>                    methodFooter.add(javaShortComment + COMTESTID + <FONT ID="StringLiteral">" "</FONT> + COMTESTEND + <FONT ID="StringLiteral">"\n"</FONT>);
+<A NAME="1301"></A>                    rawMode = <FONT ID="True">true</FONT>;
+<A NAME="1302"></A>                    initLine = lineNr+<FONT ID="IntegerLiteral">1</FONT>;
+<A NAME="1303"></A>                    baseIndent = <FONT ID="StringLiteral">""</FONT>;
+<A NAME="1304"></A>                    <FONT ID="Return">return</FONT>;
+<A NAME="1305"></A>                }
+<A NAME="1306"></A>                methodName = TEST + s.substring(p+STARTOFTEST.length());
+<A NAME="1307"></A>                methodName = removeAllAfter(methodName, <FONT ID="StringLiteral">"\""</FONT>);
+<A NAME="1308"></A>                <FONT ID="If">if</FONT> ( methodName.equals(TEST)) methodName = tryToFindMethodName(contents,lineNr);
+<A NAME="1309"></A>                methodHeader.add(<FONT ID="StringLiteral">"\n"</FONT>);
+<A NAME="1310"></A>                methodHeader.add(<FONT ID="StringLiteral">"\n"</FONT>);
+<A NAME="1311"></A>                methodHeader.add(javaShortComment + COMTESTID+ <FONT ID="StringLiteral">" "</FONT> + COMTESTBEGIN + <FONT ID="StringLiteral">"\n"</FONT>);
+<A NAME="1312"></A>                <FONT ID="If">if</FONT> ( methodThrows.length() == <FONT ID="IntegerLiteral">0</FONT> ) <FONT ID="SingleLineComment">// generate simple comment
+<A NAME="1313"></A></FONT>                  methodHeader.add(<FONT ID="StringLiteral">"  /** "</FONT> +methodName + METHODINDEXMARKER +<FONT ID="StringLiteral">" */\n"</FONT>);
+<A NAME="1314"></A>                <FONT ID="Else">else</FONT> { <FONT ID="SingleLineComment">// generate better comments for @throws
+<A NAME="1315"></A></FONT>                    methodHeader.add(<FONT ID="StringLiteral">"  /** \n"</FONT>);
+<A NAME="1316"></A>                    methodHeader.add(<FONT ID="StringLiteral">"   * "</FONT> + methodName + METHODINDEXMARKER +<FONT ID="StringLiteral">" \n"</FONT>);
+<A NAME="1317"></A>                    String exception = remove(methodThrows, <FONT ID="StringLiteral">"throws"</FONT>);
+<A NAME="1318"></A>                    <A HREF="../comtest/Strings.java.html">Strings</A> excptions = splitBy(exception, <FONT ID="StringLiteral">","</FONT>);
+<A NAME="1319"></A>                    <FONT ID="For">for</FONT> (String exp:excptions) 
+<A NAME="1320"></A>                      methodHeader.add(<FONT ID="StringLiteral">"   * @throws "</FONT> + exp.trim() +<FONT ID="StringLiteral">" when error\n"</FONT>);
+<A NAME="1321"></A>                    methodHeader.add(<FONT ID="StringLiteral">"   */\n"</FONT>);
+<A NAME="1322"></A>                    
+<A NAME="1323"></A>                }
+<A NAME="1324"></A>                methodHeader.add(<FONT ID="StringLiteral">"  @Test\n"</FONT>);
+<A NAME="1325"></A>                methodHeader.add(<FONT ID="StringLiteral">"  public void "</FONT>+methodName + METHODINDEXMARKER +<FONT ID="StringLiteral">"() "</FONT> + methodThrows + <FONT ID="StringLiteral">"{"</FONT>);
+<A NAME="1326"></A>                <FONT ID="SingleLineComment">//methodHeader.add("  @Test // " + COMTESTID+ " " + COMTESTBEGIN + "\n");
+<A NAME="1327"></A></FONT>                <FONT ID="SingleLineComment">//methodHeader.add("  public void "+methodName + METHODINDEXMARKER +"() {");
+<A NAME="1328"></A></FONT>                methodFooter.add(<FONT ID="StringLiteral">"  } // "</FONT> + COMTESTID + <FONT ID="StringLiteral">" "</FONT> + COMTESTEND + <FONT ID="StringLiteral">"\n"</FONT>);
+<A NAME="1329"></A>                initLine = lineNr+<FONT ID="IntegerLiteral">1</FONT>;
+<A NAME="1330"></A>            }
+<A NAME="1331"></A>            
+<A NAME="1332"></A>
+<A NAME="1333"></A>            <FONT ID="FormalComment">/**
+<A NAME="1334"></A>             * Reads the code from contents starting from line start
+<A NAME="1335"></A>             * and returns the line last handled.  
+<A NAME="1336"></A>             * The ComTest block ends to next @-line or
+<A NAME="1337"></A>             * to end of pre-tag.
+<A NAME="1338"></A>             * @param start first line index to handle
+<A NAME="1339"></A>             * @return last line index handled
+<A NAME="1340"></A>             */</FONT>
+<A NAME="1341"></A>            <FONT ID="Public">public</FONT> <FONT ID="Int">int</FONT> readCode(<FONT ID="Int">int</FONT> start) { <FONT ID="SingleLineComment">// NOPMD by vesal on 13.1.2008 15:30
+<A NAME="1342"></A></FONT>                methodThrows = <FONT ID="StringLiteral">""</FONT>;
+<A NAME="1343"></A>                printedTableLines = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="1344"></A>                <FONT ID="Try">try</FONT> {
+<A NAME="1345"></A>                    <FONT ID="For">for</FONT> ( lineNr = start; lineNr &lt; contents.size(); lineNr++ ) {
+<A NAME="1346"></A>                        String s = contents.get(lineNr);
+<A NAME="1347"></A>                        s = saveStartAndEndOfLine(s);
+<A NAME="1348"></A>                        <FONT ID="If">if</FONT> ( s.indexOf(<FONT ID="StringLiteral">"*/"</FONT>) &gt;= <FONT ID="IntegerLiteral">0</FONT> ) <FONT ID="Return">return</FONT> lineNr;
+<A NAME="1349"></A>                        <FONT ID="If">if</FONT> ( s.indexOf(<FONT ID="StringLiteral">"&lt;/pre&gt;"</FONT>) &gt;= <FONT ID="IntegerLiteral">0</FONT> ) <FONT ID="Return">return</FONT> lineNr;
+<A NAME="1350"></A>                        s = removeFromBeginingTrim(s,<FONT ID="StringLiteral">"*"</FONT>);
+<A NAME="1351"></A>                        <FONT ID="If">if</FONT> ( !rawMode ) s = s.trim(); <FONT ID="SingleLineComment">// in raw-mode save spaces
+<A NAME="1352"></A></FONT>                        <FONT ID="If">if</FONT> ( s.length() &lt;= <FONT ID="IntegerLiteral">0</FONT> ) {
+<A NAME="1353"></A>                            <FONT ID="If">if</FONT> ( rawMode ) <FONT ID="SingleLineComment">// In raw-mode empty lines preserved 
+<A NAME="1354"></A></FONT>                                outLines(endOfLine, lineNr+<FONT ID="IntegerLiteral">1</FONT>);
+<A NAME="1355"></A>                            <FONT ID="Continue">continue</FONT>;
+<A NAME="1356"></A>                        }
+<A NAME="1357"></A>                        s = isPseudoComment(s); 
+<A NAME="1358"></A>                        
+<A NAME="1359"></A>                        <FONT ID="If">if</FONT> ( ( s.charAt(<FONT ID="IntegerLiteral">0</FONT>)== <FONT ID="CharacerLiteral">'@'</FONT> ) &amp;&amp; !jUnitAnnotate(s) ) <FONT ID="Return">return</FONT> lineNr;
+<A NAME="1360"></A>                        s = handleAnnotationInComments(s);
+<A NAME="1361"></A>                        <FONT ID="If">if</FONT> ( checkVariables(s)) <FONT ID="Continue">continue</FONT>;
+<A NAME="1362"></A>
+<A NAME="1363"></A>                        <FONT ID="If">if</FONT> ( s.indexOf(STARTOFTEST) &gt;= <FONT ID="IntegerLiteral">0</FONT> ) {
+<A NAME="1364"></A>                            checkMethodThrows(contents.get(lineNr+<FONT ID="IntegerLiteral">1</FONT>));
+<A NAME="1365"></A>                            createHeaderAndFooter(s);
+<A NAME="1366"></A>                            <FONT ID="Continue">continue</FONT>;
+<A NAME="1367"></A>                        }
+<A NAME="1368"></A>
+<A NAME="1369"></A>                        <FONT ID="If">if</FONT> ( handleImports(s) ) <FONT ID="Continue">continue</FONT>; <FONT ID="SingleLineComment">// Is this needed anymore?
+<A NAME="1370"></A></FONT>                        
+<A NAME="1371"></A>                        <FONT ID="If">if</FONT> ( methodName == <FONT ID="Null">null</FONT> ) <FONT ID="Continue">continue</FONT>;
+<A NAME="1372"></A>
+<A NAME="1373"></A>                        <FONT ID="If">if</FONT> ( indexOfNotInQuotes(s, SEPARATORLINE) &gt;= <FONT ID="IntegerLiteral">0</FONT> ) <FONT ID="Continue">continue</FONT>;
+<A NAME="1374"></A>
+<A NAME="1375"></A>                        <FONT ID="If">if</FONT> ( indexOfNotInQuotes(s, INITLINE) &gt;= <FONT ID="IntegerLiteral">0</FONT> ) { <FONT ID="SingleLineComment">// new init
+<A NAME="1376"></A></FONT>                            <FONT ID="If">if</FONT> ( vars == <FONT ID="Null">null</FONT> &amp;&amp; EVERYLINEINITS1.equals(INITLINE) ) everyLineInits = <FONT ID="True">true</FONT>;
+<A NAME="1377"></A>                            <FONT ID="Else">else</FONT> outFooter(lineNr+<FONT ID="IntegerLiteral">1</FONT>);
+<A NAME="1378"></A>                            <FONT ID="Continue">continue</FONT>;
+<A NAME="1379"></A>                        }
+<A NAME="1380"></A>
+<A NAME="1381"></A>                        <FONT ID="If">if</FONT> ( indexOfNotInQuotes(s, EVERYLINEINITS1) &gt;= <FONT ID="IntegerLiteral">0</FONT> || 
+<A NAME="1382"></A>                             indexOfNotInQuotes(s, EVERYLINEINITS2) &gt;= <FONT ID="IntegerLiteral">0</FONT> ) {
+<A NAME="1383"></A>                            everyLineInits = <FONT ID="True">true</FONT>;
+<A NAME="1384"></A>                            <FONT ID="Continue">continue</FONT>;
+<A NAME="1385"></A>                        }
+<A NAME="1386"></A>                        
+<A NAME="1387"></A>                        <FONT ID="If">if</FONT> ( isTableLine(s) ) { handleTableLine(s); <FONT ID="Continue">continue</FONT>;  }
+<A NAME="1388"></A>
+<A NAME="1389"></A>                        handleSentences(s);
+<A NAME="1390"></A>                    }
+<A NAME="1391"></A>                } <FONT ID="Finally">finally</FONT> {
+<A NAME="1392"></A>                    <FONT ID="If">if</FONT> ( !methodHeaderPrinted &amp;&amp; initCmds.size() &gt; <FONT ID="IntegerLiteral">0</FONT> ) outNewHeader();
+<A NAME="1393"></A>                    <FONT ID="If">if</FONT> ( template.size() &gt; <FONT ID="IntegerLiteral">0</FONT> &amp;&amp; printedTableLines == <FONT ID="IntegerLiteral">0</FONT> ) {
+<A NAME="1394"></A>                        <FONT ID="If">if</FONT> ( !methodHeaderPrinted  ) outNewHeader();
+<A NAME="1395"></A>                        addOut(template,LINENUMBERMARKER,<FONT ID="StringLiteral">""</FONT>+(lineNr+<FONT ID="IntegerLiteral">1</FONT>));
+<A NAME="1396"></A>                    }
+<A NAME="1397"></A>                    outFooter(<FONT ID="IntegerLiteral">0</FONT>);
+<A NAME="1398"></A>                }
+<A NAME="1399"></A>                <FONT ID="Return">return</FONT> lineNr;
+<A NAME="1400"></A>            }
+<A NAME="1401"></A>        }
+<A NAME="1402"></A>
+<A NAME="1403"></A>
+<A NAME="1404"></A>        <FONT ID="FormalComment">/** 
+<A NAME="1405"></A>         * Returns integer i by at least two characters
+<A NAME="1406"></A>         * @param i
+<A NAME="1407"></A>         * @return i by at least two characters
+<A NAME="1408"></A>         */</FONT>
+<A NAME="1409"></A>        <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> String two(<FONT ID="Int">int</FONT> i) {
+<A NAME="1410"></A>            <FONT ID="If">if</FONT> ( i &gt;= <FONT ID="IntegerLiteral">10</FONT> || i &lt; <FONT ID="IntegerLiteral">0</FONT> ) <FONT ID="Return">return</FONT> <FONT ID="StringLiteral">""</FONT> + i;
+<A NAME="1411"></A>            <FONT ID="Return">return</FONT> <FONT ID="StringLiteral">"0"</FONT> + i;
+<A NAME="1412"></A>        }
+<A NAME="1413"></A>        
+<A NAME="1414"></A>
+<A NAME="1415"></A>        <FONT ID="FormalComment">/**
+<A NAME="1416"></A>         * Returns version string for class comments
+<A NAME="1417"></A>         */</FONT>
+<A NAME="1418"></A>        <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> String getComTestVersion() {
+<A NAME="1419"></A>            Calendar cal = Calendar.getInstance();
+<A NAME="1420"></A>            String timestamp = <FONT ID="StringLiteral">""</FONT>+cal.get(Calendar.YEAR) + <FONT ID="StringLiteral">"."</FONT> + two(cal.get(Calendar.MONTH)+<FONT ID="IntegerLiteral">1</FONT>) + <FONT ID="StringLiteral">"."</FONT> +
+<A NAME="1421"></A>                               two(cal.get(Calendar.DAY_OF_MONTH)) + <FONT ID="StringLiteral">" "</FONT> +
+<A NAME="1422"></A>                               two(cal.get(Calendar.HOUR_OF_DAY)) + <FONT ID="StringLiteral">":"</FONT> + two(cal.get(Calendar.MINUTE)) + <FONT ID="StringLiteral">":"</FONT> +
+<A NAME="1423"></A>                               two(cal.get(Calendar.SECOND));
+<A NAME="1424"></A>            <FONT ID="Return">return</FONT> <FONT ID="StringLiteral">" * @version "</FONT> + timestamp + <FONT ID="StringLiteral">" // "</FONT>+ COMTESTID;
+<A NAME="1425"></A>        }
+<A NAME="1426"></A>        
+<A NAME="1427"></A>        
+<A NAME="1428"></A>        <FONT ID="FormalComment">/**
+<A NAME="1429"></A>         * Scans String list and deletes all lines written by ComTest
+<A NAME="1430"></A>         * @param testContents list to scan
+<A NAME="1431"></A>         * @param outlines list where is the result (all lines with \n)
+<A NAME="1432"></A>         */</FONT>
+<A NAME="1433"></A>        <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> <FONT ID="Void">void</FONT> deleteComTestLines(<A HREF="../comtest/Strings.java.html">Strings</A> testContents,<A HREF="../comtest/Strings.java.html">Strings</A> outlines) { <FONT ID="SingleLineComment">// NOPMD by vesal on 13.1.2008 15:30
+<A NAME="1434"></A></FONT>            <FONT ID="If">if</FONT> ( testContents == <FONT ID="Null">null</FONT> ) <FONT ID="Return">return</FONT>;
+<A NAME="1435"></A>            <FONT ID="Int">int</FONT> blankLines = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="1436"></A>            <FONT ID="Boolean">boolean</FONT> inOwnWrite = <FONT ID="False">false</FONT>;
+<A NAME="1437"></A>            <FONT ID="For">for</FONT> (String s : testContents ) {
+<A NAME="1438"></A>                <FONT ID="If">if</FONT> ( ( indexOfNotInQuotes(s, COMTESTID) &gt;= <FONT ID="IntegerLiteral">0</FONT> ) || ( indexOfNotInQuotes(s, COMTESTIDOLD) &gt;= <FONT ID="IntegerLiteral">0</FONT> ) ) {
+<A NAME="1439"></A>                    <FONT ID="If">if</FONT> ( indexOfNotInQuotes(s,<FONT ID="StringLiteral">"@version"</FONT>) &gt;= <FONT ID="IntegerLiteral">0</FONT> ) outlines.add(getComTestVersion()+<FONT ID="StringLiteral">"\n"</FONT>);  
+<A NAME="1440"></A>                    <FONT ID="Else">else</FONT> <FONT ID="If">if</FONT> ( indexOfNotInQuotes(s, COMTESTBEGIN) &gt;= <FONT ID="IntegerLiteral">0</FONT> ) inOwnWrite = <FONT ID="True">true</FONT>;
+<A NAME="1441"></A>                    <FONT ID="Else">else</FONT> <FONT ID="If">if</FONT> ( indexOfNotInQuotes(s, COMTESTEND) &gt;= <FONT ID="IntegerLiteral">0</FONT> ) inOwnWrite = <FONT ID="False">false</FONT>;
+<A NAME="1442"></A>                    <FONT ID="Continue">continue</FONT>;
+<A NAME="1443"></A>                }    
+<A NAME="1444"></A>                <FONT ID="If">if</FONT> ( inOwnWrite ) <FONT ID="Continue">continue</FONT>;
+<A NAME="1445"></A>                
+<A NAME="1446"></A>                <FONT ID="If">if</FONT> ( s.trim().length() == <FONT ID="IntegerLiteral">0</FONT> ) {
+<A NAME="1447"></A>                    blankLines++;
+<A NAME="1448"></A>                    <FONT ID="If">if</FONT> ( blankLines &gt;= <FONT ID="IntegerLiteral">2</FONT>) <FONT ID="Continue">continue</FONT>;
+<A NAME="1449"></A>                } <FONT ID="Else">else</FONT> blankLines = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="1450"></A>                
+<A NAME="1451"></A>                outlines.add(s+<FONT ID="StringLiteral">"\n"</FONT>);
+<A NAME="1452"></A>               
+<A NAME="1453"></A>            }
+<A NAME="1454"></A>            
+<A NAME="1455"></A>            <FONT ID="SingleLineComment">// Delete last closing }
+<A NAME="1456"></A></FONT>            <FONT ID="For">for</FONT> ( <FONT ID="Int">int</FONT> ir = outlines.size()-<FONT ID="IntegerLiteral">1</FONT>; ir &gt;= <FONT ID="IntegerLiteral">0</FONT>; ir--) {
+<A NAME="1457"></A>               String s = outlines.get(ir); 
+<A NAME="1458"></A>               <FONT ID="If">if</FONT> ( indexOfNotInQuotes(s, <FONT ID="StringLiteral">"}"</FONT>) &gt;= <FONT ID="IntegerLiteral">0</FONT> ) {
+<A NAME="1459"></A>                   outlines.removeRange(ir,outlines.size());
+<A NAME="1460"></A>                   <FONT ID="Return">return</FONT>;
+<A NAME="1461"></A>               }
+<A NAME="1462"></A>            }
+<A NAME="1463"></A>        }
+<A NAME="1464"></A>
+<A NAME="1465"></A>
+<A NAME="1466"></A>        <FONT ID="FormalComment">/**
+<A NAME="1467"></A>         * May change outFileName to same directory, if no package
+<A NAME="1468"></A>         * @param fileName name to use as a base name 
+<A NAME="1469"></A>         * @throws IOException 
+<A NAME="1470"></A>         */</FONT>
+<A NAME="1471"></A>        <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> checkFileNameOnceAgain(String fileName) <FONT ID="Throws">throws</FONT> IOException  {
+<A NAME="1472"></A>            <FONT ID="If">if</FONT> ( testFilePackageName.length() &gt; <FONT ID="IntegerLiteral">0</FONT> ) <FONT ID="Return">return</FONT>;
+<A NAME="1473"></A>            directory = <FONT ID="StringLiteral">"./"</FONT>;
+<A NAME="1474"></A>            findNames(fileName);
+<A NAME="1475"></A>        }
+<A NAME="1476"></A>
+<A NAME="1477"></A>        
+<A NAME="1478"></A>        <FONT ID="FormalComment">/**
+<A NAME="1479"></A>         * Find outName and className from fileName
+<A NAME="1480"></A>         * @param fileName name to look;
+<A NAME="1481"></A>         * @return true
+<A NAME="1482"></A>         * @throws IOException when problems with the file
+<A NAME="1483"></A>         */</FONT>
+<A NAME="1484"></A>        <FONT ID="Public">public</FONT> <FONT ID="Boolean">boolean</FONT> findNames(String fileName) <FONT ID="Throws">throws</FONT> IOException {
+<A NAME="1485"></A>            File file = <FONT ID="New">new</FONT> File(fileName);
+<A NAME="1486"></A>            String name = file.getName();
+<A NAME="1487"></A>            String dir = removeAllAfter(file.getCanonicalPath(),name);
+<A NAME="1488"></A>            File iniFile = <FONT ID="New">new</FONT> File(dir,COMTESTINI);
+<A NAME="1489"></A>            comTestIni = iniFile.getCanonicalPath();
+<A NAME="1490"></A>            
+<A NAME="1491"></A>            <FONT ID="If">if</FONT> ( directory != <FONT ID="Null">null</FONT> &amp;&amp; directory.length() &gt; <FONT ID="IntegerLiteral">0</FONT> ) {
+<A NAME="1492"></A>                File outdir = <FONT ID="New">new</FONT> File(directory);
+<A NAME="1493"></A>                <FONT ID="If">if</FONT> ( outdir.isAbsolute() ) dir = directory;
+<A NAME="1494"></A>                <FONT ID="Else">else</FONT> dir = dir + directory;
+<A NAME="1495"></A>            }
+<A NAME="1496"></A>            className = justFilePart(name);
+<A NAME="1497"></A>            outFileName = addToName(name,<FONT ID="StringLiteral">"Test"</FONT>);
+<A NAME="1498"></A>            testClassName = justFilePart(outFileName);
+<A NAME="1499"></A>            File outfile = <FONT ID="New">new</FONT> File(dir,outFileName); 
+<A NAME="1500"></A>            outDirName = dir;
+<A NAME="1501"></A>            outFileName = outfile.getCanonicalPath();
+<A NAME="1502"></A>            <FONT ID="Return">return</FONT> <FONT ID="True">true</FONT>;            
+<A NAME="1503"></A>        }
+<A NAME="1504"></A>        
+<A NAME="1505"></A>        <FONT ID="FormalComment">/**
+<A NAME="1506"></A>         * Finds the package line from contents.
+<A NAME="1507"></A>         * Substitutes to packageName
+<A NAME="1508"></A>         * @param contents where to find
+<A NAME="1509"></A>         * @return true if found
+<A NAME="1510"></A>         */</FONT>
+<A NAME="1511"></A>        <FONT ID="Private">private</FONT> <FONT ID="Boolean">boolean</FONT> findPackage(<A HREF="../comtest/Strings.java.html">Strings</A> contents) {
+<A NAME="1512"></A>            String pack;
+<A NAME="1513"></A>            <FONT ID="For">for</FONT> (String s:contents) {
+<A NAME="1514"></A>                <FONT ID="If">if</FONT> ( indexOfNotInQuotes(s, <FONT ID="StringLiteral">"package"</FONT>) &gt;= <FONT ID="IntegerLiteral">0</FONT> ) {
+<A NAME="1515"></A>                    pack = removeFromBegining(s,<FONT ID="StringLiteral">"package"</FONT>).trim();
+<A NAME="1516"></A>                    pack = removeAllAfter(pack,<FONT ID="StringLiteral">";"</FONT>).trim();
+<A NAME="1517"></A>                    <FONT ID="If">if</FONT> ( packageName.length() == <FONT ID="IntegerLiteral">0</FONT> ) packageName = pack;
+<A NAME="1518"></A>                    originalPackageName = pack;
+<A NAME="1519"></A>                    <FONT ID="Return">return</FONT> <FONT ID="True">true</FONT>;
+<A NAME="1520"></A>                }    
+<A NAME="1521"></A>            }
+<A NAME="1522"></A>            <FONT ID="Return">return</FONT> <FONT ID="False">false</FONT>;
+<A NAME="1523"></A>        }
+<A NAME="1524"></A>
+<A NAME="1525"></A>        <FONT ID="FormalComment">/**
+<A NAME="1526"></A>         * Reads possible old file and removes all ComTest generated code
+<A NAME="1527"></A>         * and create the output to outlines
+<A NAME="1528"></A>         * @throws IOException if outPutFile is not possible to open
+<A NAME="1529"></A>         */</FONT>
+<A NAME="1530"></A>        <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> createTestFileBegin() <FONT ID="Throws">throws</FONT> IOException {
+<A NAME="1531"></A>            String packageline = <FONT ID="StringLiteral">""</FONT>;
+<A NAME="1532"></A>            
+<A NAME="1533"></A>            <A HREF="../comtest/Strings.java.html">Strings</A> testContents = getFileContents(outFileName);
+<A NAME="1534"></A>            outlines = <FONT ID="New">new</FONT> <A HREF="../comtest/Strings.java.html">Strings</A>();
+<A NAME="1535"></A>            deleteComTestLines(testContents,outlines);
+<A NAME="1536"></A>            <FONT ID="If">if</FONT> ( packageName.length() &gt; <FONT ID="IntegerLiteral">0</FONT> ) {
+<A NAME="1537"></A>                String pack = packageName;
+<A NAME="1538"></A>                <FONT ID="If">if</FONT> ( <FONT ID="StringLiteral">"."</FONT>.equals(pack) ) pack = originalPackageName; 
+<A NAME="1539"></A>                <FONT ID="Else">else</FONT> <FONT ID="If">if</FONT> ( pack.charAt(<FONT ID="IntegerLiteral">0</FONT>) == <FONT ID="CharacerLiteral">'.'</FONT> ) {
+<A NAME="1540"></A>                    pack = originalPackageName + <FONT ID="StringLiteral">"."</FONT> + pack.substring(<FONT ID="IntegerLiteral">1</FONT>);
+<A NAME="1541"></A>                }
+<A NAME="1542"></A>                <FONT ID="If">if</FONT> ( originalPackageName.length() == <FONT ID="IntegerLiteral">0</FONT> ) pack = <FONT ID="StringLiteral">""</FONT>;
+<A NAME="1543"></A>                packageline = <FONT ID="StringLiteral">"package "</FONT> + pack + <FONT ID="StringLiteral">";"</FONT>;
+<A NAME="1544"></A>                testFilePackageName = pack;
+<A NAME="1545"></A>            }
+<A NAME="1546"></A>
+<A NAME="1547"></A>            <FONT ID="If">if</FONT> ( ! noImportAtAll ) {
+<A NAME="1548"></A>                String[] jimp = JUNITIMPORTS.split(<FONT ID="StringLiteral">":"</FONT>);
+<A NAME="1549"></A>                <FONT ID="For">for</FONT> (String s:jimp)
+<A NAME="1550"></A>                  imports.add(s);
+<A NAME="1551"></A>            }  
+<A NAME="1552"></A>
+<A NAME="1553"></A>            <FONT ID="If">if</FONT> ( outlines.size() &gt; <FONT ID="IntegerLiteral">2</FONT> ) <FONT ID="Return">return</FONT>;
+<A NAME="1554"></A>
+<A NAME="1555"></A>            <FONT ID="If">if</FONT> ( testFilePackageName.length() &gt; <FONT ID="IntegerLiteral">0</FONT> ) addOutln(packageline);
+<A NAME="1556"></A>            addOutln(<FONT ID="StringLiteral">""</FONT>);
+<A NAME="1557"></A>            addOutln(<FONT ID="StringLiteral">"/**"</FONT>);
+<A NAME="1558"></A>            addOutln(<FONT ID="StringLiteral">" * Test class made by ComTest"</FONT>);
+<A NAME="1559"></A>            addOutln(getComTestVersion()); 
+<A NAME="1560"></A>            addOutln(<FONT ID="StringLiteral">" *"</FONT>); 
+<A NAME="1561"></A>            addOutln(<FONT ID="StringLiteral">" */"</FONT>);
+<A NAME="1562"></A>            <FONT ID="If">if</FONT> ( !BEFORETESTCLASS.equals(<FONT ID="StringLiteral">""</FONT>) ) addOutln(BEFORETESTCLASS);
+<A NAME="1563"></A>            addOutln(<FONT ID="StringLiteral">"public class "</FONT> + testClassName + <FONT ID="StringLiteral">" {"</FONT>);           
+<A NAME="1564"></A>        }
+<A NAME="1565"></A>
+<A NAME="1566"></A>
+<A NAME="1567"></A>        <FONT ID="FormalComment">/**
+<A NAME="1568"></A>         * Creates the inner part of test class
+<A NAME="1569"></A>         */</FONT>
+<A NAME="1570"></A>        <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> createTestFileInner() { <FONT ID="SingleLineComment">// NOPMD by vesal on 13.1.2008 15:30
+<A NAME="1571"></A></FONT>            <FONT ID="Boolean">boolean</FONT> javaComment=<FONT ID="False">false</FONT>;
+<A NAME="1572"></A>            <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> i=<FONT ID="IntegerLiteral">0</FONT>; i &lt; contents.size(); i++ ) {
+<A NAME="1573"></A>                String s = contents.get(i).trim();
+<A NAME="1574"></A>                <FONT ID="If">if</FONT> ( checkVariables(s) ) <FONT ID="Continue">continue</FONT>;
+<A NAME="1575"></A>                <FONT ID="If">if</FONT> ( javaComment &amp;&amp; indexOfNotInQuotes(s,<FONT ID="StringLiteral">"*/"</FONT>)&gt;=<FONT ID="IntegerLiteral">0</FONT> ) {
+<A NAME="1576"></A>                    javaComment = <FONT ID="False">false</FONT>;
+<A NAME="1577"></A>                    <FONT ID="Continue">continue</FONT>;
+<A NAME="1578"></A>                }
+<A NAME="1579"></A>                <FONT ID="If">if</FONT> ( !javaComment ) {
+<A NAME="1580"></A>                    <FONT ID="Int">int</FONT> isc = indexOfNotInQuotes(s, <FONT ID="StringLiteral">"/*"</FONT>); 
+<A NAME="1581"></A>                    <FONT ID="Int">int</FONT> iec = indexOfNotInQuotes(s, <FONT ID="StringLiteral">"*/"</FONT>,QUOTES,isc+<FONT ID="IntegerLiteral">1</FONT>); 
+<A NAME="1582"></A>                    <FONT ID="If">if</FONT> ( isc &gt;= <FONT ID="IntegerLiteral">0</FONT> &amp;&amp; iec &lt; <FONT ID="IntegerLiteral">0</FONT> ) javaComment = <FONT ID="True">true</FONT>;
+<A NAME="1583"></A>                    <FONT ID="Continue">continue</FONT>;
+<A NAME="1584"></A>                }
+<A NAME="1585"></A>                <FONT ID="If">if</FONT> ( s.indexOf(STARTOFTEST) &gt;= <FONT ID="IntegerLiteral">0</FONT> ) {
+<A NAME="1586"></A>                    CommentCodeHandler codeHandler = <FONT ID="New">new</FONT> CommentCodeHandler();  <FONT ID="SingleLineComment">// NOPMD by vesal on 13.1.2008 15:31
+<A NAME="1587"></A></FONT>                    i = codeHandler.readCode(i)-<FONT ID="IntegerLiteral">1</FONT>;
+<A NAME="1588"></A>                }    
+<A NAME="1589"></A>            }
+<A NAME="1590"></A>        }
+<A NAME="1591"></A>     
+<A NAME="1592"></A>        <FONT ID="FormalComment">/**
+<A NAME="1593"></A>         * Check the selected line by ComTest options
+<A NAME="1594"></A>         * @param line what to check
+<A NAME="1595"></A>         * @param all to check all or only part
+<A NAME="1596"></A>         *
+<A NAME="1597"></A>         * @example
+<A NAME="1598"></A>         * &lt;pre name="test"&gt;
+<A NAME="1599"></A>         *  TestHelpper t = new TestHelpper();
+<A NAME="1600"></A>         *  t.scanner.checkOptionLine("    * #import imp1; // ", true);
+<A NAME="1601"></A>         *  t.imports.get(0) === "import imp1;";
+<A NAME="1602"></A>         *  t.scanner.checkOptionLine("    *  #import imp2; // ", true);
+<A NAME="1603"></A>         *  t.imports.size() === 1; 
+<A NAME="1604"></A>         *  t.scanner.checkOptionLine("    // #import imp2; // ", true);
+<A NAME="1605"></A>         *  t.imports.get(1) === "import imp2;";
+<A NAME="1606"></A>         *  t.scanner.checkOptionLine("    //#import imp3; // ", true);
+<A NAME="1607"></A>         *  t.imports.get(2) === "import imp3;";
+<A NAME="1608"></A>         *  t.scanner.checkOptionLine("    *#import imp4; // ", true);
+<A NAME="1609"></A>         *  t.imports.get(3) === "import imp4;";
+<A NAME="1610"></A>         *  t.scanner.checkOptionLine("    //  #import imp5; // ", true);
+<A NAME="1611"></A>         *  t.imports.size() === 4; 
+<A NAME="1612"></A>         * &lt;/pre&gt;
+<A NAME="1613"></A>         */</FONT>
+<A NAME="1614"></A>        <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> checkOptionLine(String line, <FONT ID="Boolean">boolean</FONT> all) {
+<A NAME="1615"></A>            String s = line.trim(); 
+<A NAME="1616"></A>            <FONT ID="If">if</FONT> ( s.matches(<FONT ID="StringLiteral">"^\\* ?[^ ].*"</FONT>) ) s = s.substring(<FONT ID="IntegerLiteral">1</FONT>).trim();     <FONT ID="SingleLineComment">// allow: * #import anywhere
+<A NAME="1617"></A></FONT>            <FONT ID="Else">else</FONT> <FONT ID="If">if</FONT> ( s.matches(<FONT ID="StringLiteral">"^// ?[^ ].*"</FONT>) ) s = s.substring(<FONT ID="IntegerLiteral">2</FONT>).trim(); <FONT ID="SingleLineComment">// or: // #import 
+<A NAME="1618"></A></FONT>            s = removeAllAfter(s, <FONT ID="StringLiteral">"//"</FONT>);
+<A NAME="1619"></A>            <FONT ID="If">if</FONT> ( handleDirAndPackage(s) ) <FONT ID="Return">return</FONT>;
+<A NAME="1620"></A>            <FONT ID="If">if</FONT> ( handleImports(s) ) <FONT ID="Return">return</FONT>;
+<A NAME="1621"></A>            <FONT ID="If">if</FONT> ( !all ) <FONT ID="Return">return</FONT>;
+<A NAME="1622"></A>            <FONT ID="If">if</FONT> ( checkVariables(s) ) <FONT ID="Return">return</FONT>;
+<A NAME="1623"></A>        }
+<A NAME="1624"></A>
+<A NAME="1625"></A>        <FONT ID="FormalComment">/**
+<A NAME="1626"></A>         * Check the selected contents by ComTest options
+<A NAME="1627"></A>         * @param contents what to check
+<A NAME="1628"></A>         * @param all to check all or only part
+<A NAME="1629"></A>         *
+<A NAME="1630"></A>         */</FONT>
+<A NAME="1631"></A>        <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> checkOptions(<A HREF="../comtest/Strings.java.html">Strings</A> contents, <FONT ID="Boolean">boolean</FONT> all) {
+<A NAME="1632"></A>            <FONT ID="If">if</FONT> ( contents == <FONT ID="Null">null</FONT> ) <FONT ID="Return">return</FONT>;
+<A NAME="1633"></A>            <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> i=<FONT ID="IntegerLiteral">0</FONT>; i &lt; contents.size(); i++ ) {
+<A NAME="1634"></A>                checkOptionLine(contents.get(i),all);
+<A NAME="1635"></A>            }
+<A NAME="1636"></A>        }
+<A NAME="1637"></A>
+<A NAME="1638"></A>        
+<A NAME="1639"></A>       <FONT ID="FormalComment">/**
+<A NAME="1640"></A>        * Adds the line s+"\n" to outlines if it is not there already.
+<A NAME="1641"></A>        * The line "is there" if trim of it starts with s  
+<A NAME="1642"></A>        * @param i place to add if not already there
+<A NAME="1643"></A>        * @param s line to add if not found
+<A NAME="1644"></A>        * @return next place to add so i+1 if added, i if not
+<A NAME="1645"></A>        */</FONT> 
+<A NAME="1646"></A>       <FONT ID="Private">private</FONT> <FONT ID="Int">int</FONT> addIfNotAllready(<FONT ID="Int">int</FONT> i,String s) {
+<A NAME="1647"></A>           <FONT ID="For">for</FONT> ( String st:outlines ) 
+<A NAME="1648"></A>               <FONT ID="If">if</FONT> ( st.trim().startsWith(s ) ) <FONT ID="Return">return</FONT> i;
+<A NAME="1649"></A>           outlines.add(i,s+<FONT ID="StringLiteral">"\n"</FONT>);
+<A NAME="1650"></A>           <FONT ID="Return">return</FONT> i+<FONT ID="IntegerLiteral">1</FONT>;
+<A NAME="1651"></A>       }
+<A NAME="1652"></A>        
+<A NAME="1653"></A>        
+<A NAME="1654"></A>        <FONT ID="FormalComment">/**
+<A NAME="1655"></A>         * Add imports-list to outlines
+<A NAME="1656"></A>         * Also if doStaticImport is true then add also static import
+<A NAME="1657"></A>         */</FONT>
+<A NAME="1658"></A>        <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> addImports() { <FONT ID="SingleLineComment">// NOPMD by vesal on 13.1.2008 21:08
+<A NAME="1659"></A></FONT>            <FONT ID="Int">int</FONT> i; 
+<A NAME="1660"></A>            <FONT ID="Boolean">boolean</FONT> javaComment=<FONT ID="False">false</FONT>;
+<A NAME="1661"></A>            
+<A NAME="1662"></A>            <FONT ID="If">if</FONT> ( <FONT ID="StringLiteral">""</FONT>.equals(originalPackageName) ) fullAutoImport = <FONT ID="False">false</FONT>; 
+<A NAME="1663"></A>            
+<A NAME="1664"></A>            <FONT ID="If">if</FONT> ( fullAutoImport &amp;&amp; !needsStaticImport &amp;&amp; !needsClassImport ) needsClassImport = <FONT ID="True">true</FONT>;
+<A NAME="1665"></A>            
+<A NAME="1666"></A>            <FONT ID="If">if</FONT> ( fullAutoImport &amp;&amp; needsStaticImport ) imports.add(<FONT ID="StringLiteral">"import static "</FONT> + originalPackageName + <FONT ID="StringLiteral">"."</FONT> + className +<FONT ID="StringLiteral">".*;"</FONT>);
+<A NAME="1667"></A>            <FONT ID="If">if</FONT> ( fullAutoImport &amp;&amp; needsClassImport ) imports.add(<FONT ID="StringLiteral">"import "</FONT> + originalPackageName + <FONT ID="StringLiteral">".*;"</FONT>);
+<A NAME="1668"></A>
+<A NAME="1669"></A>            <FONT ID="For">for</FONT> (i=<FONT ID="IntegerLiteral">0</FONT>; i&lt;outlines.size()-<FONT ID="IntegerLiteral">1</FONT>; i++) {
+<A NAME="1670"></A>                String s = outlines.get(i).trim();
+<A NAME="1671"></A>                <FONT ID="If">if</FONT> ( javaComment ) { 
+<A NAME="1672"></A>                  <FONT ID="If">if</FONT> ( indexOfNotInQuotes(s,<FONT ID="StringLiteral">"*/"</FONT>)&gt;=<FONT ID="IntegerLiteral">0</FONT> ) javaComment = <FONT ID="False">false</FONT>;
+<A NAME="1673"></A>                  <FONT ID="Continue">continue</FONT>;
+<A NAME="1674"></A>                }
+<A NAME="1675"></A>                <FONT ID="Int">int</FONT> isc = indexOfNotInQuotes(s, <FONT ID="StringLiteral">"/*"</FONT>); 
+<A NAME="1676"></A>                <FONT ID="Int">int</FONT> iec = indexOfNotInQuotes(s, <FONT ID="StringLiteral">"*/"</FONT>,QUOTES,isc+<FONT ID="IntegerLiteral">1</FONT>); 
+<A NAME="1677"></A>                <FONT ID="If">if</FONT> ( isc &gt;= <FONT ID="IntegerLiteral">0</FONT> &amp;&amp; iec &lt; <FONT ID="IntegerLiteral">0</FONT> ) {
+<A NAME="1678"></A>                    javaComment = <FONT ID="True">true</FONT>;
+<A NAME="1679"></A>                    <FONT ID="Continue">continue</FONT>;
+<A NAME="1680"></A>                }    
+<A NAME="1681"></A>                <FONT ID="If">if</FONT> ( isEmpty(s) )                { <FONT ID="Break">break</FONT>;      }
+<A NAME="1682"></A>                <FONT ID="If">if</FONT> ( s.indexOf(<FONT ID="StringLiteral">"package"</FONT>) &gt;= <FONT ID="IntegerLiteral">0</FONT> ) { i++; <FONT ID="Break">break</FONT>; }
+<A NAME="1683"></A>                <FONT ID="If">if</FONT> ( s.indexOf(<FONT ID="StringLiteral">"class"</FONT>)   &gt;= <FONT ID="IntegerLiteral">0</FONT> ) { <FONT ID="Break">break</FONT>;      }
+<A NAME="1684"></A>                <FONT ID="If">if</FONT> ( s.indexOf(<FONT ID="StringLiteral">"import"</FONT>)  &gt;= <FONT ID="IntegerLiteral">0</FONT> ) { <FONT ID="Break">break</FONT>;      }
+<A NAME="1685"></A>            }
+<A NAME="1686"></A>            outlines.add(i++,<FONT ID="StringLiteral">"// "</FONT> + COMTESTID+ <FONT ID="StringLiteral">" "</FONT> + COMTESTBEGIN + <FONT ID="StringLiteral">"\n"</FONT>);    
+<A NAME="1687"></A>            <FONT ID="For">for</FONT> ( String s:imports ) i = addIfNotAllready(i,s);
+<A NAME="1688"></A>            <FONT ID="If">if</FONT> ( doStaticImport ) i = addIfNotAllready(i,<FONT ID="StringLiteral">"import static "</FONT> + originalPackageName + <FONT ID="StringLiteral">"."</FONT> + className +<FONT ID="StringLiteral">".*;"</FONT>);
+<A NAME="1689"></A>            <FONT ID="SingleLineComment">// if ( !noAutoImport &amp;&amp; !originalPackageName.equals(testFilePackageName) ) i = addIfNotAllready(i,JAVAIMPOPRT + originalPackageName + "." + className +";");
+<A NAME="1690"></A></FONT>            outlines.add(i++,<FONT ID="StringLiteral">"// "</FONT> + COMTESTID+ <FONT ID="StringLiteral">" "</FONT> + COMTESTEND + <FONT ID="StringLiteral">"\n"</FONT>);    
+<A NAME="1691"></A>        }
+<A NAME="1692"></A>
+<A NAME="1693"></A>        <FONT ID="FormalComment">/**
+<A NAME="1694"></A>         * Climb up from filename and find first ComTest.ini
+<A NAME="1695"></A>         * and read that
+<A NAME="1696"></A>         * @param filename name with path to start climbing
+<A NAME="1697"></A>         */</FONT>
+<A NAME="1698"></A>        <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> checkIniOptions(String filename) {
+<A NAME="1699"></A>            File file = <FONT ID="New">new</FONT> File(filename);
+<A NAME="1700"></A>            String name = file.getName();
+<A NAME="1701"></A>            String dir = removeAllAfter(file.getPath(),name);
+<A NAME="1702"></A>            <FONT ID="While">while</FONT> ( !isEmpty(dir) ) {
+<A NAME="1703"></A>              <A HREF="../comtest/Strings.java.html">Strings</A> iniContents = getFileContents(dir+name);
+<A NAME="1704"></A>              <FONT ID="If">if</FONT> ( iniContents != <FONT ID="Null">null</FONT> ) {
+<A NAME="1705"></A>                checkOptions(iniContents,<FONT ID="True">true</FONT>);
+<A NAME="1706"></A>                <FONT ID="Return">return</FONT>;
+<A NAME="1707"></A>              }
+<A NAME="1708"></A>              dir = dir.substring(<FONT ID="IntegerLiteral">0</FONT>,dir.length()-<FONT ID="IntegerLiteral">1</FONT>);
+<A NAME="1709"></A>              String filepart = justFilePart(dir);
+<A NAME="1710"></A>              dir = dir.substring(<FONT ID="IntegerLiteral">0</FONT>,dir.length()-filepart.length());
+<A NAME="1711"></A>            }  
+<A NAME="1712"></A>        }
+<A NAME="1713"></A>        
+<A NAME="1714"></A>        <FONT ID="FormalComment">/**
+<A NAME="1715"></A>         * Scan the contents and make a test class
+<A NAME="1716"></A>         * @param fileName filename read to contents
+<A NAME="1717"></A>         * @return outName if ok, null if something wrong
+<A NAME="1718"></A>         */</FONT>
+<A NAME="1719"></A>        <FONT ID="Public">public</FONT> String scan(String fileName) {
+<A NAME="1720"></A>            PrintWriter out = <FONT ID="Null">null</FONT>;
+<A NAME="1721"></A>            <FONT ID="Boolean">boolean</FONT> status = <FONT ID="False">false</FONT>;
+<A NAME="1722"></A>            <FONT ID="Try">try</FONT> {
+<A NAME="1723"></A>                findNames(fileName);
+<A NAME="1724"></A>                checkIniOptions(comTestIni);
+<A NAME="1725"></A>                findPackage(contents);
+<A NAME="1726"></A>                checkOptions(contents,<FONT ID="False">false</FONT>);
+<A NAME="1727"></A>                findNames(fileName); <FONT ID="SingleLineComment">// May have changed due options
+<A NAME="1728"></A></FONT>                createTestFileBegin();
+<A NAME="1729"></A>                createTestFileInner();
+<A NAME="1730"></A>                addOut(<FONT ID="StringLiteral">"}"</FONT>);
+<A NAME="1731"></A>                addImports();
+<A NAME="1732"></A>                
+<A NAME="1733"></A>                checkFileNameOnceAgain(fileName);
+<A NAME="1734"></A>                
+<A NAME="1735"></A>                status = <FONT ID="New">new</FONT> File(outDirName).mkdirs();
+<A NAME="1736"></A>                out = <FONT ID="New">new</FONT> PrintWriter(<FONT ID="New">new</FONT> FileWriter(outFileName));
+<A NAME="1737"></A>                println(out,outlines,<FONT ID="StringLiteral">""</FONT>);
+<A NAME="1738"></A>                <FONT ID="Return">return</FONT> outFileName;
+<A NAME="1739"></A>            } <FONT ID="Catch">catch</FONT> (IOException e) {
+<A NAME="1740"></A>                String s = <FONT ID="StringLiteral">""</FONT>;
+<A NAME="1741"></A>                <FONT ID="If">if</FONT> ( !status ) s = <FONT ID="StringLiteral">"\nNot able to make dir: "</FONT> + outDirName;
+<A NAME="1742"></A>                System.err.println(fileName +  <FONT ID="StringLiteral">" =&gt; "</FONT> + outFileName + <FONT ID="StringLiteral">" "</FONT> + e.getMessage() + s);
+<A NAME="1743"></A>                <FONT ID="Return">return</FONT> <FONT ID="Null">null</FONT>;
+<A NAME="1744"></A>            } <FONT ID="Finally">finally</FONT> {
+<A NAME="1745"></A>                <FONT ID="If">if</FONT> ( out != <FONT ID="Null">null</FONT> ) out.close();
+<A NAME="1746"></A>            }
+<A NAME="1747"></A>        }
+<A NAME="1748"></A>
+<A NAME="1749"></A>    }
+<A NAME="1750"></A>
+<A NAME="1751"></A>
+<A NAME="1752"></A>    <FONT ID="FormalComment">/**
+<A NAME="1753"></A>     * Process the file and make a unit test
+<A NAME="1754"></A>     * @param fileName the name of the file to process
+<A NAME="1755"></A>     * @return handled filename in success, null otherwise
+<A NAME="1756"></A>     */</FONT>
+<A NAME="1757"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> String processFile(String fileName) {
+<A NAME="1758"></A>        <FONT ID="If">if</FONT> ( !fileName.endsWith(<FONT ID="StringLiteral">".java"</FONT>) ) <FONT ID="Return">return</FONT> <FONT ID="Null">null</FONT>;
+<A NAME="1759"></A>        <FONT ID="SingleLineComment">//if ( fileName.endsWith("Test.java") ) return null;
+<A NAME="1760"></A></FONT>        <A HREF="../comtest/Strings.java.html">Strings</A> contents = getFileContents(fileName);
+<A NAME="1761"></A>        <FONT ID="If">if</FONT> ( contents == <FONT ID="Null">null</FONT> ) <FONT ID="Return">return</FONT> <FONT ID="Null">null</FONT>;
+<A NAME="1762"></A>        <FONT ID="If">if</FONT> ( contents.size() &lt; <FONT ID="IntegerLiteral">1</FONT>) <FONT ID="Return">return</FONT> <FONT ID="Null">null</FONT>;
+<A NAME="1763"></A>
+<A NAME="1764"></A>        ComTestScanner comtest = <FONT ID="New">new</FONT> ComTestScanner(contents);
+<A NAME="1765"></A>        <FONT ID="Return">return</FONT> comtest.scan(fileName);
+<A NAME="1766"></A>    }
+<A NAME="1767"></A>
+<A NAME="1768"></A>
+<A NAME="1769"></A>    <FONT ID="FormalComment">/**
+<A NAME="1770"></A>     * @param args name of files to process
+<A NAME="1771"></A>     */</FONT>
+<A NAME="1772"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Void">void</FONT> main(String[] args) {
+<A NAME="1773"></A>        
+<A NAME="1774"></A>        <FONT ID="If">if</FONT> ( args.length == <FONT ID="IntegerLiteral">0</FONT> ) {
+<A NAME="1775"></A>            System.out.println(<FONT ID="StringLiteral">"Run: java comtest.ComTest filename[s]"</FONT>);
+<A NAME="1776"></A>            System.out.println(<FONT ID="StringLiteral">"or: java -jar comtest.jar filename[s]"</FONT>);
+<A NAME="1777"></A>            <FONT ID="Return">return</FONT>;
+<A NAME="1778"></A>        }
+<A NAME="1779"></A>
+<A NAME="1780"></A>        <FONT ID="For">for</FONT> ( <FONT ID="Int">int</FONT> i = <FONT ID="IntegerLiteral">0</FONT>; i &lt; args.length; i++ ) {
+<A NAME="1781"></A>            String outname = processFile(args[i]);
+<A NAME="1782"></A>            <FONT ID="If">if</FONT> ( outname == <FONT ID="Null">null</FONT> ) System.out.println(args[i] + <FONT ID="StringLiteral">" error"</FONT>);
+<A NAME="1783"></A>            <FONT ID="Else">else</FONT> System.out.println(args[i] + <FONT ID="StringLiteral">" =&gt; "</FONT> + outname + <FONT ID="StringLiteral">" ok"</FONT>);
+<A NAME="1784"></A>        }   
+<A NAME="1785"></A>    }
+<A NAME="1786"></A>
+<A NAME="1787"></A>    <FONT ID="FormalComment">/**
+<A NAME="1788"></A>     * A class to help testing ComTest-functions.
+<A NAME="1789"></A>     * @author vesal
+<A NAME="1790"></A>     *
+<A NAME="1791"></A>     */</FONT>
+<A NAME="1792"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Class">class</FONT> TestHelpper {
+<A NAME="1793"></A>        <FONT ID="FormalComment">/** contents of the files       */</FONT>
+<A NAME="1794"></A>        <FONT ID="Public">public</FONT> <A HREF="../comtest/Strings.java.html">Strings</A> contents;
+<A NAME="1795"></A>        
+<A NAME="1796"></A>        <FONT ID="FormalComment">/** Global test scanner         */</FONT>
+<A NAME="1797"></A>        <FONT ID="Public">public</FONT> <A HREF="../comtest/ComTest.java.html">ComTest.ComTestScanner</A> scanner;
+<A NAME="1798"></A>        
+<A NAME="1799"></A>        <FONT ID="FormalComment">/** Global test codeHandler     */</FONT>
+<A NAME="1800"></A>        <FONT ID="Public">public</FONT> <A HREF="../comtest/ComTest.java.html">ComTest.ComTestScanner.CommentCodeHandler</A> codeHandler;
+<A NAME="1801"></A>        
+<A NAME="1802"></A>        <FONT ID="FormalComment">/** Global list for test initCmnds */</FONT>
+<A NAME="1803"></A>        <FONT ID="Public">public</FONT> <A HREF="../comtest/Strings.java.html">Strings</A> initCmnds;
+<A NAME="1804"></A>        
+<A NAME="1805"></A>        <FONT ID="FormalComment">/** Global list for test templates */</FONT>
+<A NAME="1806"></A>        <FONT ID="Public">public</FONT> <A HREF="../comtest/Strings.java.html">Strings</A> template;
+<A NAME="1807"></A>        
+<A NAME="1808"></A>        
+<A NAME="1809"></A>        <FONT ID="FormalComment">/** Global list for test outLines  */</FONT>
+<A NAME="1810"></A>        <FONT ID="Public">public</FONT> <A HREF="../comtest/Strings.java.html">Strings</A> outLines;
+<A NAME="1811"></A>        
+<A NAME="1812"></A>        <FONT ID="FormalComment">/** Import lines */</FONT>
+<A NAME="1813"></A>        <FONT ID="Public">public</FONT> <A HREF="../comtest/Strings.java.html">Strings</A> imports;
+<A NAME="1814"></A>        
+<A NAME="1815"></A>        <FONT ID="FormalComment">/** 
+<A NAME="1816"></A>         * Initializer for TestHelper      
+<A NAME="1817"></A>         */</FONT>
+<A NAME="1818"></A>        <FONT ID="Public">public</FONT> TestHelpper() {
+<A NAME="1819"></A>          contents = <FONT ID="New">new</FONT> <A HREF="../comtest/Strings.java.html">Strings</A>();
+<A NAME="1820"></A>          scanner = <FONT ID="New">new</FONT> <A HREF="../comtest/ComTest.java.html">ComTest.ComTestScanner</A>(contents);
+<A NAME="1821"></A>          <FONT ID="Try">try</FONT> { scanner.findNames(TEST);  } <FONT ID="Catch">catch</FONT> (java.io.IOException e) { 
+<A NAME="1822"></A>              System.err.println(e.getMessage());
+<A NAME="1823"></A>          } 
+<A NAME="1824"></A>          codeHandler = scanner.createCommentCodeHandler();
+<A NAME="1825"></A>          initCmnds = codeHandler.getInitCmnds();
+<A NAME="1826"></A>          template  = codeHandler.template;
+<A NAME="1827"></A>          outLines = scanner.getOutlines();
+<A NAME="1828"></A>          imports = scanner.imports;
+<A NAME="1829"></A>        }  
+<A NAME="1830"></A>        
+<A NAME="1831"></A>    }
+<A NAME="1832"></A>    
+<A NAME="1833"></A>}
+<A NAME="1834"></A></pre>
+</BODY>
+</HTML>
