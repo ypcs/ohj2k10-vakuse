@@ -1,1 +1,3 @@
 doc/suunnitelma.txt = harjoitustyön vaihe 1, eli harjoitustyön suunnitelma
+src/vaateseuranta/Vaatteet.java = luokka vaateseurantaa varten
+src/vaateseuranta/UI.java = käyttöliittymäluokka

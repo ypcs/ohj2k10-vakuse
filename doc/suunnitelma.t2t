@@ -179,10 +179,17 @@ T-paita (puuvilla, sininen, koko L)     jääkaappi          erittäin puhdas (1
 ```
 === 4. Luo satunnainen vaatekokonaisuus ===
 ```
+Paita: t-paita (sininen, koko L, tunniste 35833939393939)
+Housut: farkut (musta, koko 32/34, tunniste 8383838383838)
+Sukat: sukka (musta, koko 46, tunniste 3838393393)
+...
 ------------------------------------------
 0. Paluu päävalikkoon
 ```
 === 5. Tilastot ===
+Käytetyin vaate: sukka (sininen, koko 46)
+Likaisin vaate: t-paita (ruskea, koko L)
+...
 ```
 ------------------------------------------
 0. Paluu päävalikkoon

@@ -205,12 +205,20 @@ Data muodostetaan käyttötietokannan pohjalta: haetaan kunkin vaatteen viimeisi
 		===================================
 
 
+  Paita: t-paita (sininen, koko L, tunniste 35833939393939)
+  Housut: farkut (musta, koko 32/34, tunniste 8383838383838)
+  Sukat: sukka (musta, koko 46, tunniste 3838393393)
+  ...
   ------------------------------------------
   0. Paluu päävalikkoon
 
 
 		5. Tilastot
 		===========
+
+Käytetyin vaate: sukka (sininen, koko 46)
+Likaisin vaate: t-paita (ruskea, koko L)
+...
 
 
   ------------------------------------------
