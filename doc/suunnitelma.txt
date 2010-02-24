@@ -3,11 +3,11 @@ Ville Korhonen <ville.p.korhonen@jyu.fi>
 TIEP111, harjoitustyö, vaihe 1
 
 HTML
-  https://svn.cc.jyu.fi/srv/svn/ohj2k10/vipekorh/trunk/doc/suunnitelma.html
+  http://users.jyu.fi/~vipekorh/ohj2/doc/suunnitelma.html
 Plaintext
-  https://svn.cc.jyu.fi/srv/svn/ohj2k10/vipekorh/trunk/doc/suunnitelma.txt
+  http://users.jyu.fi/~vipekorh/ohj2/doc/suunnitelma.txt
 txt2tags (lähdekoodi)
-  https://svn.cc.jyu.fi/srv/svn/ohj2k10/vipekorh/trunk/doc/suunnitelma.t2t
+  http://users.jyu.fi/~vipekorh/ohj2/doc/suunnitelma.t2t
 
 Tehtävänä on suunnitella tietokanta henkilön vaatteiden sijainnista.
 
