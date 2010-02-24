@@ -1,2 +1,4 @@
 doc/suunnitelma.txt = harjoitustyön vaihe 1, eli harjoitustyön suunnitelma
 src/vaateseuranta/Vaateseuranta.java = käyttöliittymäluokka Vaateseuranta -sovellukseen
+doc/crc.html = harjoitustyön 4. vaihe (crc-kortit)
+doc/tietorakenne.pdf = harjoitustyön 4. vaihe (tietorakenne)
