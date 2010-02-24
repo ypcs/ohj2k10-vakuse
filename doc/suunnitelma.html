@@ -6,14 +6,59 @@
 <head>
 <title>Vaatteiden kulutuksen seurantaohjelma</title>
 <meta name="generator" content="http://txt2tags.sf.net" />
+
+<!-- Included styles.css -->
+<style type="text/css">
+html, body {
+    font-family: Arial, Helvetica, sans-serif;
+    padding: 0;
+    margin: 0;
+}
+
+header, footer, hgroup {
+    display: block;
+}
+
+hgroup h1, hgroup h2, hgroup h3, hgroup h4, hgroup h5, hgroup h6, .header h1, .header h2, .header h3, .header h4, .header h5, .header h6 {
+    margin: 0;
+    padding: 0;
+}
+
+header, .header {
+    border-bottom: 1px solid silver;
+    padding: 0.25em;
+    background: #505050;
+    color: #fff;
+}
+
+header a, .header a {
+    color: #orange;
+    background: transparent;
+}
+
+#main, .body {
+    padding: 1em;
+}
+
+ul {
+    list-style-type: square;
+}
+
+dl dt {
+    font-weight: bold;
+}
+</style>
+
 </head>
-<body bgcolor="white" text="black">
-<div align="center">
+<body>
+
+<div class="header" id="header">
 <h1>Vaatteiden kulutuksen seurantaohjelma</h1>
 <h2>Ville Korhonen &lt;ville.p.korhonen@jyu.fi&gt;</h2>
 <h3>TIEP111, harjoitustyö, vaihe 1</h3>
 </div>
 
+<div class="body" id="body">
 <dl>
 <dt>HTML</dt><dd>
   <a href="https://svn.cc.jyu.fi/srv/svn/ohj2k10/vipekorh/trunk/doc/suunnitelma.html">https://svn.cc.jyu.fi/srv/svn/ohj2k10/vipekorh/trunk/doc/suunnitelma.html</a>
@@ -76,43 +121,43 @@ Lisäksi ohjelma helpottaa käyttäjän vaateostoksia kertomalla käyttäjän om
 <h3>Tietokannat</h3>
 <h4>vaatteet</h4>
 <pre>
-  id | tyyppi | rfid                  | materiaali | väri | koko | ostopaikka | valmistaja | lisätiedot |
-  1  | 1      | 92393959239592359233  | 3          | 5    | XL   | kauppa X   | jännä firma| ....       |
-  2  | 6      | 95399229282828288283  | 9          | 7    | 47   |            | nokian     | hai-saappaat rokkaa! |
-  5  | 2      | 92939329595582828828  | 1          | 1    | L    | kauppa Y   |            |            |
-  6 ....
+id | tyyppi | rfid                  | materiaali | väri | koko | ostopaikka | valmistaja | lisätiedot |
+1  | 1      | 92393959239592359233  | 3          | 5    | XL   | kauppa X   | jännä firma| ....       |
+2  | 6      | 95399229282828288283  | 9          | 7    | 47   |            | nokian     | hai-saappaat rokkaa! |
+5  | 2      | 92939329595582828828  | 1          | 1    | L    | kauppa Y   |            |            |
+6 ....
 </pre>
 <p></p>
 <h4>käyttöhistoria</h4>
 <pre>
-  id | vaate | aika             | paikka           | kunto     | puhtausaste jälkeen | arvosana | lisätiedot
-  1  | 1     | 2010-01-23 15:15 | juhlat @ jossain | uusi      | 7                   |  9       | vaate oli ihku
-  3  | 5     | 2010-01-23 15:15 | juhlat @ jossain | reikäinen | 5                   | 4        | tän vois heittää roskiin
-  4  | 5     | 2010-01-23 16:00 | kylpyhuone       | rikki     | 6                   | 5        | osta uusi!
+id | vaate | aika             | paikka           | kunto     | puhtausaste jälkeen | arvosana | lisätiedot
+1  | 1     | 2010-01-23 15:15 | juhlat @ jossain | uusi      | 7                   |  9       | vaate oli ihku
+3  | 5     | 2010-01-23 15:15 | juhlat @ jossain | reikäinen | 5                   | 4        | tän vois heittää roskiin
+4  | 5     | 2010-01-23 16:00 | kylpyhuone       | rikki     | 6                   | 5        | osta uusi!
 </pre>
 <p></p>
 <h4>vaatetyypit</h4>
 <pre>
-  id | tyyppi
-  1  | housut
-  2  | paita
-  3  | sukka
-  6  | saapas
+id | tyyppi
+1  | housut
+2  | paita
+3  | sukka
+6  | saapas
 </pre>
 <p></p>
 <h4>materiaalit</h4>
 <pre>
-  id | materiaali
-  1  | puuvilla
-  2  | nahka
-  5  | farkku
+id | materiaali
+1  | puuvilla
+2  | nahka
+5  | farkku
 </pre>
 <p></p>
 <h4>värit</h4>
 <pre>
-  id | väri
-  1  | musta
-  2  | valkoinen
+id | väri
+1  | musta
+2  | valkoinen
 </pre>
 <p></p>
 <h2>Mitä ominaisuuksia halutaan?</h2>
@@ -134,67 +179,67 @@ Lisäksi ohjelma helpottaa käyttäjän vaateostoksia kertomalla käyttäjän om
 <h2>Tulosteet näytölle</h2>
 <h3>P. Päävalikko</h3>
 <pre>
-  Vaaterekisteri 1.0
-  
-  Toiminnot:
-  	1. Vaatteet
-  	2. Rekisteröi käyttötietoja
-  	3. Tulosta lista likaisista vaatteista
-  	4. Luo satunnainen vaatekokonaisuus
-  	5. Tilastot
-  	------------------------------------------
-  	0. Lopeta sovellus
+Vaaterekisteri 1.0
+
+Toiminnot:
+	1. Vaatteet
+	2. Rekisteröi käyttötietoja
+	3. Tulosta lista likaisista vaatteista
+	4. Luo satunnainen vaatekokonaisuus
+	5. Tilastot
+	------------------------------------------
+	0. Lopeta sovellus
 </pre>
 <p></p>
 <h3>1. Vaatteet</h3>
 <pre>
-  Toiminnot:
-  	1. Lisää uusi vaate
-  	2. Muokkaa vaatteita
-  	3. Poista vaatteita
-  	------------------------------------------
-  	0. Paluu päävalikkoon
+Toiminnot:
+	1. Lisää uusi vaate
+	2. Muokkaa vaatteita
+	3. Poista vaatteita
+	------------------------------------------
+	0. Paluu päävalikkoon
 </pre>
 <p></p>
 <h4>1.1. Lisää uusi vaate / 1.2. muokkaa vaatteita</h4>
 <pre>
-  	Lisää uusi vaate:
-  
-  	Tyyppi:         sukka[RET]        // autocomplete tyyppitaulun avulla: syötä pari
-                                        // ekaa kirjainta, paina [RET] ja sovellus ehdottaa jotain
-  	Väri:           5[RET]            // matchaus väritauluun
-  
-   	 VIRHE: syötä väritieto sanallisena
-  
-      Väri:           mus[RET]		  // autocompletea
-      
-       Tarkoititko:   musta [K/e] [RET]
-      Väri:           musta
-      
-  
-  	RFID-tunniste:  9595955939592395959[RET]
-  	Materiaali:     puuvilla[RET]     // vrt. tyyppi: sama materiaalitaulun kanssa
-  	Koko:           46[RET]               // voi olla esim. numerotieto tai kirjaimia (XL,S,...)
-  	....
-  	Vahvistus:
-  	 Lisätäänkö uusi: sukka (puuvilla, musta) kokoa 46? [K/e] [RET]
-  	 Vaate lisätty!
+	Lisää uusi vaate:
+
+	Tyyppi:         sukka[RET]        // autocomplete tyyppitaulun avulla: syötä pari
+                                      // ekaa kirjainta, paina [RET] ja sovellus ehdottaa jotain
+	Väri:           5[RET]            // matchaus väritauluun
+
+ 	 VIRHE: syötä väritieto sanallisena
+
+    Väri:           mus[RET]		  // autocompletea
+    
+     Tarkoititko:   musta [K/e] [RET]
+    Väri:           musta
+    
+
+	RFID-tunniste:  9595955939592395959[RET]
+	Materiaali:     puuvilla[RET]     // vrt. tyyppi: sama materiaalitaulun kanssa
+	Koko:           46[RET]               // voi olla esim. numerotieto tai kirjaimia (XL,S,...)
+	....
+	Vahvistus:
+	 Lisätäänkö uusi: sukka (puuvilla, musta) kokoa 46? [K/e] [RET]
+	 Vaate lisätty!
 </pre>
 <p></p>
 <h3>2. Rekisteröi käyttötietoja</h3>
 <pre>
-  	Rekisteröi käyttötietoja:
-  	
-  	RFID-tunniste:   9123951239512935912359[RET]
-  	
-  	Löytyi: housut (farkku, vaaleat, koko 32/34)
-  	
-  	Aika:            2010-01-01 02:30[RET] // pvm muoto aina tämä
-  	Sijainti:        ojanpohja[RET]        // vapaata tekstiä
-  	
-  	Tahdotko antaa käyttökokemuksen? [K/e] e[RET] // käyttökokemus = vapaata tekstiä, rivinvaihdot ok
-  	------------------------------------------
-  	0. Paluu päävalikkoon
+	Rekisteröi käyttötietoja:
+	
+	RFID-tunniste:   9123951239512935912359[RET]
+	
+	Löytyi: housut (farkku, vaaleat, koko 32/34)
+	
+	Aika:            2010-01-01 02:30[RET] // pvm muoto aina tämä
+	Sijainti:        ojanpohja[RET]        // vapaata tekstiä
+	
+	Tahdotko antaa käyttökokemuksen? [K/e] e[RET] // käyttökokemus = vapaata tekstiä, rivinvaihdot ok
+	------------------------------------------
+	0. Paluu päävalikkoon
 </pre>
 <p></p>
 <h3>3. Tulosta lista likaisista vaatteista</h3>
@@ -202,19 +247,19 @@ Lisäksi ohjelma helpottaa käyttäjän vaateostoksia kertomalla käyttäjän om
 Data muodostetaan käyttötietokannan pohjalta: haetaan kunkin vaatteen viimeisin status.
 </p>
 <pre>
-  Vaatekappale                            Sijainti           Puhtausaste
-  ------------------------------------------------------------------------------------------
-  Housut (farkku, vaaleat, koko 32/34)    huoneen lattia     likainen (1)
-  T-paita (puuvilla, sininen, koko L)     jääkaappi          erittäin puhdas (10)
+Vaatekappale                            Sijainti           Puhtausaste
+------------------------------------------------------------------------------------------
+Housut (farkku, vaaleat, koko 32/34)    huoneen lattia     likainen (1)
+T-paita (puuvilla, sininen, koko L)     jääkaappi          erittäin puhdas (10)
 </pre>
 <h3>4. Luo satunnainen vaatekokonaisuus</h3>
 <pre>
-  Paita: t-paita (sininen, koko L, tunniste 35833939393939)
-  Housut: farkut (musta, koko 32/34, tunniste 8383838383838)
-  Sukat: sukka (musta, koko 46, tunniste 3838393393)
-  ...
-  ------------------------------------------
-  0. Paluu päävalikkoon
+Paita: t-paita (sininen, koko L, tunniste 35833939393939)
+Housut: farkut (musta, koko 32/34, tunniste 8383838383838)
+Sukat: sukka (musta, koko 46, tunniste 3838393393)
+...
+------------------------------------------
+0. Paluu päävalikkoon
 </pre>
 <h3>5. Tilastot</h3>
 <p>
@@ -223,9 +268,10 @@ Likaisin vaate: t-paita (ruskea, koko L)
 ...
 </p>
 <pre>
-  ------------------------------------------
-  0. Paluu päävalikkoon
+------------------------------------------
+0. Paluu päävalikkoon
 </pre>
+</div>
 
 <!-- xhtml code generated by txt2tags 2.5 (http://txt2tags.sf.net) -->
 <!-- cmdline: txt2tags -q -\-target=xhtml -\-infile=suunnitelma.t2t -\-outfile=suunnitelma.html -->

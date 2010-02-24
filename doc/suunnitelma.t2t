@@ -4,6 +4,8 @@ TIEP111, harjoitustyö, vaihe 1
 
 %!Target: xhtml
 %!Encoding: utf-8
+%!Style(xhtml): styles.css
+%!Options(xhtml): --css-sugar --css-inside
 %
 % svn.cc.jyu.fi / trac.cc.jyu.fi käyttävät ISO-8859-1 -merkistöä, omat dokkarit UTF-8:aa,
 % korjaus onnistuu esim. svn propset svn:mime-type "text/plain;charset=utf-8" <filename>
