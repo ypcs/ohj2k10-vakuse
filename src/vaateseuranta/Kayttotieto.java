@@ -45,7 +45,7 @@ public class Kayttotieto implements Cloneable {
 	private static final long PIENIN_TUNNISTE = 1000000000;
 	private static final long SUURIN_TUNNISTE = 2000000000;
 
-	private static final String PARSE_REGEXP = "^([0-9]{1,})[" + EROTIN + "]([0-9]{1,})[" + EROTIN + "]([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2})[" + EROTIN + "](.*)[" + EROTIN + "](.*)[" + EROTIN + "]([0-9]{1})[" + EROTIN + "]([0-9]{1})[" + EROTIN + "](.*)[" + EROTIN + "]$";
+	private static final String PARSE_REGEXP = "^([0-9]{1,})[" + EROTIN + "]([0-9]{1,})[" + EROTIN + "]([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2})[" + EROTIN + "](.*)[" + EROTIN + "](.*)[" + EROTIN + "]([0-9]{1})[" + EROTIN + "]([0-9]{1})[" + EROTIN + "](.*)[" + EROTIN + "]?$";
 	
 	/** 
 	 * Parsii annetusta rivistä käyttötieto-olion tiedot
@@ -64,16 +64,76 @@ public class Kayttotieto implements Cloneable {
 		}
 		
         // TODO: vois olla oma datavarastotyyppi mallia Kentta @ Jasen.java, jolloin tiedot sais taltioitua for-loopilla tai vastaavalla...
-        // setID(m.group(KENTTA_ID + 1)); // TODO: tsekkaa, ettei id ole käytössä
-        // setType(Integer.parseInt(m.group(KENTTA_TYYPPI + 1)));
-        // setRFID(Long.parseLong(m.group(KENTTA_RFID + 1)));
-        // setMaterial(Integer.parseInt(m.group(KENTTA_MATERIAALI + 1)));
-        // setColor(Integer.parseInt(m.group(KENTTA_VARI + 1)));
-        // setSize(m.group(KENTTA_KOKO + 1));
-        // setSeller(m.group(KENTTA_OSTOPAIKKA + 1));
-        // setManufacturer(m.group(KENTTA_VALMISTAJA + 1));
-        // setAdditionalInfo(m.group(KENTTA_LISATIEDOT + 1));
+		
+		
+		
+		
         return true;
+	}
+	
+	/**
+	 * Asettaa vaatteen
+	 * @param v vaate
+	 */
+	public void setVaate(Vaate v) {
+		this.vaate = v;
+	}
+
+	
+	/**
+	 * Palauttaa vaatteen
+	 * @return palauttaa vaatteen
+	 */
+	public Vaate getVaate() {
+		return this.vaate;
+	}
+	
+	/**
+	 * Palauttaa kunnon
+	 * @return palauttaa kunnon
+	 */
+	public String getKunto() {
+		return this.kunto;
+	}
+	
+	/**
+	 * Asettaa kunnon
+	 * @param s kunto
+	 */
+	public void setKunto(String s) {
+		this.kunto = s;
+	}
+	
+	public void setPuhtaus(int i) {
+		this.puhtaus = i;
+	}
+	
+	public void setArvosana(int i) {
+		this.arvosana = i;
+	}
+	
+	public int getPuhtaus() {
+		return this.puhtaus;
+	}
+	
+	public int getArvosana() {
+		return this.arvosana;
+	}
+	
+	/**
+	 * Asettaa aikaleiman
+	 * @param s
+	 */
+	public void setTimestamp(String s) {
+		this.aika = s;
+	}
+	
+	/**
+	 * Hakee aikaleiman
+	 * @return palauttaa aikaleiman
+	 */
+	public String getTimetamp() {
+		return this.aika;
 	}
 	
 	public void createID() {
@@ -171,9 +231,9 @@ public class Kayttotieto implements Cloneable {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-        String testi1 = "1|1|2010-01-23 15:15|juhlat @ jossain|uusi|7|9|vaate oli ihku";
-        String testi2 = "3|5|2010-01-23 15:15|juhlat @ jossain|reikäinen|5|4|tän vois heittää roskiin";
-        String testi3 = "4|5|2010-01-23 16:00|kylpyhuone|rikki|6|5|osta uusi!";
+        String testi1 = "1|1|2010-01-23 15:15|juhlat @ jossain|uusi|7|9|vaate oli ihku|";
+        String testi2 = "3|5|2010-01-23 15:15|juhlat @ jossain|reikäinen|5|4|tän vois heittää roskiin|";
+        String testi3 = "4|5|2010-01-23 16:00|kylpyhuone|rikki|6|5|osta uusi!|";
         
 		Kayttotieto kayttotieto1 = new Kayttotieto(testi1);
 		kayttotieto1.createID(); // resetoidaan id parsimalla saadusta
