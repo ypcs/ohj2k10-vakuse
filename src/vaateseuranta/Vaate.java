@@ -2,6 +2,9 @@
  * TIEP111, harjoitustyö
  * @author Ville Korhonen <ville.p.korhonen@jyu.fi>
  * @version x.y
+ * 
+ * @todo eroon finglishistä (ts. käytä muuttujienkin nimissä englantia)
+ * @todo ostopaikalle parempi käännös (vrt. seller)
  */
 package vaateseuranta;
 
@@ -193,6 +196,39 @@ public class Vaate implements Cloneable {
 		return this.vari;
 	}
 	
+	
+	/**
+	 * Palauttaa materiaalin
+	 * @return palauttaa materiaalin
+	 */
+	public int getMaterial() {
+		return this.materiaali;
+	}
+	
+	/**
+	 * Palauttaa ostopaikan
+	 * @return ostopaikka
+	 */
+	public String getSeller() {
+		return this.ostopaikka;
+	}
+	
+	/**
+	 * Palauttaa valmistajan
+	 * @return valmistaja
+	 */
+	public String getManufacturer() {
+		return this.valmistaja;
+	}
+	
+	/**
+	 * Palauttaa lisätiedot
+	 * @return lisätiedot
+	 */
+	public String getAdditionalInfo() {
+		return this.lisatiedot;
+	}
+	
 	/**
 	 * Palauttaa koon
 	 * @return palauttaa koon
@@ -213,10 +249,11 @@ public class Vaate implements Cloneable {
 		parse(rivi);
 	}
 	
+	
+	
 	public String toString() {
-		// TODO: vaatetyypin (int) muuttaminen String -muotoon tyyppitaulukon avulla
-		// -> "#5 sukka, musta/46, RFID: 2399929292"
-		return "#" + this.getID() + " [vaatetyyppi], [vari: " + this.getColor() + "]/[koko], RFID: " + this.getRFID();
+		return "" + this.getID() + EROTIN + this.getType() + EROTIN + this.getRFID() + EROTIN + this.getMaterial() + EROTIN + this.getColor() + EROTIN + this.getSize() + EROTIN + this.getSeller() + EROTIN + this.getManufacturer() + EROTIN + this.getAdditionalInfo() + EROTIN;
+		//return "#" + this.getID() + " [vaatetyyppi], [vari: " + this.getColor() + "]/[koko], RFID: " + this.getRFID();
 	}
 	
 	/**
@@ -263,7 +300,9 @@ public class Vaate implements Cloneable {
 		vari = 4;
 		koko = "M";
 		rfid = 1992912345;
-		
+		ostopaikka = "Valintatalo";
+		valmistaja = "Oy Lapsityövoima Ab";
+		lisatiedot = "Tää oli rikki jo ostettaessa, mutta näytti kivalta ni pidin.";
 	}
 	
 	/**
@@ -282,7 +321,12 @@ public class Vaate implements Cloneable {
         Vaate tokavaate = new Vaate();
         tokavaate.createRFID();
         tokavaate.createID();
-        
+        tokavaate.setAdditionalInfo("Huonous");
+        tokavaate.setManufacturer("Piraatti Oy");
+        tokavaate.setSeller("Halpahalli Ab");
+        tokavaate.setSize("XXL");
+        tokavaate.setMaterial(5);
+        tokavaate.setType(2);
         tokavaate.print(System.out);
         
         Vaate kolmas = new Vaate();
