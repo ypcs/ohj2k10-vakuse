@@ -221,6 +221,13 @@ public class Vaateseuranta {
       } while (valinta != 0);
       
   }
+  
+  /**
+    * Tulostaa ohjelman päävalikon ja kysyy käyttäjältä suoritettavan toiminnon
+    * jonka jälkeen kyseinen toiminto suoritetaan
+    */
+  private static void mainMenu() {mainMenu(false);}
+
 
   /**
    * Ohjelman pääohjelma
@@ -235,7 +242,7 @@ public class Vaateseuranta {
       vaateseuranta.logo();
       
       // näytetään päävalikko
-      vaateseuranta.mainMenu(false);
+      vaateseuranta.mainMenu();
       
       // tallennetaan data
       vaateseuranta.save();
