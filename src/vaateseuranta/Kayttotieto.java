@@ -103,6 +103,7 @@ public class Kayttotieto implements Cloneable {
 	public void setVaate(int i) {
 		// TODO
 		this.vaate = new Vaate();
+		this.vaate.setID(i);
 	}
 	
 	/**
@@ -157,7 +158,7 @@ public class Kayttotieto implements Cloneable {
 	 * Hakee aikaleiman
 	 * @return palauttaa aikaleiman
 	 */
-	public String getTimetamp() {
+	public String getTimestamp() {
 		return this.aika;
 	}
 	
@@ -227,7 +228,7 @@ public class Kayttotieto implements Cloneable {
 	
 	public String toString() {
 	    // TODO: vaiheessa
-		return "" + this.getID() + EROTIN + this.getVaate().getID() + EROTIN + this.getPaikka() + EROTIN + this.getKunto() + EROTIN + this.getPuhtaus() + EROTIN + this.getArvosana() + EROTIN + this.getAdditionalInfo() + EROTIN;
+		return "" + this.getID() + EROTIN + this.getVaate().getID() + EROTIN + this.getTimestamp() + EROTIN + this.getPaikka() + EROTIN + this.getKunto() + EROTIN + this.getPuhtaus() + EROTIN + this.getArvosana() + EROTIN + this.getAdditionalInfo() + EROTIN;
 	}
 	
 	
@@ -260,6 +261,12 @@ public class Kayttotieto implements Cloneable {
         String testi2 = "3|5|2010-01-23 15:15|juhlat @ jossain|reikäinen|5|4|tän vois heittää roskiin|";
         String testi3 = "4|5|2010-01-23 16:00|kylpyhuone|rikki|6|5|osta uusi!|";
         
+        System.out.println("Sisään:");
+        System.out.println(testi1);
+        System.out.println(testi2);
+        System.out.println(testi3);
+        
+        
 		Kayttotieto kayttotieto1 = new Kayttotieto(testi1);
 		kayttotieto1.createID(); // resetoidaan id parsimalla saadusta
 		
@@ -270,6 +277,7 @@ public class Kayttotieto implements Cloneable {
 		Kayttotieto kayttotieto3 = new Kayttotieto(testi3);
 		kayttotieto3.createID();
         
+		System.out.println("Ulos:");
 		kayttotieto1.print(System.out);
 		kayttotieto2.print(System.out);
 		kayttotieto3.print(System.out);
