@@ -64,11 +64,32 @@ public class Kayttotieto implements Cloneable {
 		}
 		
         // TODO: vois olla oma datavarastotyyppi mallia Kentta @ Jasen.java, jolloin tiedot sais taltioitua for-loopilla tai vastaavalla...
-		
-		
-		
+		setID(Integer.parseInt(m.group(KENTTA_ID + 1)));
+		setVaate(Integer.parseInt(m.group(KENTTA_VAATE + 1)));
+		setTimestamp(m.group(KENTTA_AIKA + 1));
+		setPaikka(m.group(KENTTA_PAIKKA + 1));
+		setKunto(m.group(KENTTA_KUNTO + 1));
+		setPuhtaus(Integer.parseInt(m.group(KENTTA_PUHTAUS + 1)));
+		setArvosana(Integer.parseInt(m.group(KENTTA_ARVOSANA + 1)));
+		setAdditionalInfo(m.group(KENTTA_LISATIEDOT + 1));
 		
         return true;
+	}
+	
+	/**
+	 * Asettaa paikan
+	 * @param s
+	 */
+	public void setPaikka(String s) {
+		this.paikka = s;
+	}
+	
+	/**
+	 * Palauttaa paikan
+	 * @return palauttaa paikan
+	 */
+	public String getPaikka() {
+		return this.paikka;
 	}
 	
 	/**
@@ -79,6 +100,10 @@ public class Kayttotieto implements Cloneable {
 		this.vaate = v;
 	}
 
+	public void setVaate(int i) {
+		// TODO
+		this.vaate = new Vaate();
+	}
 	
 	/**
 	 * Palauttaa vaatteen
@@ -202,7 +227,7 @@ public class Kayttotieto implements Cloneable {
 	
 	public String toString() {
 	    // TODO: vaiheessa
-		return "" + this.getID() + EROTIN;
+		return "" + this.getID() + EROTIN + this.getVaate().getID() + EROTIN + this.getPaikka() + EROTIN + this.getKunto() + EROTIN + this.getPuhtaus() + EROTIN + this.getArvosana() + EROTIN + this.getAdditionalInfo() + EROTIN;
 	}
 	
 	
@@ -249,7 +274,6 @@ public class Kayttotieto implements Cloneable {
 		kayttotieto2.print(System.out);
 		kayttotieto3.print(System.out);
 		
-		System.out.println(PARSE_REGEXP);
 	}
 
 }
