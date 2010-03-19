@@ -99,24 +99,18 @@ public class Kayttotieto implements Cloneable {
 
 	
 	/**
-	 * Asettaa vaatteen lisätiedot
+	 * Asettaa käyttötiedon lisätiedot
 	 * @param s
 	 */
 	public void setAdditionalInfo(String s) {
 	    this.lisatiedot = s;
 	}
 	
-	/**
-	 * Palauttaa vaatteen RFID-tunnisteen
-	 * @return Palauttaa vaatteen RFID-tunnisteen
-	 */
-	public long getRFID() {
-		return this.rfid;
-	}
+	
 	
 	/**
-	 * Palauttaa vaatteen ID-numeron
-	 * @return palauttaa vaatteen ID-numeron
+	 * Palauttaa käyttötiedon ID-numeron
+	 * @return palauttaa käyttötiedon ID-numeron
 	 */
 	public int getID() {
 		return this.id;
@@ -130,15 +124,9 @@ public class Kayttotieto implements Cloneable {
 		return this.lisatiedot;
 	}
 	
-	/**
-	 * Palauttaa koon
-	 * @return palauttaa koon
-	 */
-	public String getSize() {
-		return this.koko;
-	}
 	
-	public Vaate() {
+	
+	public Kayttotieto() {
 		this.id = 0;
 	}
 	

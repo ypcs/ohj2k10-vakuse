@@ -1,17 +1,22 @@
+/**
+ * TIEP111, harjoitustyö
+ * @author Ville Korhonen <ville.p.korhonen@jyu.fi>
+ */
+
 package vaateseuranta;
 
 
 import java.util.Scanner;
 
 /**
- * Käyttöliittymäluokka Vaateseuranta -ohjelmaan
- * Vaateseuranta -ohjelman 
+ * Käyttöliittymäluokka Kayttoliittyma -ohjelmaan
+ * Kayttoliittyma -ohjelman 
  *
  * @author Ville Korhonen
  * @version 2010-02-05
  */
-public class Vaateseuranta {
-	private static final String APP_NAME = "Vaateseuranta";
+public class Kayttoliittyma {
+	private static final String APP_NAME = "Kayttoliittyma";
 	private static final int APP_VER_MAJOR = 0;
 	private static final int APP_VER_MINOR = 0;
 	private static final int APP_VER_PATCH = 5;
@@ -90,7 +95,7 @@ public class Vaateseuranta {
 
   /**
    * Tulostaa hieman tyhjää väliä
-   * @param kVaateseurantanka monta riviä tyhjää tulostetaan?
+   * @param kKayttoliittymanka monta riviä tyhjää tulostetaan?
    */
   private static void printSpace(int howMany) {
       for (int i=0; i<howMany; i++) {
@@ -126,7 +131,7 @@ public class Vaateseuranta {
   private static void info() {
       print(APP_INFO);
       printSpace();
-      print("Vaateseurantaohjelmisto henkilökohtaiseen vaateseurantaan");
+      print("Kayttoliittymaohjelmisto henkilökohtaiseen Kayttoliittymaan");
       print("(c) 2010, VK <ville.p.korhonen@jyu.fi>");
       printSpace();
   }
@@ -134,7 +139,7 @@ public class Vaateseuranta {
 
   /**
    * Tallentaa vaatekatalogin tiedot levylle.
-   * @return palauttaa true mikäli tallennus onnistVaateseuranta, muuten false
+   * @return palauttaa true mikäli tallennus onnistKayttoliittyma, muuten false
    * @todo tee varsinainen toiminnallisuus
    */
   public static boolean save() {
@@ -234,21 +239,20 @@ public class Vaateseuranta {
    * @param args komentorivin parametrit, ei käytössä vielä
    */
   public static void main(String[] args) {
-    Vaateseuranta vaatteet = new Vaateseuranta();
-
     try {
-      Vaateseuranta vaateseuranta = new Vaateseuranta();
+      Kayttoliittyma kl = new Kayttoliittyma();
+      Vaateseuranta vs = new Vaateseuranta();
       // näytetään logo
-      vaateseuranta.logo();
+      kl.logo();
       
       // näytetään päävalikko
-      vaateseuranta.mainMenu();
+      kl.mainMenu();
       
       // tallennetaan data
-      vaateseuranta.save();
+      kl.save();
 
       // näytetään vielä sovelluksen tiedot
-      vaateseuranta.info();
+      kl.info();
     }
     catch (Exception ex) {
       System.out.println("VIRHE: " + ex.getMessage());
