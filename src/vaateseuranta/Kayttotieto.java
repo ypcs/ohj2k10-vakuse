@@ -45,7 +45,7 @@ public class Kayttotieto implements Cloneable {
 	private static final long PIENIN_TUNNISTE = 1000000000;
 	private static final long SUURIN_TUNNISTE = 2000000000;
 
-	private static final String PARSE_REGEXP = "^([0-9]{1,})[" + EROTIN + "]([0-9]{1,})[" + EROTIN + "]([0-9]{10,10})[" + EROTIN + "]([0-9]{1,})[" + EROTIN + "]([0-9]{1,})[" + EROTIN + "](.*)[" + EROTIN + "](.*)[" + EROTIN + "](.*)[" + EROTIN + "](.*)[" + EROTIN + "]$";
+	private static final String PARSE_REGEXP = "^([0-9]{1,})[" + EROTIN + "]([0-9]{1,})[" + EROTIN + "]([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2})[" + EROTIN + "](.*)[" + EROTIN + "](.*)[" + EROTIN + "]([0-9]{1})[" + EROTIN + "]([0-9]{1})[" + EROTIN + "](.*)[" + EROTIN + "]$";
 	
 	/** 
 	 * Parsii annetusta rivistä käyttötieto-olion tiedot
@@ -175,8 +175,21 @@ public class Kayttotieto implements Cloneable {
         String testi2 = "3|5|2010-01-23 15:15|juhlat @ jossain|reikäinen|5|4|tän vois heittää roskiin";
         String testi3 = "4|5|2010-01-23 16:00|kylpyhuone|rikki|6|5|osta uusi!";
         
+		Kayttotieto kayttotieto1 = new Kayttotieto(testi1);
+		kayttotieto1.createID(); // resetoidaan id parsimalla saadusta
+		
+		
+		Kayttotieto kayttotieto2 = new Kayttotieto(testi2);
+		kayttotieto2.createID();
+		
+		Kayttotieto kayttotieto3 = new Kayttotieto(testi3);
+		kayttotieto3.createID();
         
-        
+		kayttotieto1.print(System.out);
+		kayttotieto2.print(System.out);
+		kayttotieto3.print(System.out);
+		
+		System.out.println(PARSE_REGEXP);
 	}
 
 }
